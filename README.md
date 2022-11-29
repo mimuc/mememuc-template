@@ -1,6 +1,6 @@
 # MemeMuc Launcher
 
-This "template" is made to unify the meme generator bonus project submissions. When we run `npm run install all && npm start` inside the _mememuc-launcher_ folder, your submission should run without any further adaptions.
+This "template" is made to unify the meme generator bonus project submissions. When we run `cd mememuc-launcher && npm run installall && npm start` inside the _mememuc-launcher_ folder, your submission should run without any further adaptions.
 
 It contains two folder that are relevant to you: _node-backend_ and _react-frontend_. Your project implementation is supposed to go in these two folders. Currently, both folder are filled with some dummy projects. The other two folders, _mememuc-launcher_ and _mongoserver_ must not be changed! The first implements a launcher project that simplifies and unifies how to install and launch everything. The second constitutes a local in-memory database server.
 
