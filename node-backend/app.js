@@ -7,9 +7,9 @@ var logger = require('morgan');
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
 // ### Thus copy paste this block to your project
-const mongodb_port = process.env.DBPORT || '27017';
-const db = require('monk')(`127.0.0.1:${mongodb_port}/omm-2223`); // connect to database omm-2021
-console.log(`Connected to MongoDB at port ${mongodb_port}`)
+const MONGODB_PORT = process.env.DBPORT || '27017';
+const db = require('monk')(`127.0.0.1:${MONGODB_PORT}/omm-2223`); // connect to database omm-2021
+console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
 // ######
 
 var indexRouter = require('./routes/index');
