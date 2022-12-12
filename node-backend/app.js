@@ -16,6 +16,9 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var memesAPI = require('./routes/memesApi');
 var registerUserRouter = require('./routes/registerUser');
+var uploadTemplateRouter = require('./routes/uploadTemplate');
+var createdMemes = require('./routes/createdMemes');
+
 
 var app = express();
 
@@ -62,6 +65,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/memesApi', memesAPI);
 app.use('/registerUser', registerUserRouter);
+app.use('/uploadTemplate', uploadTemplateRouter);
+app.use('/createdMemes', createdMemes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
