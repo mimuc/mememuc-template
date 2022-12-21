@@ -39,7 +39,7 @@ The other two folders __must not be changed__!
 
 ### During Development
 
-During development we recommend to ruin the two project (`./node-backend` and `./react-frontend`) individually. However if you prefer, you can use the NodeJS scripts from `./mememuc-launcher` during development too, with the following commands:
+During development we recommend to run the two projects (`./node-backend` and `./react-frontend`) individually. However if you prefer, you can use the NodeJS scripts from `./mememuc-launcher` during development too, with the following commands:
 
 ```
 cd mememuc-launcher
