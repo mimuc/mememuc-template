@@ -1,7 +1,14 @@
 import {useNavigate} from "react-router-dom";
 import {useCopyToClipboard, useToggle} from "react-use";
-import {Button, Card, message, Typography} from "antd";
-import {CommentOutlined, DownloadOutlined, HeartFilled, HeartOutlined, ShareAltOutlined} from "@ant-design/icons";
+import {Button, Card, message, Segmented, Typography} from "antd";
+import {
+    ClockCircleOutlined,
+    CommentOutlined,
+    DownloadOutlined,
+    HeartFilled,
+    HeartOutlined,
+    ShareAltOutlined
+} from "@ant-design/icons";
 import {api} from "src/api";
 import {useApi} from "src/hooks";
 import {Meme} from "src/types";
@@ -11,7 +18,7 @@ type ItemProps = {
     item: Meme;
 }
 
-const {Text} = Typography;
+const {Text, Title} = Typography;
 
 const Item = ({item}: ItemProps) => {
     const navigate = useNavigate();
@@ -95,11 +102,46 @@ const Item = ({item}: ItemProps) => {
 }
 
 export const MemesPage = () => {
+    // TODO: apply sorter 'popular' | 'latest'
+    // TODO: add filter
     const memes = useApi(api.memes.all);
 
     if (!memes) return null;
 
     return (
-        <>{memes.map(item => <Item key={item.id} item={item}/>)}</>
+        <>
+            <div style={{
+                position: 'fixed',
+                zIndex: 100,
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-around',
+                alignItems: 'center',
+                backgroundColor: 'white',
+                paddingBlock: 10,
+                boxShadow: "0 0 4px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.12)"
+            }}>
+                <Title style={{display: 'inline-block', margin: 0}} level={2}>Memes</Title>
+                <div>
+                    <Segmented
+                        options={[
+                            {
+                                value: 'latest',
+                                label: 'Latest',
+                                icon: <ClockCircleOutlined/>,
+                            },
+                            {
+                                value: 'popular',
+                                label: 'Popular',
+                                icon: <HeartOutlined/>,
+                            },
+                        ]}
+                    />
+                </div>
+            </div>
+            <div style={{paddingTop: 120}}>
+                {memes.map(item => <Item key={item.id} item={item}/>)}
+            </div>
+        </>
     )
 }
