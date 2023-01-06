@@ -11,11 +11,11 @@ export const ErrorPage = () => {
         <h1 className={'inline-block text-3xl font-bold mb-4'}>{code} Error</h1>
         <p>An error occurred.</p>
         <Link
-          to={'dashboard'}
+          to={'/'}
           className={
             'underline text-blue-600 hover:text-blue-800 visited:text-purple-600 mt-8 inline-block'
           }>
-          Dashboard
+          Start
         </Link>
       </div>
     </div>
