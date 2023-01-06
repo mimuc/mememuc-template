@@ -11,7 +11,7 @@ export const App = () => {
 
     return (
         <StrictMode>
-            <ConfigProvider theme={{token: {colorPrimary: '#232323'}}}>
+            <ConfigProvider>
                 <Router/>
             </ConfigProvider>
         </StrictMode>
