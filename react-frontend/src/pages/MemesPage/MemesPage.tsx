@@ -35,7 +35,6 @@ const Item = ({item}: ItemProps) => {
 
     // Nav events
     const navigateToMeme = () => navigate(item.id);
-    const navigateToCreator = () => item?.creator?.id && navigate("/users/" + item.creator.id);
     const navigateToComments = () => {
         navigate(item.id, {state: 'comments'});
     }
@@ -88,7 +87,7 @@ const Item = ({item}: ItemProps) => {
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <span>by {
                                 item?.creator?.displayName
-                                    ? <Text underline onClick={navigateToCreator}>{item.creator.displayName}</Text>
+                                    ? item.creator.displayName
                                     : 'Uknown'
                             }
                             </span>
