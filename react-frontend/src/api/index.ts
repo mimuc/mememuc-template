@@ -1,8 +1,6 @@
-import {client} from "./base";
+import {memes} from './memes';
+import {my} from './my';
+import {templates} from "./templates";
 
-export const templates = () => {
-    return client.get('/templates');
-}
-
-export const api = {templates};
+export const api = {memes, my, templates};
 
