@@ -1,7 +1,7 @@
 import {Outlet, RouteObject} from "react-router-dom";
 import {AppLayout} from "src/layouts";
 import {ErrorPage} from "./ErrorPage/ErrorPage";
-import {NewPage, ProfilePage, StartPage} from "src/pages";
+import {MemesPage, MemePage, NewPage, ProfilePage, StartPage} from "src/pages";
 
 const AppWrapper = () => {
     return <AppLayout>
@@ -19,7 +19,20 @@ export const routes: RouteObject[] = [
                 element: <StartPage/>
             },
             {
-                path: '/profile',
+                path: 'memes',
+                children: [
+                    {
+                        index: true,
+                        element: <MemesPage/>
+                    },
+                    {
+                        path: ':memeId',
+                        element: <MemePage/>
+                    }
+                ]
+            },
+            {
+                path: 'profile',
                 element: <ProfilePage/>
             },
             {
