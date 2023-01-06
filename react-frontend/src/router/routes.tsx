@@ -36,7 +36,7 @@ export const routes: RouteObject[] = [
                 element: <ProfilePage/>
             },
             {
-                path: '/new',
+                path: 'new',
                 element: <NewPage/>
             }
         ]
