@@ -1,5 +1,6 @@
 /**
- https://stackoverflow.com/questions/9461621/format-a-number-as-2-5k-if-a-thousand-or-more-otherwise-900
+ * Converts big numbers to human-readable format, e.g. 1.100 -> '1.1k'
+ * https://stackoverflow.com/questions/9461621/format-a-number-as-2-5k-if-a-thousand-or-more-otherwise-900
  */
 export const abbreviateNumber = (number: number) => {
     const SI_SYMBOL = ["", "k", "M", "G", "T", "P", "E"];
