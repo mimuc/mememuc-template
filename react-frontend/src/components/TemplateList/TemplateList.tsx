@@ -4,7 +4,7 @@ import {Template as TemplateType} from "src/types";
 import {Template} from "src/components/Template/Template";
 
 export const TemplateList = () => {
-    const templates = useApi<TemplateType[]>(api.templates);
+    const templates = useApi<TemplateType[]>(api.templates.all);
 
     if (!templates) return null;
 
