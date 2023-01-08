@@ -1,7 +1,7 @@
 import {Outlet, RouteObject} from "react-router-dom";
 // import {AppLayout} from "src/layouts";
 import {ErrorPage} from "./ErrorPage/ErrorPage";
-import {MemesPage, MemePage, NewPage, ProfilePage, StartPage} from "src/pages";
+import {MemesPage, MemePage, NewPage, ProfilePage, StartPage, ApiPage} from "src/pages";
 
 // const AppWrapper = () => {
 //     return <AppLayout>
@@ -36,6 +36,10 @@ export const routes: RouteObject[] = [
                 path: 'profile',
                 element: <ProfilePage/>
             },
+            {
+                path: 'api',
+                element: <ApiPage />
+            }
         ]
     }
 ]

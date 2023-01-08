@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: Meme Generator API
+  description: API for generating and managing memes
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /memes:
+    get:
+      summary: Get a list of all memes
+      description: Returns a list of all available memes
+      tags:
+        - Memes
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meme'
+  /templates:
+    get:
+      summary: Get a list of all templates
+      description: Returns a list of all available templates
+      tags:
+        - Templates
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Template'
+  /user/memes:
+    get:
+      summary: Get a list of the user's memes
+      description: Returns a list of the memes created by the authenticated user
+      tags:
+        - User
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meme'
+        '401':
+          description: Unauthorized
+  /user/account:
+    get:
+      summary: Get the user's account information
+      description: Returns the account information for the authenticated user
+      tags:
+        - User
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+  /user/templates:
+    get:
+      summary: Get a list of the user's templates
+      description: Returns a list of the templates created by the authenticated user
+      tags:
+        - User
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Template'
+        '401':
+          description: Unauthorized
+components:
+  schemas:
+    Meme:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the meme
+        name:
+          type: string
+          description: The name of the meme
+        # image: Needs image format
+        #   type: string
+        #   description: The meme 
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the template
+        name:
+          type: string
+          description: The name of the template
+        # image_url: Needs image format
+        #   type: string
+        #   description: The template image
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the user
+        name:
+          type: string
+          description: The name of the user
