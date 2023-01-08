@@ -14,6 +14,7 @@ console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var templatesRouter = require('./routes/templates');
 
 var app = express();
 
@@ -32,7 +33,7 @@ app.use(function(req,res,next){  req.db = db;
 
 
 // the login middleware. Requires BasicAuth authentication
-app.use((req,res,next) => {
+/* app.use((req,res,next) => {
   const users = db.get('users');
   users.findOne({basicauthtoken: req.headers.authorization}).then(user => {
     if (user) {
@@ -48,13 +49,14 @@ app.use((req,res,next) => {
     res.set('WWW-Authenticate', 'Basic realm="401"')
     res.status(401).send()
   })
-})
+}) */
 
 
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/templates', templatesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
