@@ -58,10 +58,9 @@ starts the backend project. It will connect to a local MongoDB instance (assumin
 
 ### How To Prepare Your Submission
 
-- Export the MongoDB database state that you want us to user for evaluating your submission from your local MongoDB as json files. You can use, e.g., the `mongoexport` command:
-`mongoexport --uri="mongodb://localhost:27017/omm-ws2223" --collection=users --out=omm-ws2223.json`
-- Put any exportet json files into the `./mongoserver/data` folder. The in-memory database server (`./mongoserver`) will import these files as default data whenever you (re)launch the project (_not implemented yet_).
-- You can test whether you application will run in the test setup using the commands below.
+- Export the MongoDB database state that you want us to user for evaluating your submission from your local MongoDB as bson files using `mongodump`, e.g.: `mongodump mongodb://127.0.0.1:27017 --db=omm-ws2223`
+- Place all created *.bson files in `mongoserver/data`
+- The in-memory database server (`./mongoserver`) will import these files as default data whenever you (re)launch the project.
 
 ### How We Will Test Your Submission
 
