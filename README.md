@@ -59,7 +59,7 @@ starts the backend project. It will connect to a local MongoDB instance (assumin
 ### How To Prepare Your Submission
 
 - Export the MongoDB database state that you want us to user for evaluating your submission from your local MongoDB as bson files using `mongodump`, e.g.: `mongodump mongodb://127.0.0.1:27017 --db=omm-ws2223`
-- Place all created *.bson files in `mongoserver/data`
+- Place all created *.bson and *.metadata.json files in `mongoserver/data`
 - The in-memory database server (`./mongoserver`) will import these files as default data whenever you (re)launch the project.
 
 ### How We Will Test Your Submission
