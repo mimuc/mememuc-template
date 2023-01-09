@@ -8,9 +8,10 @@ export type Meme = {
     name: string;
     image: string;
     totalLikes: number;
+    totalDislikes: number;
     totalComments: number;
     createdAt: string;
-    liked: boolean;
+    vote: number;
     creator?: {
         id: string;
         displayName: string;

@@ -1,12 +1,12 @@
+import {useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useCopyToClipboard, useToggle} from "react-use";
+import {useCopyToClipboard} from "react-use";
 import {Button, Card, message, Segmented, Typography} from "antd";
 import {
     ClockCircleOutlined,
-    CommentOutlined,
+    CommentOutlined, DislikeFilled, DislikeOutlined,
     DownloadOutlined,
-    HeartFilled,
-    HeartOutlined,
+    HeartOutlined, LikeFilled, LikeOutlined,
     ShareAltOutlined
 } from "@ant-design/icons";
 import {api} from "src/api";
@@ -15,36 +15,50 @@ import {Meme} from "src/types";
 import {abbreviateNumber, getTimeSince} from "src/utils";
 
 type ItemProps = {
-    item: Meme;
+    meme: Meme;
 }
 
 const {Text, Title} = Typography;
 
-const Item = ({item}: ItemProps) => {
+const MemeItem = ({meme}: ItemProps) => {
     const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage()
     const [_, copyToClipboard] = useCopyToClipboard()
 
     // States
-    const [liked, toggleLike] = useToggle(item.liked);
+    const [vote, setVote] = useState(meme.vote);
 
     // Conversion
-    const totalLikes = abbreviateNumber(item.totalLikes)
-    const totalComments = abbreviateNumber(item.totalComments)
-    const createdAt = getTimeSince(new Date(item.createdAt));
+    const totalLikes = abbreviateNumber(meme.totalLikes)
+    const totalDislikes = abbreviateNumber(meme.totalDislikes)
+    const totalComments = abbreviateNumber(meme.totalComments)
+    const createdAt = getTimeSince(new Date(meme.createdAt));
 
     // Nav events
-    const navigateToMeme = () => navigate(item.id);
+    const navigateToMeme = () => navigate(meme.id);
     const navigateToComments = () => {
-        navigate(item.id, {state: 'comments'});
+        // TODO: open comments
     }
 
     // Handlers
-    const handleLikeToggle = async () => {
-        if (liked) await api.memes.dislike(item.id);
-        else await api.memes.like(item.id);
+    const handleUpvoteToggle = async () => {
+        if (vote === 1) {
+            await api.memes.downvote(meme.id)
+            setVote(0);
+        } else {
+            await api.memes.upvote(meme.id)
+            setVote(1);
+        }
+    }
 
-        toggleLike();
+    const handleDownvoteToggle = async () => {
+        if (vote === -1) {
+            await api.memes.upvote(meme.id)
+            setVote(0);
+        } else {
+            await api.memes.downvote(meme.id)
+            setVote(-1);
+        }
     }
 
     const handleDownload = () => {
@@ -53,7 +67,7 @@ const Item = ({item}: ItemProps) => {
 
     const handleShare = () => {
         // TODO: make sure this works
-        copyToClipboard(window.location.href + '/' + item.id)
+        copyToClipboard(window.location.href + '/' + meme.id)
         messageApi.success('Meme URL copied.')
     }
 
@@ -62,12 +76,16 @@ const Item = ({item}: ItemProps) => {
             {contextHolder}
             <Card
                 style={{marginBottom: 50, marginInline: 'auto', borderRadius: 15, width: 500}}
-                cover={<img src={item.image} onClick={navigateToMeme} alt={item.name}/>}
+                cover={<img src={meme.image} onClick={navigateToMeme} alt={meme.name}/>}
                 hoverable
                 actions={[
-                    <Button type={'text'} onClick={handleLikeToggle}>
-                        {liked ? <HeartFilled/> : <HeartOutlined key={'like'}/>}{' '}
+                    <Button type={'text'} onClick={handleUpvoteToggle}>
+                        {vote === 1 ? <LikeFilled/> : <LikeOutlined key={'like'}/>}{' '}
                         <Text>{totalLikes}</Text>
+                    </Button>,
+                    <Button type={'text'} onClick={handleDownvoteToggle}>
+                        {vote === -1 ? <DislikeFilled/> : <DislikeOutlined key={'like'}/>}{' '}
+                        <Text>{totalDislikes}</Text>
                     </Button>,
                     <Button type={'text'} onClick={navigateToComments}>
                         <CommentOutlined key={'comment'}/>
@@ -82,13 +100,13 @@ const Item = ({item}: ItemProps) => {
                 ]}
             >
                 <Card.Meta
-                    title={item.name}
+                    title={meme.name}
                     description={
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <span>by {
-                                item?.creator?.displayName
-                                    ? item.creator.displayName
-                                    : 'Uknown'
+                                meme?.creator?.displayName
+                                    ? meme.creator.displayName
+                                    : 'Unknown'
                             }
                             </span>
                             <span>{createdAt}</span>
@@ -139,7 +157,7 @@ export const MemesPage = () => {
                 </div>
             </div>
             <div style={{paddingTop: 120}}>
-                {memes.map(item => <Item key={item.id} item={item}/>)}
+                {memes.map(item => <MemeItem key={item.id} meme={item}/>)}
             </div>
         </>
     )
