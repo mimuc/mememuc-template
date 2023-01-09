@@ -1,7 +1,7 @@
 ## Endpoints
 
 - /templates
-- /memes
+- /memes            # POST
     - <memeID>      # GET (comments, likes)
         - /likes    # POST/DELETE (only one per user)
         - /comments # POST/DELETE

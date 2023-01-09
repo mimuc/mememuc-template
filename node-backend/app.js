@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const bodyParser = require('body-parser');
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
@@ -15,6 +16,7 @@ console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var templatesRouter = require('./routes/templates');
+var memesRouter = require('./routes/memes');
 
 var app = express();
 
@@ -57,6 +59,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/templates', templatesRouter);
+
+app.use(bodyParser.json());
+app.use('/memes', memesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
