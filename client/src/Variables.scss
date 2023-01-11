@@ -1,0 +1,59 @@
+//Colors
+$blue: #0F243E;
+$orangelight: #ffe4d0;
+$orangefilter: invert(60%) sepia(70%) saturate(5016%) hue-rotate(1deg) brightness(102%) contrast(105%);
+$lightgrey: #FAF8F7;
+$darkgreen: #7EC03E;
+$lightgreen: #CCFFB5;
+$beak: #ffebcd;
+$grey: #C2C2C2;
+$greyfilter: invert(26%) sepia(0%) saturate(1%) hue-rotate(358deg) brightness(96%) contrast(92%);
+$benchmarkgrey: rgba(105, 105, 105, 0.623);
+$KPIColor: rgb(44, 44, 44);
+
+//Borders
+$borderradius: 10px;
+
+//Text sizes
+$normaltext: 15px;
+$mobiletext: 13px;
+
+//Headers
+$normalh2: 22px;
+$mobileh2: 18px;
+$normalh3: 18px;
+$mobileh3: 16px;
+
+//Shadows
+$boxshadow: 0px 0px 10px rgba(134, 134, 134, 0.13);
+
+//Screen sizes
+$mobile: '767px';
+$tablet: '1024px';
+
+//Animations
+@keyframes pullup {
+    from {
+        margin-top: 100rem;
+    }
+    to {
+        margin-top: 0rem;
+    }
+}
+
+@keyframes barslide {
+    from {
+        width: 0%;
+    }
+    to {
+
+    }
+}
+
+@keyframes colorchange {
+  0%  {background: lighten($blue,0%)}
+  20%  {background: lighten($blue, 3%)}
+  40%  {background: lighten($blue, 8%)}
+  60%  {background: lighten($blue, 8%)}
+  80% {background: lighten($blue, 3%)}
+}
