@@ -22,7 +22,7 @@ const canvasImg = new Image();
  * Dynamically resizes the text if it is too wide to fit on the canvas.
  * @param {*} param0 
  */
-function writeText({text="", x=0, y=0, fontSize=50, fontStyle="Impact", strokeWidth=1, resizeText=false, textColor='white'}) {
+function writeText({text="", x=0, y=0, fontSize=50, fontStyle="impact", strokeWidth=1, resizeText=false, textColor='white'}) {
     console.log("Writing text", text, x, y, fontSize, fontStyle)
     ctx.lineWidth = strokeWidth;
     ctx.fillStyle = textColor;
@@ -44,10 +44,7 @@ function writeText({text="", x=0, y=0, fontSize=50, fontStyle="Impact", strokeWi
     } 
 }
 
-function drawMeme({texts=[
-    {text: "ONE DOES NOT SIMPLY"}, 
-    {text: "USE JS FOR BACKEND PROGRAMMING"}
-    ]}={}) {
+function drawMeme({texts=[]}={}) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.drawImage(canvasImg, 0, 0, canvasImg.width, canvasImg.height);
@@ -136,32 +133,31 @@ function calculateCanvasSize({resizeCanvas=true, scaleImage=false}={}){
     }
 }
 
-function generateMemeCanvas({config, texts}){
-    var defaults = {
-        imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png'
-    };
-    var opts = Object.assign({}, defaults, config);
+function generateMemeCanvas({config={}, texts=[]}={}){
 
-    console.log("Opts", opts);
+    console.log("Opts", config);
     console.log("Texts", texts);
 
     return new Promise(function(resolve, reject){
 
-        axios.get(opts.imageURL)
-        .then(function (response) { 
-             
-            canvasImg.onload = function() {
-                calculateCanvasSize();
-                drawMeme({texts});    
-                resolve(canvas.toBuffer());
-            }
-            //canvasImg.src = new Buffer(response.data);   
-            canvasImg.src = opts.imageURL;
-            
-        }).catch(function (error) {
-            console.log(error)
-            reject(new Error('The image could not be loaded.'));
-        });
+        // Load from image url
+        if(config.imageURL) {
+            axios.get(config.imageURL)
+            .then(function (response) { 
+                
+                canvasImg.onload = function() {
+                    calculateCanvasSize();
+                    drawMeme({texts});    
+                    resolve(canvas.toBuffer());
+                }
+                canvasImg.src = config.imageURL;
+                
+            }).catch(function (error) {
+                console.log(error)
+                reject(new Error('The image could not be loaded.'));
+            });
+        }
+        
     });
 };
 
@@ -189,8 +185,25 @@ async function test() {
     
 }
 
+function storeMemes(res, {images=[], visibility="private", userId}) {
+    // TODO: Create memeId
+    if(visibility != 'public' || visibility != 'private' || visibility != 'unlisted') return;
+    if(userId == undefined) return;
 
-
+    const memeDatabase = db.get('memes');
+    for(const image of images) {
+        memeDatabase.insert({
+            image,
+            visibility,
+            userId
+          })
+          .then((docs) => {
+            console.log(docs);
+            res.json(docs);
+          })
+          .catch((e) => res.status(500).send());
+    }
+}
 
 router.post('/', async function(req, res) {
     const db = req.db;
@@ -198,7 +211,22 @@ router.post('/', async function(req, res) {
     const memes = db.get('memes'); */
     console.log("Post Request", req.body);
 
-    const config = req.body.config ? req.body.config : {};
+    const config_default = {
+        imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
+        store: undefined,
+    };
+    const config = Object.assign({}, config_default, req.body.config);
+
+    req.userId = req.body.userId;
+
+    if(req.userId == undefined) {
+        res.status(401).send();
+    }
+
+    const users = db.get('users');
+    users.find({userId: req.userId},{ projection: {basicauthtoken: 0} }) // return all user properties, except the basic auth token
+    .then((docs) => res.json(docs[0]))
+    .catch((e) => res.status(500).send())
 
     // TODO: Throw error if parameters are missing
 
@@ -208,11 +236,11 @@ router.post('/', async function(req, res) {
      // TODO: Parse template as name, URL, or file
 
     // Get template from name
-    const template = templates.find({name: req.template});
+    const template = templates.find({name: req.body.template});
 
     // TODO: Throw error if template does not exist
 
-    const texts = req.body.texts;
+    const texts = req.body.texts ?? [[]];
 
     console.log("Texts", texts)
     const createdMemes = [];
@@ -228,7 +256,7 @@ router.post('/', async function(req, res) {
     }
     else{
         // TODO: Better error handling
-        console.log("Error: is not array!")
+        res.status(400).send();
     }
 
     if(createdMemes.length === 1) {
@@ -241,17 +269,14 @@ router.post('/', async function(req, res) {
     else {
         // TODO: Send ZIP
     }
+
+    // TODO: Use next()
+    if(store) {
+        storeMemes(res, {images: createdMemes, visibility: store, userId: req.userId});
+    }
+
     res.status(500).send();
 
-    /* memes.insert({
-        username: req.params.userId
-    })
-    .then((docs) => {
-        console.log(docs);
-        res.json(docs);
-    })
-    .catch((e) => res.status(500).send()); */
 });
 
 module.exports = router;
-test();
