@@ -9,7 +9,7 @@ cd mememuc-launcher && npm run installall && npm start
 
 The template contains two folders that are relevant to you. Your implementation is supposed to go in these two folders.
 * `./node-backend`: The backend of your project using NodeJS
-* `./react-frontend`: The front of your project using React
+* `./react-frontend`: The frontend of your project using React
 
 Currently, both folder are filled with some dummy projects.
 
@@ -33,6 +33,8 @@ The other two folders __must not be changed__!
 * `./mongoserver` cotains a local in-memory database server independent of any existing local installation.
   This database is not persistent and will reset with each restart. It is meant for testing your submission with a consistent data state, independent of the computer on which it runs.
   You _can_ add files to the `./mongoserver/data` subdirectory.
+
+Regarding the other two folder, `node-backend` and `react-frontend`, you are free to edit everything. However if you want to use a database and include demodata in your submission, it makes sense to stick to the code that connects the backend to the in-memory database (see comments at the top of `node-backend/app.js`)
 
 
 ## How To Use
