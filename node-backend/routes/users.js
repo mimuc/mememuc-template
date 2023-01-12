@@ -4,30 +4,25 @@ var router = express.Router();
 
 const {User} = require('../db/models');
 
-/* GET users listing. */
-router.get('/', async function(req, res, next) {
-  const db = req.db;
-  const users = db.get('users');
-  users.find({},{ projection: {basicauthtoken: 0} }) // return all user properties, except the basic auth token
-      .then((docs) => res.json(docs))
-      .catch((e) => res.status(500).send())
-});
 
-router.get('/:userId', function(req, res, next) {
-  const db = req.db;
-  const users = db.get('users');
-  users.find({userId: req.params.userId},{ projection: {basicauthtoken: 0} }) // return all user properties, except the basic auth token
-  .then((docs) => res.json(docs[0]))
+router.get('/', async function(req, res, next) {
+  User.find({})
+  .select('-password -basicauthtoken')
+  .then((docs) => res.json(docs))
   .catch((e) => res.status(500).send())
 });
 
-// TODO: DEBUG For user creation
-router.post('/:userId', async function(req, res) {
-  const db = req.db;
-  //const users = db.get('users');
+router.get('/:userId', async function(req, res, next) {
+  const userId  = req.params.userId;
+  User.findOne({ userId })
+  .select('-password -basicauthtoken')
+  .then((docs) => res.json(docs[0]))
+  .catch((e) => res.status(500).send());
+});
 
-  const userId = req.params.userId;
-  // TODO: or: const { userId } = req.body; ? 
+// TODO: DEBUG For user creation
+router.post('/', async function(req, res) {
+  const { userId } = req.body;
 
   const existingUser = await User.findOne({ userId });
 
@@ -38,17 +33,6 @@ router.post('/:userId', async function(req, res) {
   } else {
       res.status(400).json({ message: 'User already exists' });
   }
-  /* const users = db.get('users');
-
-  users.insert({
-    userId: req.params.userId
-  })
-  .then((docs) => {
-    console.log(docs);
-    res.location(`/${userId}`);
-    res.status(201).json(docs);
-  })
-  .catch((e) => res.status(500).send()); */
 });
 
 module.exports = router;
