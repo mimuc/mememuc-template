@@ -4,13 +4,27 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const bodyParser = require('body-parser');
+var mongoose = require("mongoose");
+
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
 // ### Thus copy paste this block to your project
-const MONGODB_PORT = process.env.DBPORT || '27017';
-const db = require('monk')(`127.0.0.1:${MONGODB_PORT}/omm-2223`); // connect to database omm-2021
-console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
+const MONGODB_PORT = (process.env.DBPORT || '27017').trim();
+//const db = require('monk')(`127.0.0.1:${MONGODB_PORT}/omm-2223`); // connect to database omm-2021
+
+mongoose.connect(`mongodb://127.0.0.1:${MONGODB_PORT}/omm-2223`, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true
+});
+const db = mongoose.connection;
+
+db.on("error", console.error.bind(console, "connection error:"));
+
+db.once("open", function() {
+  console.log(`Connected to MongoDB at port ${MONGODB_PORT}`);
+});
+
 // ######
 
 var indexRouter = require('./routes/index');
@@ -39,7 +53,7 @@ app.use(function(req,res,next){  req.db = db;
   const users = db.get('users');
   users.findOne({basicauthtoken: req.headers.authorization}).then(user => {
     if (user) {
-      req.username = user.username;  // test test => Basic dGVzdDp0ZXN0
+      req.userId = user.userId;  // test test => Basic dGVzdDp0ZXN0
       next()
     }
     else {
