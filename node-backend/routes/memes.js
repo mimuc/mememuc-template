@@ -16,6 +16,7 @@ const canvas = Canvas.createCanvas(1000, 1000);
 const ctx = canvas.getContext('2d');
 const canvasImg = new Image();
 
+const {Meme, User} = require('../db/models');
 
 /**
  * Adds text to the canvas context.
@@ -185,31 +186,19 @@ async function test() {
     
 }
 
-function storeMemes(res, {images=[], visibility="private", userId}) {
-    // TODO: Create memeId
-    if(visibility != 'public' || visibility != 'private' || visibility != 'unlisted') return;
-    if(userId == undefined) return;
-
-    const memeDatabase = db.get('memes');
-    for(const image of images) {
-        memeDatabase.insert({
-            image,
-            visibility,
-            userId
-          })
-          .then((docs) => {
-            console.log(docs);
-            res.json(docs);
-          })
-          .catch((e) => res.status(500).send());
-    }
-}
-
 router.post('/', async function(req, res) {
     const db = req.db;
     /* const users = db.get('users');
     const memes = db.get('memes'); */
     console.log("Post Request", req.body);
+
+    req.username = req.body.username; // TODO: ???
+
+    const existingUser = await User.findOne({ username: req.username });
+    if(!existingUser) {
+        res.status(401).send();
+        return;
+    }
 
     const config_default = {
         imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
@@ -217,28 +206,10 @@ router.post('/', async function(req, res) {
     };
     const config = Object.assign({}, config_default, req.body.config);
 
-    req.userId = req.body.userId;
-
-    if(req.userId == undefined) {
-        res.status(401).send();
-    }
-
-    const users = db.get('users');
-    users.find({userId: req.userId},{ projection: {basicauthtoken: 0} }) // return all user properties, except the basic auth token
-    .then((docs) => res.json(docs[0]))
-    .catch((e) => res.status(500).send())
-
     // TODO: Throw error if parameters are missing
 
-    
-    const templates = db.get('templates');
+    // TODO: Parse template as name, URL, or file. Throw error if template does not exist
 
-     // TODO: Parse template as name, URL, or file
-
-    // Get template from name
-    const template = templates.find({name: req.body.template});
-
-    // TODO: Throw error if template does not exist
 
     const texts = req.body.texts ?? [[]];
 
@@ -270,13 +241,32 @@ router.post('/', async function(req, res) {
         // TODO: Send ZIP
     }
 
-    // TODO: Use next()
-    if(store) {
-        storeMemes(res, {images: createdMemes, visibility: store, userId: req.userId});
+    // TODO: Use next() ?
+
+    if(req.body.store) {
+        const storeMemes = createdMemes.map(image => {return {image, visibility: req.body.store, username: req.username }})
+        Meme.create(storeMemes)
+        .then(function() {
+            res.status(201).json({ message: 'Memes created' });
+        })
+        .catch(function(error) {
+            if (error.name === 'ValidationError') {
+                // handle validation error
+                res.status(400).send();
+            } else {
+                res.status(500).send();
+            }
+        });
     }
 
-    res.status(500).send();
+    res.status(500).send(); // TODO: ???
 
 });
+
+router.get('/', async function(req, res, next) {
+    Meme.find({})
+    .then((docs) => res.json(docs))
+    .catch((e) => res.status(500).send())
+  });
 
 module.exports = router;

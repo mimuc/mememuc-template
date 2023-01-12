@@ -7,7 +7,7 @@
         - /comments # POST/DELETE
 - /users
     - /             # Shows all users
-    - /<userID>     # Shows specific user
+    - /<username>     # Shows specific user
         - /         # Show profile
         - /memes    # GET
 - /my
@@ -24,7 +24,7 @@
 - meme
     - visibility: String ("private" - only visible to creator, "unlisted" - accessible via URL, "public")
     - image: String (base64)
-    - creator: String 
+    - username: String 
 - template
     - name: String
     - visibility: String ("private" - only visible to creator, "unlisted" - accessible via URL, "public")
@@ -45,6 +45,6 @@
             - x: Number
             - y: Number
 - user
-    - userId: String
+    - username: String        # Used to authenticate the user; each id is unique.
     - displayName: String
     - password: String
