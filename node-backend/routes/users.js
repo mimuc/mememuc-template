@@ -16,7 +16,7 @@ router.get('/:username', async function(req, res, next) {
   const username  = req.params.username;
   User.findOne({ username })
   .select('-password -basicauthtoken')
-  .then((docs) => res.json(docs[0]))
+  .then((docs) => res.json(docs))
   .catch((e) => res.status(500).send());
 });
 
