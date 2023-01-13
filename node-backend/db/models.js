@@ -15,11 +15,11 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
 );
 
 const Template = mongoose.model('Template', new mongoose.Schema({
-    name: { type: String, required: true },
-    creator: { type: String },
-    visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
-    image: { type: String, required: true }
-})
+        name: { type: String, required: true },
+        creator: { type: String },
+        visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
+        image: { type: String, required: true }
+    })
 );
 
 module.exports = {
