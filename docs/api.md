@@ -21,6 +21,7 @@
 
 
 ## Schema
+Refer to node-backend/db/models.js
 - meme
     - visibility: String ("private" - only visible to creator, "unlisted" - accessible via URL, "public")
     - image: String (base64)

@@ -264,9 +264,55 @@ router.post('/', async function(req, res) {
 });
 
 router.get('/', async function(req, res, next) {
-    Meme.find({})
-    .then((docs) => res.json(docs))
-    .catch((e) => res.status(500).send())
-  });
+
+    const config_default = {
+        searchBy: 'random', // TODO: What if I want newest/oldest of creator?
+        id: undefined,
+        maxAmount: 1, // TODO: Is this a good default.. shouldn't it be all?
+        creator: undefined
+    };
+    const config = Object.assign({}, config_default, req.body);
+
+    switch(config.searchBy){
+        case 'id': // TODO: Implement
+            // Returns a single meme, according to its id
+            if(!config.id) {
+                res.status(400).send();
+                return;
+            }
+            Meme.find({}) // TODO: id, or single view URL?
+            .then((docs) => res.json(docs))
+            .catch((e) => res.status(500).send())
+            break;
+        case 'all':
+            // TODO: Restrict to maxAmount... doesn't it become random at that point?
+            Meme.find({})
+            .then((docs) => res.json(docs))
+            .catch((e) => res.status(500).send())
+            break;
+        case 'random': // TODO: Implement
+            // TODO: Restrict to maxAmount
+            // TODO: Restrict by creator?
+            Meme.find({})
+            .then((docs) => res.json(docs))
+            .catch((e) => res.status(500).send())
+            break;
+        case 'newest': // TODO: Implement
+            // TODO: Restrict by creator?
+            Meme.find({})
+            .then((docs) => res.json(docs))
+            .catch((e) => res.status(500).send())
+            break;
+        case 'oldest': // TODO: Implement
+            // TODO: Restrict by creator?
+            Meme.find({})
+            .then((docs) => res.json(docs))
+            .catch((e) => res.status(500).send())
+            break;
+        default:
+            res.status(400).send();
+            break;
+    }
+});
 
 module.exports = router;
