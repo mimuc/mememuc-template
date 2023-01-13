@@ -1,14 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET templates listing. */
-router.get('/', function(req, res, next) {
-  const db = req.db;
-  const templates = db.get('templates');
+const {Template} = require('../db/models');
 
-  templates.find() // return all user properties, except the basic auth token
-      .then((docs) => res.json(docs))
-      .catch((e) => res.status(500).send())
+router.get('/', async function(req, res, next) {
+  Template.find({})
+  .then((docs) => res.json(docs))
+  .catch((e) => res.status(500).send())
 });
+
 
 module.exports = router;
