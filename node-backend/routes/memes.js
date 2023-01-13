@@ -243,8 +243,8 @@ router.post('/', async function(req, res) {
 
     // TODO: Use next() ?
 
-    if(req.body.store) {
-        const storeMemes = createdMemes.map(image => {return {image, visibility: req.body.store, username: req.username }})
+    if(config.store) {
+        const storeMemes = createdMemes.map(image => {return {image, visibility: config.store, creator: req.username }})
         Meme.create(storeMemes)
         .then(function() {
             res.status(201).json({ message: 'Memes created' });

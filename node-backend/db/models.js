@@ -8,7 +8,7 @@ const User = mongoose.model('User', new mongoose.Schema({
 );
 
 const Meme = mongoose.model('Meme', new mongoose.Schema({
-        username: { type: String, required: true },
+        creator: { type: String, required: true },
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
         image: { type: String, required: true }
     })
