@@ -278,15 +278,17 @@ router.get('/:memeId', async function(req, res, next) {
 
 router.get('/', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
+    // TODO: Take out error sends
 
-    // TODO: Implement offset.
-    // /memes?limit=50&offset=50&sort=newest
+    // Example request:
+    // /memes?limit=50&skip=50&sort=newest
 
     const config_default = {
         sort: 'random',
         id: undefined,
         limit: 10,
-        creator: undefined
+        creator: undefined,
+        skip: 0
     };
     const config = Object.assign({}, config_default, req.query);
     config.limit = +config.limit;
@@ -308,18 +310,14 @@ router.get('/', async function(req, res, next) {
             return;
         case 'random': {
 
-            const pipeline = config.creator ? [
-                {
-                    $match: { creator: config.creator } // Match by creator if it exists
-                },
-                {
-                    $sample: { size: config.limit }
-                }
-            ] : [
+            const pipeline = [
                 {
                     $sample: { size: config.limit }
                 }
             ];
+
+            // Restrict to creator parameter
+            if(config.creator) pipeline.push({$match: { creator: config.creator }})
 
             Meme.aggregate(pipeline)
             .then((docs) => res.json(docs))
@@ -329,24 +327,20 @@ router.get('/', async function(req, res, next) {
         case 'newest': // Same as oldest but with different sortOrder
         case 'oldest': {
             const sortOrder = config.sort === 'newest' ? -1 : 1;
-            const pipeline = config.creator ? [
-                {
-                    $match: { creator: config.creator } // Match by creator if it exists
-                },
+            const pipeline = [
                 {
                     $sort: { createdAt: sortOrder }
                 },
                 {
                     $limit: config.limit
-                }
-            ] : [
-                {
-                    $sort: { createdAt: sortOrder }
                 },
                 {
-                    $limit: config.limit
+                    $skip: config.skip
                 }
             ];
+
+            // Restrict to creator parameter
+            if(config.creator) pipeline.push({$match: { creator: config.creator }})
 
             Meme.aggregate(pipeline)
             .then((docs) => res.json(docs))
