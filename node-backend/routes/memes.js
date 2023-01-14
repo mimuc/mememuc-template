@@ -280,35 +280,32 @@ router.get('/', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
 
     // TODO: Implement offset.
-    // TODO: Implement sort separately
     // /memes?limit=50&offset=50&sort=newest
 
     const config_default = {
-        searchBy: 'random', // TODO: What if I want newest/oldest of creator?
+        sort: 'random',
         id: undefined,
-        limit: 1, // TODO: Is this a good default.. shouldn't it be all?
+        limit: 10,
         creator: undefined
     };
-    const config = Object.assign({}, config_default, req.body);
+    const config = Object.assign({}, config_default, req.query);
+    config.limit = +config.limit;
 
-    switch(config.searchBy){
-        case 'id': // TODO: Implement
-            // Returns a single meme, according to its id
-            if(!config.id) {
-                res.status(400).send();
-                return;
-            }
-            Meme.find({}) // TODO: id, or single view URL?
-            .then((docs) => res.json(docs))
-            .catch((e) => res.status(500).send())
-            break;
+    if(config.id) { // Returns a single meme by id in an array
+        Meme.find({ _id: config.id })
+        .then((docs) => res.json(docs))
+        .catch((e) => res.status(500).send());
+        return;
+    }
+
+    switch(config.sort){
         case 'all':
-            // TODO: Restrict to limit... doesn't it become random at that point?
+            // TODO: DEBUG
             Meme.find({})
             .select('-image')
             .then((docs) => res.json(docs))
             .catch((e) => res.status(500).send())
-            break;
+            return;
         case 'random': {
 
             const pipeline = config.creator ? [
@@ -326,12 +323,12 @@ router.get('/', async function(req, res, next) {
 
             Meme.aggregate(pipeline)
             .then((docs) => res.json(docs))
-            .catch((e) => res.status(500).send())
-            break;
+            .catch((e) => res.status(500).send(e))
+            return;
         }   
         case 'newest': // Same as oldest but with different sortOrder
         case 'oldest': {
-            const sortOrder = config.searchBy === 'newest' ? -1 : 1;
+            const sortOrder = config.sort === 'newest' ? -1 : 1;
             const pipeline = config.creator ? [
                 {
                     $match: { creator: config.creator } // Match by creator if it exists
@@ -353,13 +350,12 @@ router.get('/', async function(req, res, next) {
 
             Meme.aggregate(pipeline)
             .then((docs) => res.json(docs))
-            .catch((e) => res.status(500).send())
-
-            break;
+            .catch((e) => res.status(500).send(e))
+            return;
         }
         default:
-            res.status(400).send();
-            break;
+            res.status(400).send(e);
+            return;
     }
 });
 
