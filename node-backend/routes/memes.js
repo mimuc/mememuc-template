@@ -186,6 +186,10 @@ async function test() {
     
 }
 
+function generateName(username) {
+    return username.slice(-1) === 's' ? username + "\' meme" : username + "\'s meme";
+}
+
 router.post('/', async function(req, res) {
     const db = req.db;
     /* const users = db.get('users');
@@ -203,6 +207,7 @@ router.post('/', async function(req, res) {
     const config_default = {
         imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
         store: undefined,
+        name: generateName(req.username)
     };
     const config = Object.assign({}, config_default, req.body.config);
 
@@ -229,22 +234,24 @@ router.post('/', async function(req, res) {
         // TODO: Better error handling
         res.status(400).send();
     }
-
-    if(createdMemes.length === 1) {
-        // TODO: Return as image, image URL, or SingleView URL
-        console.log("Finished Creating")
-        console.log(createdMemes);
-        res.set('Content-Type', 'image/png');
-        res.send(createdMemes);
-    }
-    else {
-        // TODO: Send ZIP
+    if(!config.store){
+        if(createdMemes.length === 1) {
+            // TODO: Return as image, image URL, or SingleView URL
+            console.log("Finished Creating")
+            console.log(createdMemes);
+            res.set('Content-Type', 'image/png');
+            res.send(createdMemes);
+        }
+        else {
+            // TODO: Send ZIP
+            res.status(500).send(error);
+        }
     }
 
     // TODO: Use next() ?
 
     if(config.store) {
-        const storeMemes = createdMemes.map(image => {return {image, visibility: config.store, creator: req.username }})
+        const storeMemes = createdMemes.map(image => {return {image, visibility: config.store, creator: req.username, name: config.name }})
         Meme.create(storeMemes)
         .then(function() {
             res.status(201).json({ message: 'Memes created' });
@@ -252,23 +259,25 @@ router.post('/', async function(req, res) {
         .catch(function(error) {
             if (error.name === 'ValidationError') {
                 // handle validation error
-                res.status(400).send();
+                res.status(400).send(error);
             } else {
-                res.status(500).send();
+                res.status(500).send(error);
             }
         });
     }
-
-    res.status(500).send(); // TODO: ???
-
 });
 
 router.get('/', async function(req, res, next) {
+    // TODO: Check for privileges, whether unlisted/private should be shown
+
+    // TODO: Implement offset.
+    // TODO: Implement sort separately
+    // /memes?limit=50&offset=50&sort=newest
 
     const config_default = {
         searchBy: 'random', // TODO: What if I want newest/oldest of creator?
         id: undefined,
-        maxAmount: 1, // TODO: Is this a good default.. shouldn't it be all?
+        limit: 1, // TODO: Is this a good default.. shouldn't it be all?
         creator: undefined
     };
     const config = Object.assign({}, config_default, req.body);
@@ -285,43 +294,60 @@ router.get('/', async function(req, res, next) {
             .catch((e) => res.status(500).send())
             break;
         case 'all':
-            // TODO: Restrict to maxAmount... doesn't it become random at that point?
+            // TODO: Restrict to limit... doesn't it become random at that point?
             Meme.find({})
+            .select('-image')
             .then((docs) => res.json(docs))
             .catch((e) => res.status(500).send())
             break;
-        case 'random':
+        case 'random': {
 
             const pipeline = config.creator ? [
-                    {
-                        $match: { creator: config.creator } // Match by creator if it exists
-                    },
-                    {
-                        $sample: { size: config.maxAmount }
-                    }
-                ] : [
-                    {
-                        $sample: { size: config.maxAmount }
-                    }
-                ];
+                {
+                    $match: { creator: config.creator } // Match by creator if it exists
+                },
+                {
+                    $sample: { size: config.limit }
+                }
+            ] : [
+                {
+                    $sample: { size: config.limit }
+                }
+            ];
+
+            Meme.aggregate(pipeline)
+            .then((docs) => res.json(docs))
+            .catch((e) => res.status(500).send())
+            break;
+        }   
+        case 'newest': // Same as oldest but with different sortOrder
+        case 'oldest': {
+            const sortOrder = config.searchBy === 'newest' ? -1 : 1;
+            const pipeline = config.creator ? [
+                {
+                    $match: { creator: config.creator } // Match by creator if it exists
+                },
+                {
+                    $sort: { createdAt: sortOrder }
+                },
+                {
+                    $limit: config.limit
+                }
+            ] : [
+                {
+                    $sort: { createdAt: sortOrder }
+                },
+                {
+                    $limit: config.limit
+                }
+            ];
 
             Meme.aggregate(pipeline)
             .then((docs) => res.json(docs))
             .catch((e) => res.status(500).send())
 
             break;
-        case 'newest': // TODO: Implement
-            // TODO: Restrict by creator?
-            Meme.find({})
-            .then((docs) => res.json(docs))
-            .catch((e) => res.status(500).send())
-            break;
-        case 'oldest': // TODO: Implement
-            // TODO: Restrict by creator?
-            Meme.find({})
-            .then((docs) => res.json(docs))
-            .catch((e) => res.status(500).send())
-            break;
+        }
         default:
             res.status(400).send();
             break;
