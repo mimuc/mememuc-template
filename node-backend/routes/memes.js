@@ -290,12 +290,25 @@ router.get('/', async function(req, res, next) {
             .then((docs) => res.json(docs))
             .catch((e) => res.status(500).send())
             break;
-        case 'random': // TODO: Implement
-            // TODO: Restrict to maxAmount
-            // TODO: Restrict by creator?
-            Meme.find({})
+        case 'random':
+
+            const pipeline = config.creator ? [
+                    {
+                        $match: { creator: config.creator } // Match by creator if it exists
+                    },
+                    {
+                        $sample: { size: config.maxAmount }
+                    }
+                ] : [
+                    {
+                        $sample: { size: config.maxAmount }
+                    }
+                ];
+
+            Meme.aggregate(pipeline)
             .then((docs) => res.json(docs))
             .catch((e) => res.status(500).send())
+
             break;
         case 'newest': // TODO: Implement
             // TODO: Restrict by creator?
