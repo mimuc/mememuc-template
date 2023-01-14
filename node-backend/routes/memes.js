@@ -267,6 +267,15 @@ router.post('/', async function(req, res) {
     }
 });
 
+router.get('/:memeId', async function(req, res, next) {
+    // TODO: Check for privileges, whether unlisted/private should be shown
+
+    const _id  = req.params.memeId;
+    Meme.findOne({ _id })
+    .then((docs) => res.json(docs))
+    .catch((e) => res.status(500).send());
+  });
+
 router.get('/', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
 
