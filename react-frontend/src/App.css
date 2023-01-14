@@ -204,8 +204,8 @@ div.MemeList{
 }
 
 .canvasContainer {
-  width: fill;
-  height: fill;
+  width: stretch;
+  height: stretch;
   background-color: #444;
   border-radius: 5px;
   margin: 1vh .5vw;
@@ -217,8 +217,8 @@ div.MemeList{
 .editorContainer {
   display: flex;
   flex-flow: row;
-  width: fill;
-  height: fill;
+  width: stretch;
+  height: stretch;
 }
 
 

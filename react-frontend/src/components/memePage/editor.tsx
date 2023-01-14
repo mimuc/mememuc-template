@@ -3,6 +3,9 @@ import { Component } from 'react';
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Button } from '@mui/material';
 
 class Editor extends Component {
     state = {};
@@ -42,15 +45,39 @@ class EditorLeftMenu extends Component {
 }
 
 class EditorTopMenu extends Component {
-    state = {};
+    state = {
+        selectedImage: null
+    };
+
+    options = ['Create a merge commit', 'Squash and merge', 'Rebase and merge'];
+    imageUploadHandler = event => {
+        this.setState({
+            selectedImage: event.target.files[0]
+        })
+
+        const image = event.target.files[0];
+        // Hier kannst du mit dem Bild weiterarbeiten
+
+        console.log(image);
+    }
 
 
     render() {
         return (
             <div className="upperBtns">
-                <Fab className="upperBtn" id="btn1" variant="extended" size="medium" color="primary">
-                    Btn1
-                </Fab>
+                <Button className="upperBtn" id="connectedBtnUpload">
+                    <input
+                        style={{display: 'none'}}
+                        type="file"
+                        onChange={this.imageUploadHandler}
+                        ref={fileInput => this.fileInput = fileInput}/>
+                    <Button onClick={() => this.fileInput.click()}>
+                        <FileUploadIcon/>
+                    </Button>
+                    <Button>
+                        <ExpandMoreIcon/>
+                    </Button>              
+                </Button>
                 <Fab className="upperBtn" id="btn2" variant="extended" size="medium" color="primary">
                     <SaveAltIcon/>
                 </Fab>
