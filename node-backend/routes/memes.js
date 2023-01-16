@@ -8,6 +8,7 @@ var express = require('express');
 var router = express.Router();
 
 const axios = require('axios');
+const archiver = require('archiver');
 
 const Canvas = require('canvas');
 const Image = Canvas.Image;
@@ -166,7 +167,7 @@ function generateMemeCanvas({config={}, texts=[]}={}){
     });
 };
 
-async function test() {
+async function test() { // TODO: Debug function
     const texts = [ [ "Top Text"]];
     const config = {
         imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
@@ -179,7 +180,7 @@ async function test() {
     if(Array.isArray(texts) ) {
         for(const text of texts) {
             console.log("Text", text)
-            if(!Array.isArray(text) ) continue; // TODO: Maybe a better handling could be done here.
+            if(!Array.isArray(text) ) continue;
             const img = await generateMemeCanvas({config, texts: text});
             console.log("Finished creation", img)
             createdMemes.push(img);
@@ -187,7 +188,6 @@ async function test() {
     }
 
     if(createdMemes.length === 1) {
-        // TODO: Return as image, image URL, or SingleView URL
         console.log("Finished Creating")
         console.log(createdMemes);
         
@@ -197,18 +197,6 @@ async function test() {
 
 function generateName(username) {
     return username.slice(-1) === 's' ? username + "\' meme" : username + "\'s meme";
-}
-
-async function testUrl() {
-    let urlSet = new Set();
-    let documents = [ {name: 'a' }, {name: 'b'}, {name: 'c'}, {name: 'd'}];
-
-
-    for(let doc of documents) {
-        doc.url = await generateUrl(Meme, urlSet);
-    }
-
-    console.log(documents)
 }
 
 function uniqueId() {
@@ -245,7 +233,8 @@ router.post('/', async function(req, res) {
     const config_default = {
         imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
         store: undefined,
-        name: generateName(req.username)
+        name: generateName(req.username), // TODO: This makes no sense if multiple memes are generated.
+        returnType: undefined // Returns a single-view url when store is defined, otherwise returns an image/zip
     };
     const config = Object.assign({}, config_default, req.body.config);
 
@@ -253,14 +242,14 @@ router.post('/', async function(req, res) {
 
     // TODO: Parse template as name, URL, or file. Throw error if template does not exist
 
+    // TODO: Support template url, rather than an imageURL
+
 
     const texts = req.body.texts ?? [[]];
 
-    console.log("Texts", texts)
     const createdMemes = [];
 
-    
-
+    // Generate the meme images from the provided images, and the text objects
     if(Array.isArray(texts) ) {
         for(const text of texts) {
             console.log("Current text", text)
@@ -272,31 +261,45 @@ router.post('/', async function(req, res) {
     else{
         // TODO: Better error handling
         res.status(400).send();
+        return;
     }
-    if(!config.store){
+
+    if(!config.store){ 
+        // The meme should not be stored on the server
+        // Always return as image or zip, as no url was created
         if(createdMemes.length === 1) {
-            // TODO: Return as image, image URL, or SingleView URL
-            console.log("Finished Creating")
-            console.log(createdMemes);
+            // Return a single image
             res.set('Content-Type', 'image/png');
-            res.send(createdMemes);
+            res.send(createdMemes[0]);
+            return;
         }
         else {
-            // TODO: Send ZIP
-            res.status(500).send(error);
+            // Send ZIP
+            const archive = archiver('zip', { zlib: { level: 9 } });
+            res.attachment('memes.zip');
+            archive.pipe(res);
+            for(let i = 0; i < createdMemes.length; i++) {
+                // Create nice, 0-padded names
+                const paddedIndex = (i + 1).toString().padStart(createdMemes.length.toString().length, '0');
+                const extension = 'image/png'.split('/')[1];
+                console.log("EXTENSION", extension);
+                const name = `meme_${paddedIndex}.${extension}`;
+                archive.append(createdMemes[i], { name });// TODO: Check for name
+            }
+            archive.finalize();
+            return;
         }
     }
 
-    // TODO: Use next() ?
-
     if(config.store) {
+        // The meme should be stored on the server
 
         const storeMemes = createdMemes.map(image => {return {
             image, 
             visibility: config.store, 
             creator: req.username, 
             name: config.name,
-            contentType: 'image/png',
+            contentType: 'image/png', // TODO:
         }});
 
         let urlSet = new Set();
@@ -306,7 +309,42 @@ router.post('/', async function(req, res) {
 
         Meme.create(storeMemes)
         .then(function() {
-            res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}${resourcePath}${m.url}`) });
+            // Return either a download, or an url to the image, or an url to the single-view
+            if(config.returnType === 'download') { // TODO: Duplicate code...
+                if(createdMemes.length === 1) {
+                    // Return a single image
+                    res.set('Content-Type', 'image/png');
+                    res.send(createdMemes[0]);
+                    return;
+                }
+                else {
+                    // Send ZIP
+                    const archive = archiver('zip', { zlib: { level: 9 } });
+                    res.attachment('memes.zip');
+                    archive.pipe(res);
+                    for(let i = 0; i < createdMemes.length; i++) {
+                        // Create nice, 0-padded names
+                        const paddedIndex = (i + 1).toString().padStart(createdMemes.length.toString().length, '0');
+                        const extension = 'image/png'.split('/')[1];
+                        console.log("EXTENSION", extension);
+                        const name = `meme_${paddedIndex}.${extension}`;
+                        archive.append(createdMemes[i], { name });// TODO: Check for name
+                    }
+                    archive.finalize();
+                    return;
+                }
+                
+            }
+            else if( config.returnType === 'image-url' ) {
+                // Url to the image itself
+                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}'/resources/images/'${m.url}`) });
+                return;
+            }
+            else { // TODO: Sending by single-view url is standard
+                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}'/memes/'${m.url}`) });
+                return;
+            }
+            
         })
         .catch(function(error) {
             if (error.name === 'ValidationError') {
@@ -319,11 +357,11 @@ router.post('/', async function(req, res) {
     }
 });
 
-router.get('/:memeId', async function(req, res, next) {
+router.get('/:url', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
 
-    const _id  = req.params.memeId;
-    Meme.findOne({ _id })
+    const url  = req.params.url;
+    Meme.findOne({ url })
     .then((docs) => res.json(docs))
     .catch((e) => res.status(500).send());
   });
