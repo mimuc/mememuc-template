@@ -14,6 +14,11 @@ console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var memesAPI = require('./routes/memesApi');
+var registerUserRouter = require('./routes/registerUser');
+var uploadTemplateRouter = require('./routes/uploadTemplate');
+var createdMemes = require('./routes/createdMemes');
+
 
 var app = express();
 
@@ -26,12 +31,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(function(req,res,next){  req.db = db;
+app.use(function(req,res,next){
+  req.db = db;
   next();
 });
 
 
 // the login middleware. Requires BasicAuth authentication
+/*
 app.use((req,res,next) => {
   const users = db.get('users');
   users.findOne({basicauthtoken: req.headers.authorization}).then(user => {
@@ -49,12 +56,17 @@ app.use((req,res,next) => {
     res.status(401).send()
   })
 })
+*/
 
 
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/memesApi', memesAPI);
+app.use('/registerUser', registerUserRouter);
+app.use('/uploadTemplate', uploadTemplateRouter);
+app.use('/createdMemes', createdMemes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
