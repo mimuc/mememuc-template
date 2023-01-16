@@ -15,9 +15,10 @@ console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var memesAPI = require('./routes/memesApi');
-var registerUserRouter = require('./routes/registerUser');
+// var registerUserRouter = require('./routes/registerUser');
 var uploadTemplateRouter = require('./routes/uploadTemplate');
 var createdMemes = require('./routes/createdMemes');
+const session = require('express-session');
 
 
 var app = express();
@@ -27,7 +28,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
-app.use(express.json());
+app.use(session({
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true,
+}))
+app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
@@ -64,7 +70,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/memesApi', memesAPI);
-app.use('/registerUser', registerUserRouter);
+// app.use('/registerUser', registerUserRouter);
 app.use('/uploadTemplate', uploadTemplateRouter);
 app.use('/createdMemes', createdMemes);
 
