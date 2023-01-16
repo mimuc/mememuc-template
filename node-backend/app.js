@@ -31,6 +31,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var templatesRouter = require('./routes/templates');
 var memesRouter = require('./routes/memes');
+var resourcesRouter = require('./routes/resources');
 
 var app = express();
 
@@ -73,6 +74,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/templates', templatesRouter);
+app.use('/resources', resourcesRouter);
+
 
 app.use(bodyParser.json());
 app.use('/memes', memesRouter);

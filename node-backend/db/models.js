@@ -12,7 +12,9 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
         name: { type: String, required: true },
         creator: { type: String, required: true },
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
-        image: { type: String, required: true },
+        image: { type: Buffer, required: true },
+        url: { type: String, required: true, unique: true },
+        contentType: { type: String, default: 'image/png' },
         createdAt: { type: Date, default: Date.now }
     })
 );

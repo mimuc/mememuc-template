@@ -18,6 +18,10 @@ const canvasImg = new Image();
 
 const {Meme, User} = require('../db/models');
 
+const mongoose = require("mongoose");
+
+const resourcePath = '/resources/images/';
+
 /**
  * Adds text to the canvas context.
  * Dynamically resizes the text if it is too wide to fit on the canvas.
@@ -164,16 +168,21 @@ function generateMemeCanvas({config={}, texts=[]}={}){
 
 async function test() {
     const texts = [ [ "Top Text"]];
-    const config = {};
+    const config = {
+        imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
+        store: undefined,
+        name: "B"
+    };
 
     const createdMemes = [];
 
     if(Array.isArray(texts) ) {
         for(const text of texts) {
+            console.log("Text", text)
             if(!Array.isArray(text) ) continue; // TODO: Maybe a better handling could be done here.
-            await generateMemeCanvas({config, texts: text});
-            console.log("Finished creation")
-            createdMemes.push(canvas.toDataURL());
+            const img = await generateMemeCanvas({config, texts: text});
+            console.log("Finished creation", img)
+            createdMemes.push(img);
         }
     }
 
@@ -188,6 +197,35 @@ async function test() {
 
 function generateName(username) {
     return username.slice(-1) === 's' ? username + "\' meme" : username + "\'s meme";
+}
+
+async function testUrl() {
+    let urlSet = new Set();
+    let documents = [ {name: 'a' }, {name: 'b'}, {name: 'c'}, {name: 'd'}];
+
+
+    for(let doc of documents) {
+        doc.url = await generateUrl(Meme, urlSet);
+    }
+
+    console.log(documents)
+}
+
+function uniqueId() {
+    return Date.now() + '' + Math.floor(Math.random())
+}
+
+async function generateUrl(model, urlSet) {
+
+    let url = uniqueId();
+    let document = await model.findOne({ url });
+    
+    while(document || (urlSet ? urlSet.has(url) : false)) { // Ensure that the url is unique
+        url = uniqueId();
+        document = await model.findOne({ url });
+    }
+    urlSet.add(url);
+    return url;
 }
 
 router.post('/', async function(req, res) {
@@ -221,13 +259,14 @@ router.post('/', async function(req, res) {
     console.log("Texts", texts)
     const createdMemes = [];
 
+    
+
     if(Array.isArray(texts) ) {
         for(const text of texts) {
             console.log("Current text", text)
             if(!Array.isArray(text) ) continue; // TODO: Maybe a better handling could be done here.
-            await generateMemeCanvas({config, texts: text});
-            console.log("Finished creation")
-            createdMemes.push(canvas.toDataURL());
+            const img = await generateMemeCanvas({config, texts: text});
+            createdMemes.push(img);
         }
     }
     else{
@@ -251,10 +290,23 @@ router.post('/', async function(req, res) {
     // TODO: Use next() ?
 
     if(config.store) {
-        const storeMemes = createdMemes.map(image => {return {image, visibility: config.store, creator: req.username, name: config.name }})
+
+        const storeMemes = createdMemes.map(image => {return {
+            image, 
+            visibility: config.store, 
+            creator: req.username, 
+            name: config.name,
+            contentType: 'image/png',
+        }});
+
+        let urlSet = new Set();
+        for(const m of storeMemes) {
+            m.url = 'm' + await generateUrl(Meme, urlSet);
+        }
+
         Meme.create(storeMemes)
         .then(function() {
-            res.status(201).json({ message: 'Memes created' });
+            res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}${resourcePath}${m.url}`) });
         })
         .catch(function(error) {
             if (error.name === 'ValidationError') {
@@ -279,6 +331,7 @@ router.get('/:memeId', async function(req, res, next) {
 router.get('/', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
     // TODO: Take out error sends
+    // TODO: return type: image, image URL, single view URL. 
 
     // Example request:
     // /memes?limit=50&skip=50&sort=newest
