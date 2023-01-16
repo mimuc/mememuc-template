@@ -200,7 +200,7 @@ function generateName(username) {
 }
 
 function uniqueId() {
-    return Date.now() + '' + Math.floor(Math.random())
+    return Date.now() + '' + Math.floor(Math.random() * 100000);
 }
 
 async function generateUrl(model, urlSet) {
@@ -337,11 +337,11 @@ router.post('/', async function(req, res) {
             }
             else if( config.returnType === 'image-url' ) {
                 // Url to the image itself
-                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}'/resources/images/'${m.url}`) });
+                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.url}`) });
                 return;
             }
             else { // TODO: Sending by single-view url is standard
-                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}'/memes/'${m.url}`) });
+                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/memes/${m.url}`) });
                 return;
             }
             
