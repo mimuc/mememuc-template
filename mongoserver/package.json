@@ -1,5 +1,5 @@
 {
-  "name": "MongoDB Server",
+  "name": "mongodbserver",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,7 +12,12 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
-    "mongodb-memory-server": "^8.10.0",
-    "mongoose": "^6.7.4"
+    "mongodb-memory-server": "^8.11.1",
+    "mongoose": "^6.8.3"
+  },
+  "config": {
+    "mongodbMemoryServer": {
+      "arch ": "x64"
+    }
   }
 }

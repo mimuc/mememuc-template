@@ -57,7 +57,8 @@ router.post('/find', function(req, res, next) {
   const db = req.db;
   const users = db.get('users');
   console.log("loaded from db");
-  users.find({username: req.body.username},{ projection: {basicauthtoken: 0}}) // return all user properties, except the basic auth token
+  console.log(users);
+  users.find({username: req.body.username}) // return all user properties, except the basic auth token
       .then((docs) => {
         console.log("preparing json..");
         console.log(docs);
