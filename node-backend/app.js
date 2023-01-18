@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const cors = require('cors');
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
@@ -33,9 +34,10 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
 }))
-app.use(express.json({ extended: false }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
 
 app.use(function(req,res,next){
   req.db = db;
