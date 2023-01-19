@@ -74,9 +74,9 @@ function drawMeme({texts=[]}={}) {
         }
         if(y == undefined) {
             if(i == 0) { // Can someone tell me why === does not work here???
-                y = 0;
+                y = canvas.height*0.1;
             }
-            else y = canvas.height - canvas.height*0.1;
+            else y = canvas.height - canvas.height*0.1 - (texts[i].fontSize ?? 50);
         }
 
         if (typeof texts[i] === 'string') writeText({text: texts[i], x, y})
