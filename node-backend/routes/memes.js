@@ -369,7 +369,6 @@ router.get('/:url', async function(req, res, next) {
 router.get('/', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
     // TODO: Take out error sends
-    // TODO: return type: image, image URL, single view URL. 
 
     // Example request:
     // /memes?limit=50&skip=50&sort=newest
@@ -379,67 +378,110 @@ router.get('/', async function(req, res, next) {
         id: undefined,
         limit: 10,
         creator: undefined,
-        skip: 0
+        skip: 0,
+        returnType: 'json' // single-view, image-url, download, json
     };
     const config = Object.assign({}, config_default, req.query);
     config.limit = +config.limit;
+    config.skip = +config.skip;
 
-    if(config.id) { // Returns a single meme by id in an array
-        Meme.find({ _id: config.id })
-        .then((docs) => res.json(docs))
-        .catch((e) => res.status(500).send());
+    // The found memes
+    let documents;
+
+    if(config.id) {
+        // ID was given. The meme with the id is return inside an array.
+        documents = await Meme.find({ _id: config.id });
+    }
+    else {
+        // Search for the memes, according to the config options
+        switch(config.sort){
+            case 'all':
+                // TODO: Debug function
+                documents = await Meme.find({})
+                .select('-image');
+                break;
+            case 'random': {
+
+                const pipeline = [
+                    {
+                        $sample: { size: config.limit }
+                    }
+                ];
+
+                // Restrict to creator parameter
+                if(config.creator) pipeline.push({$match: { creator: config.creator }});
+
+                documents = await Meme.aggregate(pipeline);
+                break;
+            }   
+            case 'newest': // Same as oldest but with different sortOrder
+            case 'oldest': {
+                const sortOrder = config.sort === 'newest' ? -1 : 1;
+                const pipeline = [
+                    {
+                        $sort: { createdAt: sortOrder }
+                    },
+                    {
+                        $limit: config.limit
+                    },
+                    {
+                        $skip: config.skip
+                    }
+                ];
+
+                // Restrict to creator parameter
+                if(config.creator) pipeline.push({$match: { creator: config.creator }})
+
+                documents = await Meme.aggregate(pipeline);
+                break;
+            }
+            default:
+                res.status(400).send();
+                return;
+        }
+    }
+
+    // Document was no found
+    if(!documents) {
+        res.status(404).send();
         return;
     }
 
-    switch(config.sort){
-        case 'all':
-            // TODO: DEBUG
-            Meme.find({})
-            .select('-image')
-            .then((docs) => res.json(docs))
-            .catch((e) => res.status(500).send())
+    // Return the found memes
+    switch(config.returnType) {
+        case 'json':
+            res.json(documents);
             return;
-        case 'random': {
-
-            const pipeline = [
-                {
-                    $sample: { size: config.limit }
+        case 'download':
+            if(documents.length === 1) {
+                // Return a single image
+                // TODO: Add metadata
+                res.set('Content-Type', 'image/png');
+                res.send(documents[0].image);
+            }
+            else {
+                // Send ZIP
+                // TODO: Add metadata
+                const archive = archiver('zip', { zlib: { level: 9 } });
+                res.attachment('memes.zip');
+                archive.pipe(res);
+                for(let i = 0; i < documents.length; i++) {
+                    // Create nice, 0-padded names
+                    const paddedIndex = (i + 1).toString().padStart(documents.length.toString().length, '0');
+                    const extension = documents[i].contentType.split('/')[1];
+                    const name = `meme_${documents[i].name}_${paddedIndex}.${extension}`;
+                    archive.append(documents[i].image, { name });
                 }
-            ];
-
-            // Restrict to creator parameter
-            if(config.creator) pipeline.push({$match: { creator: config.creator }})
-
-            Meme.aggregate(pipeline)
-            .then((docs) => res.json(docs))
-            .catch((e) => res.status(500).send(e))
+                archive.finalize();
+            }
             return;
-        }   
-        case 'newest': // Same as oldest but with different sortOrder
-        case 'oldest': {
-            const sortOrder = config.sort === 'newest' ? -1 : 1;
-            const pipeline = [
-                {
-                    $sort: { createdAt: sortOrder }
-                },
-                {
-                    $limit: config.limit
-                },
-                {
-                    $skip: config.skip
-                }
-            ];
-
-            // Restrict to creator parameter
-            if(config.creator) pipeline.push({$match: { creator: config.creator }})
-
-            Meme.aggregate(pipeline)
-            .then((docs) => res.json(docs))
-            .catch((e) => res.status(500).send(e))
+        case 'image-url':
+            // Url to the image itself
+            res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.url}`) });
             return;
-        }
-        default:
-            res.status(400).send(e);
+        case 'single-view':
+            // TODO: Implement
+            res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.url}`) });
             return;
     }
 });
