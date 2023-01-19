@@ -8,15 +8,23 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Button } from '@mui/material';
 
 class Editor extends Component {
-    state = {};
+    state = {hasImage: false, imageFile: null};
+
+
+    handleGetImage = (image) => {
+        console.log("in Parent");
+        this.imageFile = image;
+        console.log(this.imageFile);
+        this.setState({hasImage: true});
+    }
 
     render() {
         return (
             <div className="side" id="sideRight">
-                <EditorTopMenu/>
+                <EditorTopMenu getImage={this.handleGetImage}/>
                 <div className="editorContainer">
                     <EditorLeftMenu/>
-                    <EditorCanvas/>
+                    <EditorCanvas setImage={this.state.hasImage} image={this.imageFile}/>
                 </div>
             </div>
         )
@@ -56,9 +64,12 @@ class EditorTopMenu extends Component {
         })
 
         const image = event.target.files[0];
-        // Hier kannst du mit dem Bild weiterarbeiten
-
+        console.log("In Top Menu");
         console.log(image);
+
+        this.props.getImage(event.target.files[0]);
+
+        
     }
 
 
@@ -92,13 +103,42 @@ class EditorTopMenu extends Component {
 class EditorCanvas extends Component {
     state = {};
 
+    handleImage = () => {
+        console.log("IN Canvas");
+        console.log(this.props.image);
+        if(this.props.image != null){
+            var selectedFile = this.props.image;
+            var reader = new FileReader();
+            var img = new Image();
+
+            var imgtag = document.getElementById("myimage");
+            var canvas = document.getElementById("imageCanavas");
+ 
+            var ctx = canvas.getContext("2d");
+
+            
+
+            reader.onload = function(event) {
+                img.src = event.target.result;
+                ctx.canvas.width  = img.naturalWidth;
+                ctx.canvas.height = img.naturalHeight;
+                ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+            };
+
+            reader.readAsDataURL(selectedFile);
+        }
+    }
+
     render() {
         return (
             <div className="canvasContainer">
-                <canvas className=""/>
+                <img id="myimage" height="200"></img>
+                {this.handleImage()}
+                <canvas id="imageCanavas"/>
             </div>
         );
     }
+
 }
 
 export default Editor;
