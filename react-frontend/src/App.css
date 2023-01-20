@@ -237,12 +237,64 @@ div.MemeList{
   z-index: 0;
 }
 
+.textFormattingContainer{
+  display:flex;
+  flex-direction: row;
+  width: 10vw;
+  margin-left: 0.5vw;
+}
+
+#iconsTextFormatting{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+}
+
+#italicIconsTextFormatting{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+}
+
+#colorIconTextFormatting{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+  background-color: #000;
+}
+
+#iconsTextFormatting2{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+}
+
+#italicIconsTextFormatting2{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+}
+
+#colorIconTextFormatting2{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+  background-color: #000;
+}
+
 .canvasText{
   position:absolute;
   left: 24vw; 
   top: 10vh; 
   z-index: 1;
 }
+.canvasText2{
+  position:absolute;
+  left: 24vw; 
+  top: 10vh; 
+  z-index: 1;
+}
+
 
 .editCanvasView{
   display: flex;
