@@ -91,7 +91,7 @@ router.post('/find', function(req, res, next) {
       const db = req.db;
       const users = db.get('users');
       console.log("loaded from db");
-      console.log(users);
+      // console.log(users);
       users.find({username: req.body.username}) // return all user properties, except the basic auth token
       .then((docs) => {
         console.log("preparing json..");

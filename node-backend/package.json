@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "startdev": "node ./bin/www",
-    "start": "SET DBPORT=65535 && node ./bin/www"
+    "start": "SET DBPORT=27017 && node ./bin/www"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
