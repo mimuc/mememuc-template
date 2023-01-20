@@ -5,21 +5,47 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import {Alert, AlertTitle} from "@mui/material";
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import LockIcon from '@mui/icons-material/Lock';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 // eslint-disable-next-line
 import { Navigate, useNavigate } from "react-router-dom";
+import {useState} from "react";
 
 // vgl. https://github.com/mui/material-ui/blob/v5.11.4/docs/data/material/getting-started/templates/sign-in/SignIn.tsx
 
 const theme = createTheme();
 
+interface Props {
+  render: boolean;
+  msg: string;
+}
+
+const ErrorMessage:React.FC<Props> = (props) => {
+  const render = props.render;
+  const msg = props.msg;
+  return (
+      <div>
+        {
+          render &&
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            {msg}
+          </Alert>
+        }
+      </div>
+  )
+}
+
+
 function Register() {
+  const navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
@@ -27,24 +53,34 @@ function Register() {
         email: data.get('email'),
         password: data.get('password'),
       });
-      let bodyContent = JSON.stringify({
-        timestamp: Date.now(),
-        username: data.get('username'),
-        password: data.get('password'),
-        email: data.get('email'),
-      });
-      console.log(bodyContent);
-      console.log("trying to register");
-      fetch('http://localhost:3001/users/insert', {
-        method: 'POST',
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          "Content-Type": "application/json"
-        },
-        body: bodyContent,
-      }).then((res) => {
-        console.log(res.status);
-      });
+
+      if(data.get('password') !== data.get('repeat-password')) {
+        //TODO show error
+      } else {
+        let bodyContent = JSON.stringify({
+          timestamp: Date.now(),
+          username: data.get('username'),
+          password: data.get('password'),
+          email: data.get('email'),
+        });
+        console.log(bodyContent);
+        console.log("trying to register");
+        fetch('http://localhost:3001/users/insert', {
+          method: 'POST',
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            "Content-Type": "application/json"
+          },
+          body: bodyContent,
+        }).then((res) => {
+          console.log(res.status);
+          if(res.ok) {
+            navigate("/memePage");
+          } else {
+            //TODO show error
+          }
+        });
+      }
   };
 
   return (<ThemeProvider theme={theme}>
@@ -58,6 +94,7 @@ function Register() {
             alignItems: 'center',
           }}
       >
+        <LockIcon></LockIcon>
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
@@ -90,6 +127,16 @@ function Register() {
               id="password"
               autoComplete="current-password"
           />
+          <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="repeat-password"
+              label="Repeat Password"
+              type="password"
+              id="repeat-password"
+              autoComplete="current-password"
+          />
           <Button
               type="submit"
               fullWidth
@@ -114,6 +161,9 @@ function Register() {
 
 function SignIn() {
   const navigate = useNavigate();
+
+  const [renderError, setRenderError] = useState(false);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -134,8 +184,13 @@ function SignIn() {
     }).then((res) => {
       console.log(res);
       console.log(res.status);
+      if(res.ok) {
+        navigate("/memePage");
+      }
+      else {
+        setRenderError(true);
+      }
     });
-    //TODO: Schauen ob email und passwort vorhanden und richtig
     
     //navigate("/memePage");
     //<Navigate to="/memePage"/>
@@ -153,6 +208,7 @@ function SignIn() {
             alignItems: 'center',
           }}
         >
+          <LockIcon></LockIcon>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
@@ -185,6 +241,7 @@ function SignIn() {
             >
               Sign In
             </Button>
+            <ErrorMessage render={renderError} msg={"wrong email or password"}/>
             <Grid container>
               <Grid item>
                 <Link href="/register" variant="body2">

@@ -51,8 +51,10 @@ router.post('/auth', function(req, res) {
     const db = req.db;
     const req_email = req.body.email;
     const req_password = req.body.password;
-
+    console.log('In auth');
+    //console.log(req);
     if(req_email && req_password) {
+        console.log('email and password submitted')
        db.get('users').find({ email: req_email }).then((docs) => {
            if(docs.length > 0) {
                //res.send('Correct username');
@@ -60,6 +62,7 @@ router.post('/auth', function(req, res) {
                    res.send('Logged in');
                    req.session.loggedin = true;
                    req.session.username = docs[0].username;
+                   console.log('Login complete');
                }
                else {
                    console.log("Password didn't match");
@@ -73,7 +76,6 @@ router.post('/auth', function(req, res) {
                res.statusCode = 401;
                res.send('Incorrect email');
            }
-           res.end();
        })
     } else {
         console.log("No credentials");
