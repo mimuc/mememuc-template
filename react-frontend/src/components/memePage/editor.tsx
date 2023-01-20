@@ -5,6 +5,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EditIcon from '@mui/icons-material/Edit';
 import { Button } from '@mui/material';
 import { Input } from '@mui/material';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -12,6 +13,8 @@ import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
+//Vgl. https://mui.com/material-ui/react-text-field/
+//
 
 class Editor extends Component {
     state = {hasImage: false, imageFile: null};
@@ -22,12 +25,16 @@ class Editor extends Component {
         this.setState({hasImage: true});
     }
 
+    handleMeme = (image) => {
+        //console.log(image);
+    }
+
     render() {
         return (
             <div className="side" id="sideRight">
                 <EditorTopMenu getImage={this.handleGetImage}/>
                 <div className="editorContainer">
-                    <EditorCanvas setImage={this.state.hasImage} image={this.imageFile}/>
+                    <EditorCanvas setImage={this.state.hasImage} image={this.imageFile} setMeme={this.handleMeme}/>
                 </div>
             </div>
         )
@@ -97,7 +104,16 @@ class EditorTopMenu extends Component {
 }
 
 class EditorCanvas extends Component {
-    state = {};
+    //Set image, texts and x and y positions as states!!!
+    constructor(props){
+        super(props);
+        this.state = {imageCanvas: null, positionSelector1: "notSelected", positionSelector2: "notSelected"};
+        this.handleImage = this.handleImage.bind(this)
+        this.handleUpdateTextData = this.handleUpdateTextData.bind(this)
+        this.handlePositionSelect = this.handlePositionSelect.bind(this)
+        this.handleCanvasClick = this.handleCanvasClick.bind(this)
+    }
+    
     
 
     handleImage = () => {
@@ -146,10 +162,13 @@ class EditorCanvas extends Component {
             };
 
             reader.readAsDataURL(selectedFile);
+            this.props.setMeme(img);
         }
+        
     }
 
     handleUpdateTextData(){
+        if(this.props.image != null){
             console.log("clicked on update");
             const canvasText = document.getElementById("textCanavas");
             const ctxText = canvasText.getContext("2d");
@@ -161,24 +180,75 @@ class EditorCanvas extends Component {
             const yPos1 = document.getElementById("ypositionInputField1");
             const xPos2 = document.getElementById("xpositionInputField2");
             const yPos2 = document.getElementById("ypositionInputField2");
-            ctxText.font = "48px serif";
+            ctxText.font = "48px Arial"; // italic bold 
+            //ctxText.fillStyle = "#ff0000"; -> color
             ctxText.fillText(text1.value, xPos1.value, yPos1.value);
             ctxText.fillText(text2.value, xPos2.value, yPos2.value);
+        }
+    }
+
+    handlePositionSelect(value){
+        if(value === "Icon1"){
+            var icon = document.getElementById("setPositionIcon1");
+            if((this.state.positionSelector1 === "notSelected") && (this.state.positionSelector2 === "notSelected")){
+                console.log("set selected");
+                this.state.positionSelector1 = "Selected";
+                icon.style.backgroundColor = "#444";
+            }else{
+                console.log("set not selected");
+                this.state.positionSelector1 = "notSelected";
+                icon.style.backgroundColor = "#222";
+            }
+        }else if(value === "Icon2"){
+            var icon = document.getElementById("setPositionIcon2");
+            if((this.state.positionSelector2 === "notSelected") && (this.state.positionSelector1 === "notSelected")){
+                console.log("set selected");
+                this.state.positionSelector2 = "Selected";
+                icon.style.backgroundColor = "#444";
+            }else{
+                console.log("set not selected");
+                this.state.positionSelector2 = "notSelected";
+                icon.style.backgroundColor = "#222";
+            }
+        }
+    }
+
+
+    handleCanvasClick = event =>{
+        const canvas = document.getElementById('textCanavas');
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        console.log("x: " + x  + " y: " + y )
+        if(this.state.positionSelector1 ==="Selected"){
+            var xp1 = document.getElementById("xpositionInputField1");
+            var yp1 = document.getElementById("ypositionInputField1");
+            xp1.value = x;
+            yp1.value = y;
+        }else if(this.state.positionSelector2 ==="Selected"){
+            var xp2 = document.getElementById("xpositionInputField2");
+            var yp2 = document.getElementById("ypositionInputField2");
+            xp2.value = x;
+            yp2.value = y;
+        }
+
+        this.handleUpdateTextData()
     }
 
     render() {
         return (
             <div className="editCanvasView">
                 <div className="canvasContainer">
-                    {this.handleImage()}
                     <canvas id="imageCanavas" className="canvasImage"/>
-                    <canvas id="textCanavas" className="canvasText"/>
+                    <canvas id="textCanavas" className="canvasText"  onClick={this.handleCanvasClick}/>
+                    {this.handleImage()}
                 </div>
                 <div className="leftBtns">
                     <div id="canvasEditors">
                         <p className="inputFieldDescription">ADD TEXTS: </p>
                         <Input placeholder="Text 1" type="string" className='InputText1' id="inputField" />
                         <div className="positionInputContainer">
+                            <EditIcon color="primary" id="setPositionIcon1"  onClick={this.handlePositionSelect.bind(this,"Icon1")} ></EditIcon>
                             <div className='positionInputHolder'>
                                 <Input placeholder="0px" className="xPos1" id="xpositionInputField1" />
                                 <p className="positionInputLabel">X pos</p>
@@ -190,6 +260,7 @@ class EditorCanvas extends Component {
                         </div>
                         <Input placeholder="Text 2" className='InputText2' id="inputField2" />
                         <div className="positionInputContainer">
+                        <EditIcon color="primary" id="setPositionIcon2"  onClick={this.handlePositionSelect.bind(this,"Icon2")} ></EditIcon>
                             <div className='positionInputHolder'>
                                 <Input placeholder="0px" className="xPos2" id="xpositionInputField2" />
                                 <p className="positionInputLabel">X pos</p>
@@ -204,6 +275,7 @@ class EditorCanvas extends Component {
                 </div>
              </div>
         );
+        
     }
 
 }

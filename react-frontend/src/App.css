@@ -51,6 +51,22 @@
   box-shadow:  2px 3px 5px #1f1f1f;
 }
 
+#setPositionIcon1{
+  margin-top: 1vh;
+  margin-right: 0.5vw;
+  margin-left: 0.5vw;
+  border-radius: 5px;
+  height: 3vh;
+}
+
+#setPositionIcon2{
+  margin-top: 1vh;
+  margin-right: 0.5vw;
+  margin-left: 0.5vw;
+  border-radius: 5px;
+  height: 3vh;
+}
+
 #sideLeft {
   width: 22vw;
   height: 98vh;
