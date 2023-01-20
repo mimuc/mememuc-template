@@ -2,7 +2,7 @@ var express = require('express');
 const mongoose = require('mongoose');
 var router = express.Router();
 
-const {Meme} = require('../db/models');
+const {Meme, Template} = require('../db/models');
 
 router.get('/:type/:url', async function(req, res, next) {
   const type = req.params.type;
@@ -18,6 +18,18 @@ router.get('/:type/:url', async function(req, res, next) {
         }
         res.set('Content-Type', meme.contentType);
         res.send(meme.image);
+      } catch (err) {
+          res.status(500).send(err);
+      }
+    }
+    else if(url.startsWith('t')) {
+      try {
+        const template = await Template.findOne({ url });
+        if (!template) {
+            return res.status(404).send('Image not found');
+        }
+        res.set('Content-Type', template.contentType);
+        res.send(template.image);
       } catch (err) {
           res.status(500).send(err);
       }

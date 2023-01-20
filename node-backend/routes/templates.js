@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const {Template} = require('../db/models');
+const {Template, generateUrl} = require('../db/models');
 
 router.get('/', async function(req, res, next) {
   // TODO: Restrict GET to templates the user can see
@@ -20,12 +20,22 @@ router.get('/:name', async function(req, res, next) {
 
 router.post('/', async function(req, res) {
   // TODO: Requires authentication, uses username as creator
-  const { name } = req.body;
+  // TODO: Parse/upload image
+  // TODO: Set creator field
 
-  const existingTemplate = await Template.findOne({ name });
+  const image = req.body.image;
+
+  const existingTemplate = await Template.findOne({ name: req.body.name });
 
   if (!existingTemplate) {
-      const template = new Template(req.body);
+      const template = new Template({
+        name: req.body.name,
+        image,
+        visibility: req.body.visibility,    
+        contentType: req.body.contentType,
+        url: 't' + await generateUrl(Template)
+      });
+        
       template.save()
       .then(function() {
         res.status(201).json({ message: 'Template created' });

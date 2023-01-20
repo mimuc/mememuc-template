@@ -17,7 +17,7 @@ const canvas = Canvas.createCanvas(1000, 1000);
 const ctx = canvas.getContext('2d');
 const canvasImg = new Image();
 
-const {Meme, User} = require('../db/models');
+const {Meme, User, generateUrl} = require('../db/models');
 
 const mongoose = require("mongoose");
 
@@ -199,22 +199,7 @@ function generateName(username) {
     return username.slice(-1) === 's' ? username + "\' meme" : username + "\'s meme";
 }
 
-function uniqueId() {
-    return Date.now() + '' + Math.floor(Math.random() * 100000);
-}
 
-async function generateUrl(model, urlSet) {
-
-    let url = uniqueId();
-    let document = await model.findOne({ url });
-    
-    while(document || (urlSet ? urlSet.has(url) : false)) { // Ensure that the url is unique
-        url = uniqueId();
-        document = await model.findOne({ url });
-    }
-    urlSet.add(url);
-    return url;
-}
 
 router.post('/', async function(req, res) {
     const db = req.db;
