@@ -25,16 +25,18 @@ const theme = createTheme();
 interface Props {
   render: boolean;
   msg: string;
+  severity;
 }
 
 const ErrorMessage:React.FC<Props> = (props) => {
   const render = props.render;
   const msg = props.msg;
+  const severity = props.severity;
   return (
       <div>
         {
           render &&
-          <Alert severity="error">
+          <Alert severity={severity}>
             <AlertTitle>Error</AlertTitle>
             {msg}
           </Alert>
@@ -45,6 +47,8 @@ const ErrorMessage:React.FC<Props> = (props) => {
 
 
 function Register() {
+  const [renderAccountExistsError, setRenderAccountExistsError] = useState(false);
+  const [renderPasswordNotMatchingError, setRenderPasswordNotMatchingError] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -55,8 +59,10 @@ function Register() {
       });
 
       if(data.get('password') !== data.get('repeat-password')) {
-        //TODO show error
+        setRenderPasswordNotMatchingError(true);
+        return;
       } else {
+        if (renderPasswordNotMatchingError) setRenderPasswordNotMatchingError(false);
         let bodyContent = JSON.stringify({
           timestamp: Date.now(),
           username: data.get('username'),
@@ -77,7 +83,7 @@ function Register() {
           if(res.ok) {
             navigate("/memePage");
           } else {
-            //TODO show error
+            setRenderAccountExistsError(true);
           }
         });
       }
@@ -94,7 +100,7 @@ function Register() {
             alignItems: 'center',
           }}
       >
-        <LockIcon></LockIcon>
+        <LockOutlinedIcon/>
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
@@ -127,6 +133,7 @@ function Register() {
               id="password"
               autoComplete="current-password"
           />
+          <ErrorMessage render={renderPasswordNotMatchingError} msg={"passwords are not matching"} severity={"warning"}/>
           <TextField
               margin="normal"
               required
@@ -137,6 +144,7 @@ function Register() {
               id="repeat-password"
               autoComplete="current-password"
           />
+          <ErrorMessage render={renderAccountExistsError} msg={"Username and/or email already exists"} severity={"error"}/>
           <Button
               type="submit"
               fullWidth
@@ -182,6 +190,7 @@ function SignIn() {
         password: data.get('password'),
       }),
     }).then((res) => {
+      console.log("result from auth:");
       console.log(res);
       console.log(res.status);
       if(res.ok) {
@@ -189,7 +198,10 @@ function SignIn() {
       }
       else {
         setRenderError(true);
+        return res.text();
       }
+    }).then((res) => {
+      console.log(res);
     });
     
     //navigate("/memePage");
@@ -208,7 +220,7 @@ function SignIn() {
             alignItems: 'center',
           }}
         >
-          <LockIcon></LockIcon>
+          <LockOutlinedIcon/>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
@@ -241,7 +253,7 @@ function SignIn() {
             >
               Sign In
             </Button>
-            <ErrorMessage render={renderError} msg={"wrong email or password"}/>
+            <ErrorMessage render={renderError} msg={"wrong email and/or password"} severity={"error"}/>
             <Grid container>
               <Grid item>
                 <Link href="/register" variant="body2">

@@ -33,6 +33,7 @@ router.post('/insert', function(req, res, next) {
             password: hash(req.body.password),
             email: req.body.email
         });
+        req.session.loggedin = true;
         res.status(200).send();
     });
 });
@@ -58,17 +59,19 @@ router.post('/auth', function(req, res) {
        db.get('users').find({ email: req_email }).then((docs) => {
            if(docs.length > 0) {
                //res.send('Correct username');
+               console.log(docs[0].password);
+               console.log(req_password);
+               console.log(hash(req_password));
                if(docs[0].password === hash(req_password)) {
-                   res.send('Logged in');
                    req.session.loggedin = true;
                    req.session.username = docs[0].username;
                    console.log('Login complete');
-               }
-               else {
+                   res.send('Logged in');
+               } else {
                    console.log("Password didn't match");
-                   res.send('Wrong password');
                    res.statusCode = 401;
-                   res.end();
+                   // console.log(res);
+                   res.send('Wrong password');
                }
            }
            else {
@@ -81,7 +84,7 @@ router.post('/auth', function(req, res) {
         console.log("No credentials");
         res.statusCode = 401;
         res.send('Plese log in');
-        res.end();
+        res.send();
     }
 });
 

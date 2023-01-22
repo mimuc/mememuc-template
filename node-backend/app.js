@@ -30,13 +30,26 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(session({
-  secret: 'secret',
+  secret: 'veryverysecretsecretthatshouldberemovedforproduction',
   resave: true,
+  cookie: {maxAge: 1000*60*60*24*7},
   saveUninitialized: true,
 }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, 'Content-Type' : 'multipart/form-data' ,* "
+  );
+  res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST"
+  );
+  next();
+});
 app.use(cors());
 
 app.use(function(req,res,next){
