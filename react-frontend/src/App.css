@@ -249,3 +249,15 @@ div.MemeList{
 .hidden {
   display: none;
 }
+
+#wait-container {
+  width: 100%;
+  height: 100%;
+  background-color: #070709;
+}
+
+#wait-header {
+  width: 100%;
+  text-align: center;
+  font-family: "Arial Black";
+}

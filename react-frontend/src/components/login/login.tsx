@@ -53,10 +53,6 @@ function Register() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      console.log({
-        email: data.get('email'),
-        password: data.get('password'),
-      });
 
       if(data.get('password') !== data.get('repeat-password')) {
         setRenderPasswordNotMatchingError(true);
@@ -77,6 +73,7 @@ function Register() {
             'Access-Control-Allow-Origin': '*',
             "Content-Type": "application/json"
           },
+          credentials: "include",
           body: bodyContent,
         }).then((res) => {
           console.log(res.status);
@@ -175,23 +172,20 @@ function SignIn() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
     fetch('http://localhost:3001/users/auth', {
       method: 'POST',
       headers: {
         'Access-Control-Allow-Origin': '*',
         "Content-Type": "application/json"
       },
+      credentials: "include",
       body: JSON.stringify({
         email: data.get('email'),
         password: data.get('password'),
       }),
     }).then((res) => {
       console.log("result from auth:");
-      console.log(res);
+      // console.log(res);
       console.log(res.status);
       if(res.ok) {
         navigate("/memePage");

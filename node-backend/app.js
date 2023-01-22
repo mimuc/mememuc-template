@@ -32,7 +32,11 @@ app.use(logger('dev'));
 app.use(session({
   secret: 'veryverysecretsecretthatshouldberemovedforproduction',
   resave: true,
-  cookie: {maxAge: 1000*60*60*24*7},
+  cookie: {
+    maxAge: 1000*60*60*24*7,
+    httpOnly: false,
+    secure: false,
+  },
   saveUninitialized: true,
 }))
 app.use(express.json());
@@ -50,7 +54,11 @@ app.use((req, res, next) => {
   );
   next();
 });
-app.use(cors());
+app.use(cors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+}
+));
 
 app.use(function(req,res,next){
   req.db = db;
