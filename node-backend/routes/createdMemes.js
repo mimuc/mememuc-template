@@ -22,11 +22,12 @@ router.post('/insert', function(req, res, next) {
   /*
 [
             {
+                textNr: req.text_number
                 textContent: req.text_contex,
-                textSize: req.text_size,
                 xPosition: req.xPosition,
                 yPosition: req.yPosition,
-                textFont: req.text_font,
+                bold: req.bold,
+                italic: req.italic,
                 color: req.color
             }
         ] 

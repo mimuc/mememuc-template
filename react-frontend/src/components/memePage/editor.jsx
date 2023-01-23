@@ -21,50 +21,103 @@ import { color } from '@mui/system';
 //
 
 class Editor extends Component {
-    state = {hasImage: false, imageFile: null};
+    
+
+    constructor(props){
+        super(props);
+        this.state = {hasImage: false, imageFile: null, image: null, xPosT1: 0, yPosT1:0, xPosT2:0, yPosT2:0, boldT1:"", boldT2:"", italicT1:"", italicT2:"", colorT1:"", colorT2:""};
+        this.handleGetImage = this.handleGetImage.bind(this);
+        this.saveMeme = this.saveMeme.bind(this);
+        this.downloadMeme = this.downloadMeme.bind(this);
+        this.handleTextInfo = this.handleTextInfo.bind(this);
+        this.handleImageInfo = this.handleImageInfo.bind(this);
+    }
 
 
     handleGetImage = (image) => {
-        this.imageFile = image;
+        this.state.imageFile = image;
         this.setState({hasImage: true});
     }
 
-    handleMeme = (image) => {
-        //console.log(image);
+    saveMeme = () => {
+        var image = this.state.image;
+        var imgWidth = 0;
+        var imgHeight = 0;
+        if(image !== null){
+            imgWidth = this.state.image.width;
+            imgHeight = this.state.image.height;
+        }
+        var text1 = document.getElementById("inputField").value;
+        var text1XPos = this.state.xPosT1;
+        var text1YPos = this.state.yPosT1;
+        var text1Bold = this.state.boldT1;
+        var text1Italic = this.state.italicT1;
+        var text1Color = this.state.colorT1;
+        var text2 = document.getElementById("inputField2").value;
+        var text2XPos = this.state.xPosT2;
+        var text2YPos = this.state.yPosT2;
+        var text2Bold = this.state.boldT2;
+        var text2Italic = this.state.italicT2;
+        var text2Color = this.state.colorT2;
+        var title = document.getElementById("titleInput").value;
+    }
+
+    downloadMeme = () => {
+        var title = document.getElementById("titleInput");
+        var mergeCanvas = document.getElementById("mergingCanvas");
+        var imageCanvas = document.getElementById("imageCanavas");
+        var textCanvas1 = document.getElementById("textCanvas");
+        var textCanvas2 = document.getElementById("textCanvas2");
+
+        var ctxMerge = mergeCanvas.getContext("2d");
+        ctxMerge.drawImage(imageCanvas, 0, 0);
+        ctxMerge.drawImage(textCanvas1, 0, 0);
+        ctxMerge.drawImage(textCanvas2, 0, 0);
+
+        var url = mergeCanvas.toDataURL("image/png");
+        var link = document.createElement('a');
+        if(title.value !== ""){
+            link.download = title.value + '.png';
+        }else{
+            link.download = 'meme.png';
+        }
+        link.href = url;
+        link.click();
+    }
+
+    handleTextInfo(textNr, xPos, yPos, bold, italic, color){
+        if(textNr === "Text 1"){
+            this.state.xPosT1 = xPos;
+            this.state.yPosT1 = yPos;
+            this.state.boldT1 = bold;
+            this.state.italicT1 = italic;
+            this.state.colorT1 = color;
+        }else if(textNr === "Text 2"){
+            this.state.xPosT2 = xPos;
+            this.state.yPosT2 = yPos;
+            this.state.boldT2 = bold;
+            this.state.italicT2 = italic;
+            this.state.colorT2 = color;
+        }
+    }
+
+    handleImageInfo(image){
+        this.state.image = image;
     }
 
     render() {
         return (
             <div className="side" id="sideRight">
-                <EditorTopMenu getImage={this.handleGetImage}/>
+                <EditorTopMenu getImage={this.handleGetImage} downloadMeme={this.downloadMeme} saveMeme={this.saveMeme}/>
                 <div className="editorContainer">
-                    <EditorCanvas setImage={this.state.hasImage} image={this.imageFile} setMeme={this.handleMeme}/>
+                    <EditorCanvas setImage={this.state.hasImage} image={this.state.imageFile} setMeme={this.handleMeme} handleTextInfo={this.handleTextInfo} handleImageInfo={this.handleImageInfo}/>
                 </div>
             </div>
         )
     };
 }
 
-class EditorLeftMenu extends Component {
-    state = {};
 
-    render() {
-        return (
-            <div className="leftBtns">
-                <Fab className="leftBtn" id="btn1" size="medium" color="primary">
-                </Fab>
-                <Fab className="leftBtn" id="btn2" size="medium" color="primary">
-                </Fab>
-                <Fab className="leftBtn" id="btn3" size="medium" color="primary">
-                </Fab>
-                <Fab className="leftBtn" id="btn3" size="medium" color="primary">
-                </Fab>
-                <Fab className="leftBtn" id="btn3" size="medium" color="primary">
-                </Fab>
-            </div>
-        );
-    }
-}
 
 class EditorTopMenu extends Component {
     state = {
@@ -96,10 +149,10 @@ class EditorTopMenu extends Component {
                         <ExpandMoreIcon/>
                     </Button>              
                 </Button>
-                <Fab className="upperBtn" id="btn2" variant="extended" size="medium" color="primary">
-                    <SaveAltIcon/>
+                <Fab className="upperBtn" id="btn2" variant="extended" size="medium" color="primary" onClick={this.props.downloadMeme}>
+                    <SaveAltIcon  />
                 </Fab>
-                <Fab className="upperBtn" id="btnSave" variant="extended" size="large" color="primary">
+                <Fab className="upperBtn" id="btnSave" variant="extended" size="large" color="primary" onClick={this.props.saveMeme}>
                     <SaveIcon/>
                 </Fab>
             </div>
@@ -113,6 +166,7 @@ class EditorCanvas extends Component {
         super(props);
         this.state = {imageCanvas: false, update: 0};
         this.handleImage = this.handleImage.bind(this)
+        this.handleTextData = this.handleTextData.bind(this);
     }
     
     
@@ -127,10 +181,12 @@ class EditorCanvas extends Component {
             var scaleFactor = 1;
 
             var canvas = document.getElementById("imageCanavas");
+            var mergingCanavas = document.getElementById("mergingCanvas");
+            var mergeCtx = mergingCanavas.getContext("2d");
             var ctx = canvas.getContext("2d");
 
 
-            reader.onload = function(event) {
+            reader.onload = function(event, handleImage) {
                 img.src = event.target.result;
 
                 if(img.height > img.width){
@@ -156,26 +212,39 @@ class EditorCanvas extends Component {
                 }
                 ctx.canvas.width  = img.width;
                 ctx.canvas.height = img.height;
+                mergeCtx.canvas.width = img.width;
+                mergeCtx.canvas.height = img.height;
                 ctx.drawImage(img, 0, 0, img.width, img.height);
             };
-
+            
             reader.readAsDataURL(selectedFile);
-            //this.props.setMeme(img);
+            this.props.handleImageInfo(img);
         }
         
     }
+
+    handleTextData(textNr, xPos, yPos, bold, italic, color){
+        this.props.handleTextInfo(textNr, xPos, yPos, bold, italic, color);
+    }
+
+    
 
     render() {
         return (
             <div className="editCanvasView">
                 <div className="canvasContainer">
+                    <canvas id="mergingCanvas" className="canvasImage"/>
                     <canvas id="imageCanavas" className="canvasImage"/>
                     {this.handleImage()}
                 </div>
                 <div className="leftBtns">
+                    
                     <div id="canvasEditors">
-                        <CanvasText idNameEdit="setPositionIcon1" idNameTextInput="inputField" nameTextPlaceHolder="Text 1" idNameTextCanvas="textCanvas" updateText={this.state.update} idNameX="xpositionInputField1" idNameY="ypositionInputField1" image={this.props.image} classNameCanvas="canvasText" boldIcon="iconsTextFormatting" italicIcon="italicIconsTextFormatting" colorIcon="colorIconsTextFormatting"></CanvasText>
-                        <CanvasText idNameEdit="setPositionIcon2" idNameTextInput="inputField2" nameTextPlaceHolder="Text 2" idNameTextCanvas="textCanvas2"  updateText={this.state.update} idNameX="xpositionInputField2" idNameY="ypositionInputField2" image={this.props.image} classNameCanvas="canvasText2" boldIcon="iconsTextFormatting2" italicIcon="italicIconsTextFormatting2" colorIcon="colorIconsTextFormatting2"></CanvasText>
+                        <p className="inputFieldDescription">ADD TITLE:</p>
+                        <Input placeholder="Title" type="string" id="titleInput" />
+                        <p className="inputFieldDescription"></p>
+                        <CanvasText idNameEdit="setPositionIcon1" idNameTextInput="inputField" nameTextPlaceHolder="Text 1" idNameTextCanvas="textCanvas" updateText={this.state.update} idNameX="xpositionInputField1" idNameY="ypositionInputField1" image={this.props.image} classNameCanvas="canvasText" boldIcon="iconsTextFormatting" italicIcon="italicIconsTextFormatting" colorIcon="colorIconsTextFormatting" handleTextData={this.handleTextData}></CanvasText>
+                        <CanvasText idNameEdit="setPositionIcon2" idNameTextInput="inputField2" nameTextPlaceHolder="Text 2" idNameTextCanvas="textCanvas2"  updateText={this.state.update} idNameX="xpositionInputField2" idNameY="ypositionInputField2" image={this.props.image} classNameCanvas="canvasText2" boldIcon="iconsTextFormatting2" italicIcon="italicIconsTextFormatting2" colorIcon="colorIconsTextFormatting2" handleTextData={this.handleTextData}></CanvasText>
                         
                     </div>
                 </div>
@@ -201,6 +270,8 @@ class CanvasText extends Component {
         this.handleItalic = this.handleItalic.bind(this)
         this.handleColor = this.handleColor.bind(this)
     }
+
+
 
     handleTextCanvas = () => {
         if(this.props.image != null){
@@ -252,12 +323,11 @@ class CanvasText extends Component {
         const rect = canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        console.log("x: " + x  + " y: " + y )
         if(this.state.positionSelector ==="Selected"){
             var xp1 = document.getElementById(this.props.idNameX);
             var yp1 = document.getElementById(this.props.idNameY);
-            xp1.value = x;
-            yp1.value = y;
+            xp1.value = Math.trunc(x);
+            yp1.value = Math.trunc(y);
         }
 
         this.handleUpdateTextData();
@@ -266,7 +336,6 @@ class CanvasText extends Component {
 
     handleUpdateTextData(){
         if(this.props.image != null){
-            console.log("clicked on update");
             const canvasText = document.getElementById(this.props.idNameTextCanvas);
             
             const ctxText = canvasText.getContext("2d");
@@ -278,8 +347,13 @@ class CanvasText extends Component {
             const yPos1 = document.getElementById(this.props.idNameY);
             ctxText.font = this.state.bold + " " + this.state.italic + " 48px Arial"; // italic bold 
             ctxText.fillStyle = this.state.color; 
-            console.log(text1.value + " " + xPos1.value + " " + yPos1.value)
-            ctxText.fillText(text1.value, xPos1.value, yPos1.value);
+            var x = Math.trunc(xPos1.value);
+            var y = Math.trunc(yPos1.value);
+            ctxText.fillText(text1.value, x, y);
+
+        
+            this.props.handleTextData(this.props.nameTextPlaceHolder, x, y, this.state.bold, this.state.italic, this.state.color);
+            //TextNr, xPos, yPos, bold, italic, color
         }
         
     }
@@ -296,11 +370,9 @@ class CanvasText extends Component {
                     canvases[i].style['pointer-events'] = "auto";
                 }else{
                     canvases[i].style['pointer-events'] = "none";
-                    console.log("set others none");
                 }
             }
         }else{
-            console.log("set not selected");
             this.state.positionSelector = "notSelected";
             icon.style.backgroundColor = "#222";
         }
