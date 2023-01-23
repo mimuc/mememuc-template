@@ -7,6 +7,7 @@
     "start": "env-cmd node ./bin/www"
   },
   "dependencies": {
+    "all": "^0.0.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "env-cmd": "^10.1.0",

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-web-editor": "^2.2.6",
+    "wysiwyg-editor-react": "^0.1.7"
+  }
+}
