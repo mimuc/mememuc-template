@@ -25,7 +25,7 @@ class Editor extends Component {
 
     constructor(props){
         super(props);
-        this.state = {hasImage: false, imageFile: null, image: null, xPosT1: 0, yPosT1:0, xPosT2:0, yPosT2:0, boldT1:"", boldT2:"", italicT1:"", italicT2:"", colorT1:"", colorT2:""};
+        this.state = {hasImage: false, imageFile: null, image: null, imageWidth: 0, imageHeight: 0, xPosT1: 0, yPosT1:0, xPosT2:0, yPosT2:0, boldT1:"", boldT2:"", italicT1:"", italicT2:"", colorT1:"", colorT2:""};
         this.handleGetImage = this.handleGetImage.bind(this);
         this.saveMeme = this.saveMeme.bind(this);
         this.downloadMeme = this.downloadMeme.bind(this);
@@ -41,25 +41,43 @@ class Editor extends Component {
 
     saveMeme = () => {
         var image = this.state.image;
-        var imgWidth = 0;
-        var imgHeight = 0;
-        if(image !== null){
-            imgWidth = this.state.image.width;
-            imgHeight = this.state.image.height;
+        var imgWidth = this.state.imageWidth;
+        var imgHeight = this.state.imageHeight;
+        var state = this.state;
+        var memeData= {
+         image,
+         imgWidth,
+         imgHeight,
+         text1: document.getElementById("inputField").value,
+         text1XPos: state.xPosT1,
+         text1YPos: state.yPosT1,
+         text1Bold: state.boldT1,
+         text1Italic: state.italicT1,
+         text1Color: state.colorT1,
+         text2: document.getElementById("inputField2").value,
+         text2XPos: state.xPosT2,
+         text2YPos: state.yPosT2,
+         text2Bold: state.boldT2,
+         text2Italic: state.italicT2,
+         text2Color: state.colorT2,
+         title: document.getElementById("titleInput").value,
         }
-        var text1 = document.getElementById("inputField").value;
-        var text1XPos = this.state.xPosT1;
-        var text1YPos = this.state.yPosT1;
-        var text1Bold = this.state.boldT1;
-        var text1Italic = this.state.italicT1;
-        var text1Color = this.state.colorT1;
-        var text2 = document.getElementById("inputField2").value;
-        var text2XPos = this.state.xPosT2;
-        var text2YPos = this.state.yPosT2;
-        var text2Bold = this.state.boldT2;
-        var text2Italic = this.state.italicT2;
-        var text2Color = this.state.colorT2;
-        var title = document.getElementById("titleInput").value;
+
+
+        fetch("http://localhost:3001/createdMemes/insert", {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                "Content-Type": "application/json"
+              },
+            method: "POST",
+            body: JSON.stringify(memeData),
+            credentials: "include"
+        }).then((res) =>{
+            console.log(res.status);
+        })
+
+        //console.log(memeData);
+        
     }
 
     downloadMeme = () => {
@@ -101,8 +119,10 @@ class Editor extends Component {
         }
     }
 
-    handleImageInfo(image){
+    handleImageInfo(image, width, height){
         this.state.image = image;
+        this.state.imageWidth =  width;
+        this.state.imageHeight = height;
     }
 
     render() {
@@ -184,9 +204,10 @@ class EditorCanvas extends Component {
             var mergingCanavas = document.getElementById("mergingCanvas");
             var mergeCtx = mergingCanavas.getContext("2d");
             var ctx = canvas.getContext("2d");
+            var props = this.props;
 
 
-            reader.onload = function(event, handleImage) {
+            reader.onload = function(event) {
                 img.src = event.target.result;
 
                 if(img.height > img.width){
@@ -215,10 +236,14 @@ class EditorCanvas extends Component {
                 mergeCtx.canvas.width = img.width;
                 mergeCtx.canvas.height = img.height;
                 ctx.drawImage(img, 0, 0, img.width, img.height);
+                //var canvasImg = document.getElementById("imageCanavas");
+                var imgString = canvas.toDataURL();
+                props.handleImageInfo(imgString, img.width, img.height);
             };
             
             reader.readAsDataURL(selectedFile);
-            this.props.handleImageInfo(img);
+            //
+            //this.props.handleImageInfo(imgString, canvasImg.width, canvasImg.height);
         }
         
     }
