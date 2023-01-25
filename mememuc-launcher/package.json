@@ -17,5 +17,7 @@
   },
   "devDependencies": {
     "typescript": "^4.9.4"
+    "concurrently": "^7.5.0",
+    "cors": "^2.8.5"
   }
 }

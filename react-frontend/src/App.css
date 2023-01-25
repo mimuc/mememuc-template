@@ -51,6 +51,22 @@
   box-shadow:  2px 3px 5px #1f1f1f;
 }
 
+#setPositionIcon1{
+  margin-top: 1vh;
+  margin-right: 0.5vw;
+  margin-left: 0.5vw;
+  border-radius: 5px;
+  height: 3vh;
+}
+
+#setPositionIcon2{
+  margin-top: 1vh;
+  margin-right: 0.5vw;
+  margin-left: 0.5vw;
+  border-radius: 5px;
+  height: 3vh;
+}
+
 #sideLeft {
   width: 22vw;
   height: 98vh;
@@ -182,14 +198,14 @@ div.MemeList{
 .leftBtns {
   display: flex;
   flex-flow: column wrap;
-  width: 48px;
+  width: 12vw;
+  height: 89vh;
+  margin-top: 1vh;
+  margin-left: 1vh;
   justify-content: center;
   background-color: #222;
-  padding-right: 1.5vw;
   border-radius: 5px;
-  margin: 1.2vh .8vh !important;
-  margin-bottom: 9vh !important;
-  box-shadow: 3px 3px 8px #1f1f1f;
+  box-shadow: 3px 3px 8px #060606;
 }
 
 .leftBtn {
@@ -204,14 +220,228 @@ div.MemeList{
 }
 
 .canvasContainer {
-  width: stretch;
-  height: stretch;
+  width: 63vw;
+  height: 89vh;
   background-color: #444;
   border-radius: 5px;
-  margin: 1vh .5vw;
+  margin-top: 1vh;
   margin-bottom: 9vh;
   margin-left: 0vw;
   box-shadow: 3px 3px 6px #1f1f1f inset;
+}
+
+.canvasImage{
+  position:absolute;
+  left: 24vw; 
+  top: 10vh; 
+  z-index: 0;
+}
+
+.textFormattingContainer{
+  display:flex;
+  flex-direction: row;
+  width: 10vw;
+  margin-left: 0.5vw;
+}
+
+#iconsTextFormatting{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+}
+
+#italicIconsTextFormatting{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+}
+
+#colorIconTextFormatting{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+  background-color: #000;
+}
+
+#iconsTextFormatting2{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+}
+
+#italicIconsTextFormatting2{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+}
+
+#colorIconTextFormatting2{
+  color:#3c70ab;
+  margin-right: 0.5vw;
+  border-radius: 3px;
+  background-color: #000;
+}
+
+.canvasText{
+  position:absolute;
+  left: 24vw; 
+  top: 10vh; 
+  z-index: 1;
+}
+.canvasText2{
+  position:absolute;
+  left: 24vw; 
+  top: 10vh; 
+  z-index: 1;
+}
+
+
+.editCanvasView{
+  display: flex;
+  flex-direction: row;
+}
+
+.inputFieldDescription{
+  color: #3c70ab;
+  margin-bottom: 1vh;
+  font-weight: 500;
+  margin-top: 1vh;
+}
+
+input[type=text] {
+  padding-left: 0.25vw; 
+}
+
+#inputField{
+  margin-top: 1vh;
+  width: 10vw;
+  max-width: 10vw;
+  color: white;
+  background-color: #555;
+  border-radius: 5px;
+}
+
+#inputField2{
+  margin-top: 1vh;
+  width: 10vw;
+  max-width: 10vw;
+  color: white;
+  background-color: #555;
+  border-radius: 5px;
+}
+
+#titleInput{
+  margin-top: 0vh;
+  width: 10vw;
+  max-width: 10vw;
+  color: white;
+  background-color: #555;
+  border-radius: 5px;
+}
+
+#xpositionInputField1{
+  margin-top: 1vh;
+  width: 3vw;
+  height: 2vh;
+  max-width: 10vw;
+  color: white;
+  background-color: #555;
+  border-radius: 5px;
+}
+#ypositionInputField1{
+  margin-top: 1vh;
+  width: 3vw;
+  height: 2vh;
+  max-width: 10vw;
+  color: white;
+  background-color: #555;
+  border-radius: 5px;
+}
+#xpositionInputField2{
+  margin-top: 1vh;
+  width: 3vw;
+  height: 2vh;
+  max-width: 10vw;
+  color: white;
+  background-color: #555;
+  border-radius: 5px;
+}
+#ypositionInputField2{
+  margin-top: 1vh;
+  width: 3vw;
+  height: 2vh;
+  max-width: 10vw;
+  color: white;
+  background-color: #555;
+  border-radius: 5px;
+}
+
+.positionInputHolder{
+  margin-right: 0.5vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.positionInputLabel{
+  color: #3c70ab;
+  font-size: 1.6vh;
+  margin-left: 0.4vw;
+}
+
+#updateButton{
+  width: 9vw;
+  height: 3vh;
+  background-color: #3c70ab;
+  border: none;
+  border-radius: 3vh;
+  color: white;
+  text-align: center;
+  display: inline-block;
+  font-size: 2.4vh;
+  margin-top: 1vh;
+  margin-left: 0.5vw;
+  margin-bottom: 1vh;
+  box-shadow: 3px 4px 4px #0c0c0c;
+}
+
+#updateButton:hover {
+  background-color: #2261aa;
+}
+
+#outlined-adornment-weight{
+  color:white;
+  background-color: #444;
+  padding: 0;
+}
+
+#unit{
+  padding: 0;
+}
+
+#outlined-weight-helper-text{
+  min-width: max-content;
+  color: #3c70ab;
+}
+
+.positionInputContainer{
+  display: flex;
+  flex-direction: row;
+}
+
+#positionInput{
+  margin-top: 1vh;
+  margin-right: 0.5vw;
+  width: 3vw;
+  height: 8vh;
+}
+
+
+
+#canvasEditors{
+  width:10vw;
+  margin-left: 1vw;
+  display: flex;
+  flex-direction: column;
 }
 
 .editorContainer {

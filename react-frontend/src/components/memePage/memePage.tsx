@@ -5,7 +5,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 //@ts-ignore
 import HistoryAndTemplatesView from './historyAndTemplates.tsx';
 //@ts-ignore
-import Editor from './editor.tsx';
+import Editor from './editor.jsx';
 import Fab from '@mui/material/Fab';
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded';
 import { useNavigate } from 'react-router-dom';

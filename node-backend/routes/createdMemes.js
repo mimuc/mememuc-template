@@ -7,14 +7,27 @@ var router = express.Router();
 
 //Insert created Meme
 router.post('/insert', function(req, res, next) {
+  console.log("im backend");
     const db = req.db;
     if(db.get('createdMemes') === undefined) db.create("createdMemes");
 
     db.get('createdMemes').insert({
-        image_name: req.body.image_name,
-        time_stamp: req.body.time_stamp,
-        image_base_64: req.body.image_base_64,
-        texts: req.body.texts
+      image: req.body.image,
+      imgWidth: req.body.imgWidth,
+      imgHeight: req.body.imgHeight,
+      text1: req.body.text1,
+      text1XPos: req.body.text1XPos,
+      text1YPos: req.body.text1YPos,
+      text1Bold: req.body.text1Bold,
+      text1Italic: req.body.text1Italic,
+      text1Color: req.body.text1Color,
+      text2Bold: req.body.text2Bold,
+      text2XPos: req.body.text2XPos,
+      text2YPos: req.body.text2YPos,
+      text2Bold: req.body.text2Bold,
+      text2Italic: req.body.text2Italic,
+      text2Color: req.body.text2Color,
+      title: req.body.title,
     });
     res.status(200).send();
   });
@@ -22,11 +35,12 @@ router.post('/insert', function(req, res, next) {
   /*
 [
             {
+                textNr: req.text_number
                 textContent: req.text_contex,
-                textSize: req.text_size,
                 xPosition: req.xPosition,
                 yPosition: req.yPosition,
-                textFont: req.text_font,
+                bold: req.bold,
+                italic: req.italic,
                 color: req.color
             }
         ] 
