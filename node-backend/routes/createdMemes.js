@@ -28,6 +28,7 @@ router.post('/insert', function(req, res, next) {
       text2Italic: req.body.text2Italic,
       text2Color: req.body.text2Color,
       title: req.body.title,
+        likes: 0,
     });
     res.status(200).send();
   });
@@ -50,7 +51,7 @@ router.post('/insert', function(req, res, next) {
 router.post('/find', function(req, res, next) {
     const db = req.db;
     const createdMemes = db.get('createdMemes');
-    createdMemes.find({image_name: req.body.image_name},{ projection: {basicauthtoken: 0}}) // return all user properties, except the basic auth token
+    createdMemes.find({image_name: req.body.image_name})
         .then((docs) => {
           console.log("preparing json..");
           console.log(docs);
@@ -61,6 +62,19 @@ router.post('/find', function(req, res, next) {
           res.status(500).send();
         });
   });
+
+router.post('/like', function (req, res) {
+    console.log('in /like');
+    const db = req.db;
+    const createdMemes = db.get('createdMemes');
+    createdMemes.find({_id: req.body.uid}).then((docs) => {
+        console.log(typeof docs);
+        let currLikes = docs[0].likes;
+        createdMemes.update({_id: req.body.uid}, { $set: {likes: currLikes + 1}});
+        console.log('updated likes');
+        res.send('Updated likes');
+    });
+})
 
 router.get('/all', function (req, res) {
    const db = req.db;

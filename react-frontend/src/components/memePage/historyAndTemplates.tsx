@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Component } from 'react';
 import Button from '@mui/material/Button';
+import {IconButton} from "@mui/material";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 class HistoryAndTemplatesView extends Component {
     state = {};
@@ -86,7 +88,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             }).then((res) => {
                 console.log(res);
                 this.setState({memeList: res});
-            })
+            });
         } else {
             // TODO: fetch data for template
         }
@@ -97,7 +99,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             <div className="MemeList">
                 {
                     this.state.memeList.map((meme) => {
-                        return <MemeTile key={meme} base64Image={meme.image} title={meme.title}/>
+                        return <MemeTile uid={meme._id} key={meme} base64Image={meme.image} title={meme.title} likes={meme.likes}/>
                     })
                 }
             </div>
@@ -109,12 +111,58 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
 interface MemeTileProps {
     base64Image: string;
     title: string;
+    likes: number,
+    uid: string,
 }
-class MemeTile extends Component<MemeTileProps> {
+interface MemeTileState {
+    likes: number,
+}
+class MemeTile extends Component<MemeTileProps, MemeTileState> {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {likes: this.props.likes};
+    }
+
+    private updateLikeDisplay() {
+        this.setState({likes: this.state.likes + 1});
+    }
+
+    increaseLikeCount() {
+        console.log('trying to increase like');
+        let mUid = this.props.uid;
+        let listOfLiked = localStorage.getItem('listOfLiked');
+        if (listOfLiked !== undefined && listOfLiked !== null) {
+            listOfLiked = JSON.parse(listOfLiked);
+            if (!listOfLiked.includes(this.props.uid)) {
+                listOfLiked = null;
+            }
+        }
+        if (listOfLiked === undefined || listOfLiked === null) {
+            fetch('http://localhost:3001/createdMemes/like', {
+                method: 'POST',
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    uid: mUid,
+                })
+            }).then((res) => {
+                console.log('like increased?');
+                console.log(res.status);
+                this.updateLikeDisplay();
+                let listOfLiked = localStorage.getItem('listOfLiked');
+                if (listOfLiked === undefined || listOfLiked === null) {
+                    localStorage.setItem('listOfLiked', JSON.stringify([this.props.uid]));
+                } else {
+                    listOfLiked = JSON.parse(listOfLiked);
+                    listOfLiked.push(this.props.uid);
+                    localStorage.setItem('listOfLiked', JSON.stringify(listOfLiked));
+                }
+            });
+        }
     }
 
     render() {
@@ -125,10 +173,16 @@ class MemeTile extends Component<MemeTileProps> {
         console.log("Height = " + height + " width = " + width);
 
         return (
-            <div id="MemeTile"> 
+            <div id="MemeTile">
                 <img className="ImageMeme" src={this.props.base64Image} alt={this.props.title}></img>
                 <p className="TitleMeme">Title: {this.props.title}</p>
                 <p className="InfoMeme">Info: {this.props.title}</p>
+                <div className="likeContainer">
+                    <IconButton onClick={this.increaseLikeCount.bind(this)}>
+                        <ThumbUpIcon color={'success'}/>
+                    </IconButton>
+                    <a className="likeCount">{this.state.likes}</a>
+                </div>
             </div>
         );
     }

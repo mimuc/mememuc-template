@@ -166,6 +166,10 @@ div.MemeList{
   margin-top: 0.5vh;
 }
 
+.likeCount{
+  color: #999;
+}
+
 .InfoMeme{
   color:#888;
   font-weight: 500;
