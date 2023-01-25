@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const cors = require('cors');
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
@@ -15,7 +16,7 @@ console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var memesAPI = require('./routes/memesApi');
-var registerUserRouter = require('./routes/registerUser');
+//var registerUserRouter = require('./routes/registerUser');
 var uploadTemplateRouter = require('./routes/uploadTemplate');
 var createdMemes = require('./routes/createdMemes');
 
@@ -27,9 +28,27 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+var bodyParser = require('body-parser');
+app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use(cookieParser());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, 'Content-Type' : 'multipart/form-data' ,* "
+  );
+  res.header(
+      "Access-Control-Allow-Methods",
+      "GET, POST"
+  );
+  next();
+});
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}
+));
 
 app.use(function(req,res,next){
   req.db = db;
@@ -64,7 +83,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/memesApi', memesAPI);
-app.use('/registerUser', registerUserRouter);
+//app.use('/registerUser', registerUserRouter);
 app.use('/uploadTemplate', uploadTemplateRouter);
 app.use('/createdMemes', createdMemes);
 
