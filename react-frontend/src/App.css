@@ -156,6 +156,7 @@ div.MemeList{
   height: 20vh;
   width: 18vw;
   border-radius: 5px;
+  object-fit: cover;
 }
 
 .TitleMeme{

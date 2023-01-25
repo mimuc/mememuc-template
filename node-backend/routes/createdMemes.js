@@ -61,6 +61,16 @@ router.post('/find', function(req, res, next) {
           res.status(500).send();
         });
   });
+
+router.get('/all', function (req, res) {
+   const db = req.db;
+   const createdMemes = db.get('createdMemes');
+   const allMemes = createdMemes.find({})
+       .then((docs) => {
+           //console.log(docs);
+           res.json(docs);
+       });
+});
   
 
 
