@@ -227,7 +227,7 @@ router.post('/', async function(req, res) {
     };
     const config = Object.assign({}, config_default, req.body.config);
 
-    const templates = req.body.texts ?? [[]];
+    const templates = req.body.templates ?? [{}];
 
     const createdMemes = [];
 
@@ -253,7 +253,7 @@ router.post('/', async function(req, res) {
                 data_template.texts = templateInDatabase.texts;
                 data_template.url = templateInDatabase.url;
             }
-            const data = Object.assign(data_default, data_template, template);
+            const data = Object.assign(data_default, data_template, template); // Currently does not check whether memeNames collide
 
             const img = await generateMemeCanvas({config, data});
             createdMemes.push({img, name: data.memeName});
