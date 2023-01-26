@@ -17,7 +17,7 @@ const canvas = Canvas.createCanvas(1000, 1000);
 const ctx = canvas.getContext('2d');
 const canvasImg = new Image();
 
-const {Meme, User, generateUrl} = require('../db/models');
+const {Meme, User, Template, generateUrl} = require('../db/models');
 
 const mongoose = require("mongoose");
 
@@ -140,16 +140,17 @@ function calculateCanvasSize({resizeCanvas=true, scaleImage=false}={}){
     }
 }
 
-function generateMemeCanvas({config={}, texts=[]}={}){
+function generateMemeCanvas({config={}, data={}}={}){
 
     console.log("Opts", config);
-    console.log("Texts", texts);
+    console.log("Data", data);
+    const texts = data.texts;
 
     return new Promise(function(resolve, reject){
 
         // Load from image url
-        if(config.imageURL) {
-            axios.get(config.imageURL)
+        if(data.url) {
+            axios.get(data.url)
             .then(function (response) { 
                 
                 canvasImg.onload = function() {
@@ -157,7 +158,7 @@ function generateMemeCanvas({config={}, texts=[]}={}){
                     drawMeme({texts});    
                     resolve(canvas.toBuffer());
                 }
-                canvasImg.src = config.imageURL;
+                canvasImg.src = data.url;
                 
             }).catch(function (error) {
                 console.log(error)
@@ -209,7 +210,6 @@ router.post('/', async function(req, res) {
 
     // TODO: Accept array of images
     // TODO: Explicit canvas sizes
-    // TODO: Get images from template name(s)
     // TODO: Add to metadata whether the currently authorised user liked the meme
     console.log("Post Request", req.body);
 
@@ -222,31 +222,39 @@ router.post('/', async function(req, res) {
     }
 
     const config_default = {
-        imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
         store: undefined,
-        name: generateName(req.username), // TODO: This makes no sense if multiple memes are generated.
-        returnType: undefined // Returns a single-view url when store is defined, otherwise returns an image/zip
+        return: undefined // Returns a single-view url when store is defined, otherwise returns an image/zip
     };
     const config = Object.assign({}, config_default, req.body.config);
 
-    // TODO: Throw error if parameters are missing
-
-    // TODO: Parse template as name, URL, or file. Throw error if template does not exist
-
-    // TODO: Support template url, rather than an imageURL
-
-
-    const texts = req.body.texts ?? [[]];
+    const templates = req.body.texts ?? [[]];
 
     const createdMemes = [];
 
-    // Generate the meme images from the provided images, and the text objects
-    if(Array.isArray(texts) ) {
-        for(const text of texts) {
-            console.log("Current text", text)
-            if(!Array.isArray(text) ) continue; // TODO: Maybe a better handling could be done here.
-            const img = await generateMemeCanvas({config, texts: text});
-            createdMemes.push(img);
+    // Generate the meme images from the provided templates, and the text objects
+    if(Array.isArray(templates) ) {
+        for(const i in templates) {
+            const template = templates[i];
+            const data_default = {
+                memeName: generateName(req.username) + " " + (i+1),
+                texts: ["ONE DOES NOT SIMPLY", "USE JS FOR BACKEND PROGRAMMING"], 
+                url: 'https://8ms.com/uploads/2022/08/image-3-700x412.png'
+            };
+            const data_template = {};
+            if(template.name) {
+                // Load template from database
+                const templateInDatabase = await Template.findOne({ name: template.name });
+                if(!templateInDatabase) {
+                    res.status(404).send("Template could not be found.");
+                    return;
+                }
+                data_template.texts = templateInDatabase.texts;
+                data_template.url = templateInDatabase.url;
+            }
+            const data = Object.assign(data_default, data_template, template);
+
+            const img = await generateMemeCanvas({config, data});
+            createdMemes.push({img, name: data.memeName});
         }
     }
     else{
@@ -261,7 +269,7 @@ router.post('/', async function(req, res) {
         if(createdMemes.length === 1) {
             // Return a single image
             res.set('Content-Type', 'image/png');
-            res.send(createdMemes[0]);
+            res.send(createdMemes[0].img);
             return;
         }
         else {
@@ -275,7 +283,7 @@ router.post('/', async function(req, res) {
                 const extension = 'image/png'.split('/')[1];
                 console.log("EXTENSION", extension);
                 const name = `meme_${paddedIndex}.${extension}`;
-                archive.append(createdMemes[i], { name });// TODO: Check for name
+                archive.append(createdMemes[i].img, { name: createdMemes[i].name });// TODO: Check for name
             }
             archive.finalize();
             return;
@@ -285,11 +293,11 @@ router.post('/', async function(req, res) {
     if(config.store) {
         // The meme should be stored on the server
 
-        const storeMemes = createdMemes.map(image => {return {
-            image, 
+        const storeMemes = createdMemes.map(m => {return {
+            image: m.img, 
             visibility: config.store, 
             creator: req.username, 
-            name: config.name,
+            name: m.name,
             contentType: 'image/png', // TODO:
         }});
 
@@ -301,7 +309,7 @@ router.post('/', async function(req, res) {
         Meme.create(storeMemes)
         .then(function() {
             // Return either a download, or an url to the image, or an url to the single-view
-            if(config.returnType === 'download') { // TODO: Duplicate code...
+            if(config.return === 'download') { // TODO: Duplicate code...
                 if(createdMemes.length === 1) {
                     // Return a single image
                     res.set('Content-Type', 'image/png');
@@ -319,14 +327,14 @@ router.post('/', async function(req, res) {
                         const extension = 'image/png'.split('/')[1];
                         console.log("EXTENSION", extension);
                         const name = `meme_${paddedIndex}.${extension}`;
-                        archive.append(createdMemes[i], { name });// TODO: Check for name
+                        archive.append(createdMemes[i].img, { name: createdMemes[i].name });// TODO: Check for name
                     }
                     archive.finalize();
                     return;
                 }
                 
             }
-            else if( config.returnType === 'image-url' ) {
+            else if( config.return === 'image-url' ) {
                 // Url to the image itself
                 res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.url}`) });
                 return;
@@ -383,7 +391,7 @@ router.get('/', async function(req, res, next) {
         limit: 10,
         creator: undefined,
         skip: 0,
-        returnType: 'json' // single-view, image-url, download, json
+        return: 'json' // single-view, image-url, download, json
     };
     const config = Object.assign({}, config_default, req.query);
     config.limit = +config.limit;
@@ -452,7 +460,7 @@ router.get('/', async function(req, res, next) {
     }
 
     // Return the found memes
-    switch(config.returnType) {
+    switch(config.return) {
         case 'json':
             res.json(documents);
             return;
