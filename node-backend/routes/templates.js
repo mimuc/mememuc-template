@@ -22,6 +22,7 @@ router.post('/', async function(req, res) {
   // TODO: Requires authentication, uses username as creator
   // TODO: Parse/upload image
   // TODO: Set creator field
+  // TODO: Save text with positions
 
   const image = req.body.image;
 

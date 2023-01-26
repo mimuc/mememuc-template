@@ -5,7 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const bodyParser = require('body-parser');
 var mongoose = require("mongoose");
+require('dotenv').config();
 
+const {authenticate} = require('./db/authentication');
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
@@ -44,29 +46,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use(function(req,res,next){  req.db = db;
-  next();
-});
+
 
 
 // the login middleware. Requires BasicAuth authentication
-/* app.use((req,res,next) => {
-  const users = db.get('users');
-  users.findOne({basicauthtoken: req.headers.authorization}).then(user => {
-    if (user) {
-      req.userId = user.userId;  // test test => Basic dGVzdDp0ZXN0
-      next()
-    }
-    else {
-      res.set('WWW-Authenticate', 'Basic realm="401"')
-      res.status(401).send()
-    }
-  }).catch(e => {
-    console.error(e)
-    res.set('WWW-Authenticate', 'Basic realm="401"')
-    res.status(401).send()
-  })
-}) */
+// app.use((req,res,next) => {
+//   const users = db.get('users');
+//   users.findOne({basicauthtoken: req.headers.authorization}).then(user => {
+//     if (user) {
+//       req.userId = user.userId;  // test test => Basic dGVzdDp0ZXN0
+//       next()
+//     }
+//     else {
+//       res.set('WWW-Authenticate', 'Basic realm="401"')
+//       res.status(401).send()
+//     }
+//   }).catch(e => {
+//     console.error(e)
+//     res.set('WWW-Authenticate', 'Basic realm="401"')
+//     res.status(401).send()
+//   })
+// })
 
 
 

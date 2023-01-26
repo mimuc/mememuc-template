@@ -22,6 +22,7 @@ const {Meme, User, generateUrl} = require('../db/models');
 const mongoose = require("mongoose");
 
 const resourcePath = '/resources/images/';
+const {authenticate} = require('../db/authentication');
 
 /**
  * Adds text to the canvas context.
@@ -205,6 +206,11 @@ router.post('/', async function(req, res) {
     const db = req.db;
     /* const users = db.get('users');
     const memes = db.get('memes'); */
+
+    // TODO: Accept array of images
+    // TODO: Explicit canvas sizes
+    // TODO: Get images from template name(s)
+    // TODO: Add to metadata whether the currently authorised user liked the meme
     console.log("Post Request", req.body);
 
     req.username = req.body.username; // TODO: ???
@@ -351,6 +357,19 @@ router.get('/:url', async function(req, res, next) {
     .catch((e) => res.status(500).send());
   });
 
+router.post('/:url/like', async function(req, res, next) {
+// TODO: Like the meme with the currently authorised user
+
+
+});
+
+router.get('/:url/like', async function(req, res, next) {
+// TODO: Check if currently authorised user liked the meme
+
+
+});
+
+
 router.get('/', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
     // TODO: Take out error sends
@@ -466,9 +485,11 @@ router.get('/', async function(req, res, next) {
             return;
         case 'single-view':
             // TODO: Implement
+            // TODO: Retrieve port and address
+            console.log("PORT", process.env.PORT);
             res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.url}`) });
             return;
     }
 });
-
+console.log(process.env.DOMAIN)
 module.exports = router;
