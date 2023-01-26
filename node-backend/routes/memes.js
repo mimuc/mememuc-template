@@ -235,8 +235,10 @@ router.post('/', async function(req, res) {
     if(Array.isArray(templates) ) {
         for(const i in templates) {
             const template = templates[i];
+            // Create nice, 0-padded names
+            const paddedIndex = (i + 1).toString().padStart(templates.length.toString().length, '0');
             const data_default = {
-                memeName: generateName(req.username) + " " + (i+1),
+                memeName: generateName(req.username) + " " + paddedIndex,
                 texts: ["ONE DOES NOT SIMPLY", "USE JS FOR BACKEND PROGRAMMING"], 
                 url: 'https://8ms.com/uploads/2022/08/image-3-700x412.png'
             };
@@ -278,12 +280,8 @@ router.post('/', async function(req, res) {
             res.attachment('memes.zip');
             archive.pipe(res);
             for(let i = 0; i < createdMemes.length; i++) {
-                // Create nice, 0-padded names
-                const paddedIndex = (i + 1).toString().padStart(createdMemes.length.toString().length, '0');
                 const extension = 'image/png'.split('/')[1];
-                console.log("EXTENSION", extension);
-                const name = `meme_${paddedIndex}.${extension}`;
-                archive.append(createdMemes[i].img, { name: createdMemes[i].name });// TODO: Check for name
+                archive.append(createdMemes[i].img, { name: createdMemes[i].name + "." + extension});
             }
             archive.finalize();
             return;
@@ -322,12 +320,8 @@ router.post('/', async function(req, res) {
                     res.attachment('memes.zip');
                     archive.pipe(res);
                     for(let i = 0; i < createdMemes.length; i++) {
-                        // Create nice, 0-padded names
-                        const paddedIndex = (i + 1).toString().padStart(createdMemes.length.toString().length, '0');
                         const extension = 'image/png'.split('/')[1];
-                        console.log("EXTENSION", extension);
-                        const name = `meme_${paddedIndex}.${extension}`;
-                        archive.append(createdMemes[i].img, { name: createdMemes[i].name });// TODO: Check for name
+                        archive.append(createdMemes[i].img, { name: createdMemes[i].name + "." + extension});
                     }
                     archive.finalize();
                     return;
