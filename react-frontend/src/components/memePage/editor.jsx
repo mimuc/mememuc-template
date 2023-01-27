@@ -52,7 +52,7 @@ class Editor extends Component {
             imageFile: null,
             image: null, imageWidth: 0, imageHeight: 0,
             xPosT1: 0, yPosT1: 0, xPosT2: 0, yPosT2: 0,
-            boldT1: "", boldT2: "", italicT1: "", italicT2: "", colorT1: "", colorT2: "",
+            boldT1: "", boldT2: "", italicT1: "", italicT2: "", colorT1: "", colorT2: "", imageOption: "",
             showCameraPopUp: false
         };
         this.handleGetImage = this.handleGetImage.bind(this);
@@ -65,8 +65,8 @@ class Editor extends Component {
 
 
     handleGetImage = (image) => {
-        console.log(image);
         this.state.imageFile = image;
+        this.state.imageOption = "ImageFile";
         this.setState({ hasImage: true });
     }
 
@@ -93,8 +93,6 @@ class Editor extends Component {
             text2Color: state.colorT2,
             title: document.getElementById("titleInput").value,
         }
-
-
         fetch("http://localhost:3001/createdMemes/insert", {
             headers: {
                 'Access-Control-Allow-Origin': '*',
@@ -106,9 +104,6 @@ class Editor extends Component {
         }).then((res) => {
             console.log(res.status);
         })
-
-        //console.log(memeData);
-
     }
 
     downloadMeme = () => {
@@ -157,10 +152,9 @@ class Editor extends Component {
     }
 
     handleWebcamGotScreenshot(image) {
-        console.log("Got screenshot from webcam, hiding popup");
-        //Handle the Base64 image here
-        console.log(image);
-        this.setState({ showCameraPopUp: false });
+        this.state.imageFile = image;
+        this.state.imageOption = "CameraImage";
+        this.setState({ showCameraPopUp: false , hasImage: true });
     }
 
     handleWebcamButtonClicked() {
@@ -174,7 +168,7 @@ class Editor extends Component {
                 {this.state.showCameraPopUp && <PopUp showCamera={true} handleScreenshot={(image) => { this.handleWebcamGotScreenshot(image) }} />}
                 <EditorTopMenu getImage={this.handleGetImage} downloadMeme={this.downloadMeme} saveMeme={this.saveMeme} webcamButtonClicked={this.handleWebcamButtonClicked} />
                 <div className="editorContainer">
-                    <EditorCanvas setImage={this.state.hasImage} image={this.state.imageFile} setMeme={this.handleMeme} handleTextInfo={this.handleTextInfo} handleImageInfo={this.handleImageInfo} />
+                    <EditorCanvas setImage={this.state.hasImage} image={this.state.imageFile} setMeme={this.handleMeme} handleTextInfo={this.handleTextInfo} handleImageInfo={this.handleImageInfo} imageOption={this.state.imageOption}/>
                 </div>
             </div>
         )
@@ -197,7 +191,6 @@ class EditorTopMenu extends Component {
         this.setState({
             selectedImage: event.target.files[0]
         })
-        console.log(event.target.files[0])
         this.props.getImage(event.target.files[0]);
     }
 
@@ -234,63 +227,113 @@ class EditorCanvas extends Component {
         this.state = { imageCanvas: false, update: 0 };
         this.handleImage = this.handleImage.bind(this)
         this.handleTextData = this.handleTextData.bind(this);
+        this.handleImageLoaded = this.handleImageLoaded.bind(this);
+    }
+
+
+    handleImageLoaded = (img) =>{
+        
+
+
+        
     }
 
 
 
     handleImage = () => {
         if (this.props.image != null) {
-            var selectedFile = this.props.image;
-            var reader = new FileReader();
-            var img = new Image();
             const MAX_HEIGHT = 777;
             const MAX_WIDTH = 1090;
             var scaleFactor = 1;
-
+            var canvas = document.getElementById("imageCanavas");
+            var mergingCanavas = document.getElementById("mergingCanvas");
+            var mergeCtx = mergingCanavas.getContext("2d");
+            var ctx = canvas.getContext("2d");
+            var props = this.props;
+            var selectedFile = this.props.image;
+            var reader = new FileReader();
+            var img = new Image();
+            
             var canvas = document.getElementById("imageCanavas");
             var mergingCanavas = document.getElementById("mergingCanvas");
             var mergeCtx = mergingCanavas.getContext("2d");
             var ctx = canvas.getContext("2d");
             var props = this.props;
 
+            var handleImageLoaded = this.handleImageLoaded();
 
-            reader.onload = function (event) {
-                img.src = event.target.result;
-
-                if (img.height > img.width) {
-                    scaleFactor = MAX_HEIGHT / img.height;
-                    img.height = MAX_HEIGHT;
-                    img.width = img.width * scaleFactor;
-
-                } else if (img.height === img.width) {
-                    img.width = MAX_HEIGHT;
-                    img.height = MAX_HEIGHT;
-
-                } else if (img.height < img.width) {
-                    scaleFactor = MAX_WIDTH / img.width;
-                    if (img.height * scaleFactor > MAX_HEIGHT) {
+            if(this.props.imageOption === "ImageFile"){
+                reader.onload = function (event) {
+                    img.src = event.target.result;
+                    console.log("Loaded");
+                    console.log(img);
+                    if (img.height > img.width) {
                         scaleFactor = MAX_HEIGHT / img.height;
                         img.height = MAX_HEIGHT;
                         img.width = img.width * scaleFactor;
-                    } else {
-                        img.width = MAX_WIDTH;
-                        img.height = img.height * scaleFactor;
+            
+                    } else if (img.height === img.width) {
+                        img.width = MAX_HEIGHT;
+                        img.height = MAX_HEIGHT;
+            
+                    } else if (img.height < img.width) {
+                        scaleFactor = MAX_WIDTH / img.width;
+                        if (img.height * scaleFactor > MAX_HEIGHT) {
+                            scaleFactor = MAX_HEIGHT / img.height;
+                            img.height = MAX_HEIGHT;
+                            img.width = img.width * scaleFactor;
+                        } else {
+                            img.width = MAX_WIDTH;
+                            img.height = img.height * scaleFactor;
+                        }
+            
                     }
+                    ctx.canvas.width = img.width;
+                    ctx.canvas.height = img.height;
+                    mergeCtx.canvas.width = img.width;
+                    mergeCtx.canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    var imgString = canvas.toDataURL();
+                    props.handleImageInfo(imgString, img.width, img.height);
+                    
+                };
 
+                reader.readAsDataURL(selectedFile);
+            }else if(this.props.imageOption === "CameraImage"){
+                img.onload = function(){
+                    if (img.height > img.width) {
+                        scaleFactor = MAX_HEIGHT / img.height;
+                        img.height = MAX_HEIGHT;
+                        img.width = img.width * scaleFactor;
+            
+                    } else if (img.height === img.width) {
+                        img.width = MAX_HEIGHT;
+                        img.height = MAX_HEIGHT;
+            
+                    } else if (img.height < img.width) {
+                        scaleFactor = MAX_WIDTH / img.width;
+                        if (img.height * scaleFactor > MAX_HEIGHT) {
+                            scaleFactor = MAX_HEIGHT / img.height;
+                            img.height = MAX_HEIGHT;
+                            img.width = img.width * scaleFactor;
+                        } else {
+                            img.width = MAX_WIDTH;
+                            img.height = img.height * scaleFactor;
+                        }
+            
+                    }
+                    ctx.canvas.width = img.width;
+                    ctx.canvas.height = img.height;
+                    mergeCtx.canvas.width = img.width;
+                    mergeCtx.canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    var imgString = canvas.toDataURL();
+                    props.handleImageInfo(imgString, img.width, img.height);
                 }
-                ctx.canvas.width = img.width;
-                ctx.canvas.height = img.height;
-                mergeCtx.canvas.width = img.width;
-                mergeCtx.canvas.height = img.height;
-                ctx.drawImage(img, 0, 0, img.width, img.height);
-                //var canvasImg = document.getElementById("imageCanavas");
-                var imgString = canvas.toDataURL();
-                props.handleImageInfo(imgString, img.width, img.height);
-            };
-
-            reader.readAsDataURL(selectedFile);
-            //
-            //this.props.handleImageInfo(imgString, canvasImg.width, canvasImg.height);
+                img.src = selectedFile;
+                
+                
+            }
         }
 
     }
@@ -300,7 +343,6 @@ class EditorCanvas extends Component {
     }
 
     speechHandler(speech) {
-        console.log(speech);
         document.getElementById("titleInput").value = speech;
     }
 
@@ -323,8 +365,8 @@ class EditorCanvas extends Component {
                         </div>
                         <Input placeholder="Title" type="string" id="titleInput" />
                         <p className="inputFieldDescription"></p>
-                        <CanvasText idNameEdit="setPositionIcon1" idNameTextInput="inputField" nameTextPlaceHolder="Text 1" idNameTextCanvas="textCanvas" updateText={this.state.update} idNameX="xpositionInputField1" idNameY="ypositionInputField1" image={this.props.image} classNameCanvas="canvasText" boldIcon="iconsTextFormatting" italicIcon="italicIconsTextFormatting" colorIcon="colorIconsTextFormatting" handleTextData={this.handleTextData}></CanvasText>
-                        <CanvasText idNameEdit="setPositionIcon2" idNameTextInput="inputField2" nameTextPlaceHolder="Text 2" idNameTextCanvas="textCanvas2" updateText={this.state.update} idNameX="xpositionInputField2" idNameY="ypositionInputField2" image={this.props.image} classNameCanvas="canvasText2" boldIcon="iconsTextFormatting2" italicIcon="italicIconsTextFormatting2" colorIcon="colorIconsTextFormatting2" handleTextData={this.handleTextData}></CanvasText>
+                        <CanvasText idNameEdit="setPositionIcon1" idNameTextInput="inputField" nameTextPlaceHolder="Text 1" idNameTextCanvas="textCanvas" updateText={this.state.update} idNameX="xpositionInputField1" idNameY="ypositionInputField1" image={this.props.image} classNameCanvas="canvasText" boldIcon="iconsTextFormatting" italicIcon="italicIconsTextFormatting" colorIcon="colorIconsTextFormatting" handleTextData={this.handleTextData} imageOption={this.props.imageOption}></CanvasText>
+                        <CanvasText idNameEdit="setPositionIcon2" idNameTextInput="inputField2" nameTextPlaceHolder="Text 2" idNameTextCanvas="textCanvas2" updateText={this.state.update} idNameX="xpositionInputField2" idNameY="ypositionInputField2" image={this.props.image} classNameCanvas="canvasText2" boldIcon="iconsTextFormatting2" italicIcon="italicIconsTextFormatting2" colorIcon="colorIconsTextFormatting2" handleTextData={this.handleTextData} imageOption={this.props.imageOption}></CanvasText>
 
                     </div>
                 </div>
@@ -366,34 +408,63 @@ class CanvasText extends Component {
             var textCanvas = document.getElementById(this.props.idNameTextCanvas);
             var ctxText = textCanvas.getContext("2d");
 
-            reader.onload = function (event) {
-                img.src = event.target.result;
+            if(this.props.imageOption === "ImageFile"){
+                reader.onload = function (event) {
+                    img.src = event.target.result;
 
-                if (img.height > img.width) {
-                    scaleFactor = MAX_HEIGHT / img.height;
-                    img.height = MAX_HEIGHT;
-                    img.width = img.width * scaleFactor;
-
-                } else if (img.height === img.width) {
-                    img.width = MAX_HEIGHT;
-                    img.height = MAX_HEIGHT;
-
-                } else if (img.height < img.width) {
-                    scaleFactor = MAX_WIDTH / img.width;
-                    if (img.height * scaleFactor > MAX_HEIGHT) {
+                    if (img.height > img.width) {
                         scaleFactor = MAX_HEIGHT / img.height;
                         img.height = MAX_HEIGHT;
                         img.width = img.width * scaleFactor;
-                    } else {
-                        img.width = MAX_WIDTH;
-                        img.height = img.height * scaleFactor;
-                    }
 
+                    } else if (img.height === img.width) {
+                        img.width = MAX_HEIGHT;
+                        img.height = MAX_HEIGHT;
+
+                    } else if (img.height < img.width) {
+                        scaleFactor = MAX_WIDTH / img.width;
+                        if (img.height * scaleFactor > MAX_HEIGHT) {
+                            scaleFactor = MAX_HEIGHT / img.height;
+                            img.height = MAX_HEIGHT;
+                            img.width = img.width * scaleFactor;
+                        } else {
+                            img.width = MAX_WIDTH;
+                            img.height = img.height * scaleFactor;
+                        }
+
+                    }
+                    ctxText.canvas.width = img.width;
+                    ctxText.canvas.height = img.height;
+                };
+                reader.readAsDataURL(selectedFile);
+            }else if(this.props.imageOption === "CameraImage"){
+                img.onload = function(){
+                    if (img.height > img.width) {
+                        scaleFactor = MAX_HEIGHT / img.height;
+                        img.height = MAX_HEIGHT;
+                        img.width = img.width * scaleFactor;
+
+                    } else if (img.height === img.width) {
+                        img.width = MAX_HEIGHT;
+                        img.height = MAX_HEIGHT;
+
+                    } else if (img.height < img.width) {
+                        scaleFactor = MAX_WIDTH / img.width;
+                        if (img.height * scaleFactor > MAX_HEIGHT) {
+                            scaleFactor = MAX_HEIGHT / img.height;
+                            img.height = MAX_HEIGHT;
+                            img.width = img.width * scaleFactor;
+                        } else {
+                            img.width = MAX_WIDTH;
+                            img.height = img.height * scaleFactor;
+                        }
+
+                    }
+                    ctxText.canvas.width = img.width;
+                    ctxText.canvas.height = img.height;
                 }
-                ctxText.canvas.width = img.width;
-                ctxText.canvas.height = img.height;
-            };
-            reader.readAsDataURL(selectedFile);
+                img.src = selectedFile;
+            }
 
         }
 
