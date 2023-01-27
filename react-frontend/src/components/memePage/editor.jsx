@@ -19,13 +19,14 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import { color } from '@mui/system';
 import Camera from './Camera';
+import SpeechToText from './speechToText';
 //Vgl. https://mui.com/material-ui/react-text-field/
 //
 
 class PopUp extends Component {
     constructor(props) {
         super(props);
-        this.state = { 
+        this.state = {
             showCamera: this.props.showCamera,
             handleScreenshot: this.props.handleScreenshot
         };
@@ -34,7 +35,7 @@ class PopUp extends Component {
     render() {
         return (
             <div className='popup'>
-                {this.state.showCamera && <Camera showCamera={this.state.showCamera} handleScreenshot={this.state.handleScreenshot}/>}
+                {this.state.showCamera && <Camera showCamera={this.state.showCamera} handleScreenshot={this.state.handleScreenshot} />}
             </div>
         )
     }
@@ -48,10 +49,10 @@ class Editor extends Component {
         super(props);
         this.state = {
             hasImage: false,
-            imageFile: null, 
-            image: null, imageWidth: 0, imageHeight: 0, 
-            xPosT1: 0, yPosT1: 0, xPosT2: 0, yPosT2: 0, 
-            boldT1: "", boldT2: "", italicT1: "", italicT2: "", colorT1: "", colorT2: "", 
+            imageFile: null,
+            image: null, imageWidth: 0, imageHeight: 0,
+            xPosT1: 0, yPosT1: 0, xPosT2: 0, yPosT2: 0,
+            boldT1: "", boldT2: "", italicT1: "", italicT2: "", colorT1: "", colorT2: "",
             showCameraPopUp: false
         };
         this.handleGetImage = this.handleGetImage.bind(this);
@@ -170,7 +171,7 @@ class Editor extends Component {
     render() {
         return (
             <div className="side" id="sideRight">
-                {this.state.showCameraPopUp && <PopUp showCamera={true} handleScreenshot={(image) => {this.handleWebcamGotScreenshot(image)}}/>}
+                {this.state.showCameraPopUp && <PopUp showCamera={true} handleScreenshot={(image) => { this.handleWebcamGotScreenshot(image) }} />}
                 <EditorTopMenu getImage={this.handleGetImage} downloadMeme={this.downloadMeme} saveMeme={this.saveMeme} webcamButtonClicked={this.handleWebcamButtonClicked} />
                 <div className="editorContainer">
                     <EditorCanvas setImage={this.state.hasImage} image={this.state.imageFile} setMeme={this.handleMeme} handleTextInfo={this.handleTextInfo} handleImageInfo={this.handleImageInfo} />
@@ -298,6 +299,11 @@ class EditorCanvas extends Component {
         this.props.handleTextInfo(textNr, xPos, yPos, bold, italic, color);
     }
 
+    speechHandler(speech) {
+        console.log(speech);
+        document.getElementById("titleInput").value = speech;
+    }
+
 
 
     render() {
@@ -311,7 +317,10 @@ class EditorCanvas extends Component {
                 <div className="leftBtns">
 
                     <div id="canvasEditors">
-                        <p className="inputFieldDescription">ADD TITLE:</p>
+                        <div className='inline'>
+                            <p className="inputFieldDescription">ADD TITLE:</p>
+                            <SpeechToText speechHandler={this.speechHandler}/>
+                        </div>
                         <Input placeholder="Title" type="string" id="titleInput" />
                         <p className="inputFieldDescription"></p>
                         <CanvasText idNameEdit="setPositionIcon1" idNameTextInput="inputField" nameTextPlaceHolder="Text 1" idNameTextCanvas="textCanvas" updateText={this.state.update} idNameX="xpositionInputField1" idNameY="ypositionInputField1" image={this.props.image} classNameCanvas="canvasText" boldIcon="iconsTextFormatting" italicIcon="italicIconsTextFormatting" colorIcon="colorIconsTextFormatting" handleTextData={this.handleTextData}></CanvasText>
@@ -340,6 +349,7 @@ class CanvasText extends Component {
         this.handleBoldness = this.handleBoldness.bind(this)
         this.handleItalic = this.handleItalic.bind(this)
         this.handleColor = this.handleColor.bind(this)
+        this.speechHandler = this.speechHandler.bind(this)
     }
 
 
@@ -487,6 +497,10 @@ class CanvasText extends Component {
         this.handleUpdateTextData();
     }
 
+    speechHandler(speech) {
+        document.getElementById(this.props.idNameTextInput).value = speech;
+    }
+
 
     render() {
         return (
@@ -495,9 +509,10 @@ class CanvasText extends Component {
                 {this.handleTextCanvas()}
                 <p className="inputFieldDescription">ADD TEXT: </p>
                 <div className="textFormattingContainer">
-                    <FormatBoldIcon color="primary" id={this.props.boldIcon} onClick={this.handleBoldness}></FormatBoldIcon>
-                    <FormatItalicIcon color="primary" id={this.props.italicIcon} onClick={this.handleItalic}></FormatItalicIcon>
-                    <FormatColorTextIcon color="primary" id={this.props.colorIcon} onClick={this.handleColor}></FormatColorTextIcon>
+                    <FormatBoldIcon color="primary" className="formatIcon" id={this.props.boldIcon} onClick={this.handleBoldness}></FormatBoldIcon>
+                    <FormatItalicIcon color="primary" className="formatIcon" id={this.props.italicIcon} onClick={this.handleItalic}></FormatItalicIcon>
+                    <FormatColorTextIcon color="primary" className="formatIcon" id={this.props.colorIcon} onClick={this.handleColor}></FormatColorTextIcon>
+                    <SpeechToText id="speechInline" speechHandler={this.speechHandler}/>
                 </div>
                 <Input placeholder={this.props.nameTextPlaceHolder} type="string" id={this.props.idNameTextInput} />
                 <div className="positionInputContainer">
