@@ -2,6 +2,8 @@ import React, { useRef, useState } from "react";
 import Webcam from "react-webcam";
 import Fab from '@mui/material/Fab';
 
+// vgl. https://webgurucoder.com/react/build-a-react-js-webcam-capture-camera-selfie-app-using-react-webcam-library-in-browser-in-js/
+
 const videoConstraints = {
     width: window.innerWidth,
     height: window.innerHeight,
