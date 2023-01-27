@@ -451,6 +451,19 @@ input[type=text] {
   height: stretch;
 }
 
+.popup {
+  display: flex;
+  flex-flow: column;
+  position: absolute;
+  margin: 1vh .6vw;
+  width: 74vw;
+  height: 96vh;
+  z-index: 100000;
+  background-color: #111;
+  border-radius: 15px;
+  opacity: 0.95;
+}
+
 
 #sideRight {
   width: 75vw;
@@ -467,7 +480,14 @@ input[type=text] {
   min-width: 6vw;
 }
 
+#webcamCapture {
+  margin: 1vh 28vw;
+}
 
+
+.roundedCorner {
+  border-radius: 15px;
+}
 
 .Screenlayout{
   background-color: #070709;
