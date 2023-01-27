@@ -9,17 +9,19 @@ var router = express.Router();
 
 const axios = require('axios');
 const archiver = require('archiver');
-
 const Canvas = require('canvas');
+const {Meme, User, Template, generateUrl} = require('../db/models');
+const mongoose = require("mongoose");
+
 const Image = Canvas.Image;
 
 const canvas = Canvas.createCanvas(1000, 1000);
 const ctx = canvas.getContext('2d');
 const canvasImg = new Image();
 
-const {Meme, User, Template, generateUrl} = require('../db/models');
 
-const mongoose = require("mongoose");
+
+
 
 const resourcePath = '/resources/images/';
 const {authenticate} = require('../db/authentication');
@@ -240,20 +242,53 @@ router.post('/', async function(req, res) {
             const data_default = {
                 memeName: generateName(req.username) + " " + paddedIndex,
                 texts: ["ONE DOES NOT SIMPLY", "USE JS FOR BACKEND PROGRAMMING"], 
-                url: 'https://8ms.com/uploads/2022/08/image-3-700x412.png'
+                url: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
+                canvas: {
+                    width: 1000,
+                    height: 1000,
+                    resizeCanvas: true
+                }
             };
             const data_template = {};
             if(template.name) {
                 // Load template from database
                 const templateInDatabase = await Template.findOne({ name: template.name });
                 if(!templateInDatabase) {
-                    res.status(404).send("Template could not be found.");
+                    res.status(404).send("Template could not be found: " + template.name);
                     return;
                 }
                 data_template.texts = templateInDatabase.texts;
                 data_template.url = templateInDatabase.url;
             }
-            const data = Object.assign(data_default, data_template, template); // Currently does not check whether memeNames collide
+            const data = Object.assign(data_default, data_template, template); // TODO: Currently does not check whether memeNames collide
+
+            if(Array.isArray(data.images)) {
+                const loadedImages = [];
+                for(const img of data.images) {
+                    const canvas_img = new Image();
+
+                    // Load all images via a get request
+                    await axios.get(img.url)
+                    .then(function (response) {            
+                        canvas_img.src = img.url;
+                        loadedImages.push(canvas_img);
+                    }).catch(function (error) {
+                        res.status(400).send("The image could not be loaded: " + img.url);
+                        return; //FIXME:
+                    });
+                }
+                // Wait until all images were loaded
+                Promise.all(loadedImages
+                .filter(img => !img.complete)
+                .map(img => new Promise(resolve => { img.onload = img.onerror = resolve; })))
+                .then(async () => { //FIXME:
+                    console.log('images finished loading');
+                    // TODO:
+                    data.loadedImages = loadedImages;
+                    const img = await generateMemeCanvas({config, data});
+                    createdMemes.push({img, name: data.memeName});
+                });
+            }
 
             const img = await generateMemeCanvas({config, data});
             createdMemes.push({img, name: data.memeName});
