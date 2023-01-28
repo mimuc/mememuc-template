@@ -212,13 +212,42 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
         image.src = this.props.base64Image;
         let height = image.height;
         let width = image.width;
-        console.log("Height = " + height + " width = " + width);
+        let imageCanvas = document.createElement('canvas');
+        imageCanvas.height = height;
+        imageCanvas.width=width;
+        let imageCtx = imageCanvas.getContext('2d');
+        imageCtx.drawImage(image, 0, 0);
+        //console.log(this.props.text1);
+        imageCtx.font = this.props.text1Bold + " " + this.props.text1Italic + " 48px Arial";
+        // console.log(imageCtx.font);
+        imageCtx.fillStyle = this.props.text1Color;
+        imageCtx.fillText(this.props.text1, this.props.text1XPos, this.props.text1YPos);
+        // console.log("Text 2 bold: " + this.props.text2Bold);
+        imageCtx.font = this.props.text2Bold + " " + this.props.text2Italic + " 48px Arial";
+        //console.log(imageCtx.font);
+        imageCtx.fillStyle = this.props.text2Color;
+        imageCtx.fillText(this.props.text2, this.props.text2XPos, this.props.text2YPos);
+        // image.src = imageCanvas.toDataURL("image/png");
+        //console.log("Height = " + height + " width = " + width);
+        let info: string = "";
+        if (this.props.text1) {
+            info += "Text 1: " + this.props.text1;
+        }
+        if(this.props.text2) {
+            info += ", Text 2: " + this.props.text2;
+        }
+        if (!this.props.text1 && !this.props.text2) {
+            info += "No text";
+        }
+        if(info.length > 60) {
+            info = info.substring(0, 55) + "...";
+        }
 
         return (
             <div id="MemeTile">
-                <img className="ImageMeme" src={this.props.base64Image} alt={this.props.title}></img>
+                <img className="ImageMeme" src={imageCanvas.toDataURL('image/png')} alt={this.props.title}></img>
                 <p className="TitleMeme">Title: {this.props.title}</p>
-                <p className="InfoMeme">Info: {this.props.title}</p>
+                <p className="InfoMeme">Info: {info}</p>
                 <div className="likeContainer">
                     <IconButton onClick={this.increaseLikeCount.bind(this)}>
                         <ThumbUpIcon color={'success'}/>
