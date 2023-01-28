@@ -18,6 +18,16 @@ export type Meme = {
     }
 }
 
+export type Comment = {
+    id: string;
+    text: string;
+    createdAt: string;
+    user?: {
+        id: string;
+        name: string;
+    }
+}
+
 export type User = {
     name: string
 }

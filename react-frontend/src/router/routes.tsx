@@ -1,13 +1,20 @@
 import {Outlet, RouteObject} from "react-router-dom";
-// import {AppLayout} from "src/layouts";
+import {MemeLayout} from "src/layouts";
+import {ApiPage, MemePage, MemesPage, NewPage, ProfilePage} from "src/pages";
 import {ErrorPage} from "./ErrorPage/ErrorPage";
-import {MemesPage, MemePage, NewPage, ProfilePage, StartPage, ApiPage} from "src/pages";
 
 // const AppWrapper = () => {
 //     return <AppLayout>
 //         <Outlet/>
 //     </AppLayout>
 // }
+
+const MemeWrapper = () => {
+    return <MemeLayout>
+        <Outlet/>
+        <MemesPage/>
+    </MemeLayout>
+}
 
 export const routes: RouteObject[] = [
     {
@@ -20,12 +27,9 @@ export const routes: RouteObject[] = [
                 element: <NewPage/>
             },
             {
+                element: <MemeWrapper/>,
                 path: 'memes',
                 children: [
-                    {
-                        index: true,
-                        element: <MemesPage/>
-                    },
                     {
                         path: ':memeId',
                         element: <MemePage/>
@@ -38,7 +42,7 @@ export const routes: RouteObject[] = [
             },
             {
                 path: 'api',
-                element: <ApiPage />
+                element: <ApiPage/>
             }
         ]
     }

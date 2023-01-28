@@ -1,3 +1,7 @@
+export * from './Buttons/DislikeButton';
+export * from './Buttons/DownloadButton';
+export * from './Buttons/LikeButton';
+export * from './Buttons/ShareButton';
 export * from './Comments/Comments';
 export * from './Header/Header';
 export * from './Navigation/Navigation';

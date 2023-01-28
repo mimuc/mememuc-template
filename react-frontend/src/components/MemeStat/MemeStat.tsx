@@ -6,8 +6,8 @@ type MemeStatProps = {
 
 export const MemeStat = ({meme}: MemeStatProps) => {
     return (
-        <>
+        <div style={{height: 500}}>
         {/*TODO*/}
-        </>
+        </div>
     )
 }

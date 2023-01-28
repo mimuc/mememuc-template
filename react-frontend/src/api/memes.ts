@@ -3,7 +3,7 @@ import {Meme} from "src/types";
 const mock = [
     {
         id: '1',
-        name: 'Meme 1',
+        name: 'I\'m not a scientist, but I think we can all agree that...',
         image: 'https://i.imgflip.com/768vkl.jpg',
         totalComments: 100,
         totalLikes: 6500,
@@ -17,7 +17,7 @@ const mock = [
     },
     {
         id: '2',
-        name: 'Meme 1',
+        name: 'I\'m not sure if this is a good idea, but I\'m going to do it anyway',
         image: 'https://i.imgflip.com/768vkl.jpg',
         totalComments: 1100000,
         totalLikes: 6300,
@@ -27,7 +27,7 @@ const mock = [
     },
     {
         id: '3',
-        name: 'Meme 1',
+        name: 'I\'m not sure what\'s going on, but I\'m pretty sure it\'s not good',
         image: 'https://i.imgflip.com/768vkl.jpg',
         totalComments: 2300,
         totalLikes: 1300,
@@ -41,7 +41,7 @@ const mock = [
     },
     {
         id: '4',
-        name: 'Meme 1',
+        name: 'Here come dat boi',
         image: 'https://i.imgflip.com/768vkl.jpg',
         totalComments: 1000,
         totalLikes: 6000,
@@ -60,6 +60,10 @@ const get = (memeId: string) => {
     return Promise.resolve<Meme>(mock.find(m => m.id === memeId) as Meme)
 }
 
+const getRandomMeme = () => {
+    return Promise.resolve<Meme>(mock[0])
+}
+
 const upvote = (memeId: string) => {
     return Promise.resolve()
 }
@@ -68,4 +72,4 @@ const downvote = (memeId: string) => {
     return Promise.resolve()
 }
 
-export const memes = {all, get, upvote, downvote};
+export const memes = {all, get, getRandomMeme,upvote, downvote};
