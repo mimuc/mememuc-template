@@ -32,7 +32,7 @@ app.use(function(req,res,next){  req.db = db;
 
 
 // the login middleware. Requires BasicAuth authentication
-app.use((req,res,next) => {
+/*app.use((req,res,next) => {
   const users = db.get('users');
   users.findOne({basicauthtoken: req.headers.authorization}).then(user => {
     if (user) {
@@ -48,7 +48,7 @@ app.use((req,res,next) => {
     res.set('WWW-Authenticate', 'Basic realm="401"')
     res.status(401).send()
   })
-})
+})*/
 
 
 

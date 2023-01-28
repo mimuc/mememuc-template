@@ -14,7 +14,18 @@ router.post('/create_comment', function(req, res, next) {
         text: data.text,
         n_likes: data.n_likes,
         date: data.date
-    });
+    },(err, image) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Error retrieving image');
+            return;
+        }
+        if (!image) {
+            res.status(404).send('Image not found');
+            return;
+        }
+
+});
 
     
   

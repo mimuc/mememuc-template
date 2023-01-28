@@ -19,10 +19,22 @@ router.post('/create_post', function(req, res, next) {
         
 
 
-    });
+    }, (err, image) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Error retrieving image');
+            return;
+        }
+        if (!image) {
+            res.status(404).send('Image not found');
+            return;
+        }
+    
 
     
   
+});
+
 });
 
 

@@ -17,7 +17,18 @@ router.post('/create_like', function(req, res, next) {
 
 
 
-    });
+    }, (err, image) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('Error retrieving image');
+            return;
+        }
+        if (!image) {
+            res.status(404).send('Image not found');
+            return;
+        }
+    
+});
 
     
   
@@ -27,8 +38,13 @@ router.post('/create_like', function(req, res, next) {
     
 router.post('/posts_like/:id/act', (req, res, next) => {
   const action = req.body.genre;
-  const counter = action === 'like' ? 1 : -1;
+  const counter = action === 'like' ? 1 : 0;
   Post.update({_id: req.params.id}, {$inc: {n_likes: counter}}, {}, (err, numberAffected) => {
+      res.send('');
+  });
+
+  const counter2 = action === 'dislike' ? 1 : 0;
+  Post.update({_id: req.params.id}, {$inc: {n_dislikes: counter2}}, {}, (err, numberAffected) => {
       res.send('');
   });
  });
