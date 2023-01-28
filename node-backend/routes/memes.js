@@ -17,14 +17,6 @@ const Image = Canvas.Image;
 
 const canvas = Canvas.createCanvas(1000, 1000);
 const ctx = canvas.getContext('2d');
-const canvasImg = new Image();
-
-
-
-
-
-const resourcePath = '/resources/images/';
-const {authenticate} = require('../db/authentication');
 
 /**
  * Adds text to the canvas context.
@@ -53,10 +45,17 @@ function writeText({text="", x=0, y=0, fontSize=50, fontStyle="impact", strokeWi
     } 
 }
 
-function drawMeme({texts=[]}={}) {
+function drawMeme({texts=[], loadedImages=[]}={}) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.drawImage(canvasImg, 0, 0, canvasImg.width, canvasImg.height);
+    for(const img of loadedImages) {
+        const x = img.x ?? 0;
+        const y = img.y ?? 0;
+        const width = img.image.width;
+        const height = img.image.height;
+        ctx.drawImage(img.image, x, y, width, height);
+    }
+    
         
     ctx.strokeStyle = 'black';
     ctx.mutterLine = 2;
@@ -112,64 +111,38 @@ function drawMeme({texts=[]}={}) {
  * 
  * @param {*} param0 
  */
-function calculateCanvasSize({resizeCanvas=true, scaleImage=false}={}){
+function calculateCanvasSize({resizeCanvas=false, scaleImage=false, width=1000, height=1000, images=[]}={}){
     if(resizeCanvas) {
-        // Increase the size of the canvas to fit the image
-        canvas.width = canvasImg.width;
-        canvas.height = canvasImg.height;
+        // Increase the size of the canvas to fit all images
+        let minX = 3000, minY = 3000, maxX = 0, maxY = 0;
+        for (const img of images) {
+            const x = img.x ? +img.x : 0;
+            const y = img.y ? +img.y : 0;
+            
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x + +img.image.width);
+            maxY = Math.max(maxY, y + +img.image.height);
+        }
+        canvas.width = maxX - minX;
+        canvas.height = maxY - minY;
     }
     else {
-
-        // Resize the image so that if fits on the canvas
-        if(canvasImg.width > canvasImg.height){
-            if(canvasImg.width > canvas.width) {
-                // TODO: scale down image
-            }
-            else if(scaleImage) {
-                // TODO: scale up image
-            }
-        }
-        else {
-
-        }
+        canvas.width = width;
+        canvas.height = height;
     }
-    console.log(canvasImg.width, canvasImg.height);
-    if(canvasImg.width > canvasImg.height){
-        canvas.height = canvasImg.height / canvasImg.width * canvas.width;
-        memeWidth = canvas.width;
-        memeHeight = canvas.height;
-        console.log(canvas.width, canvas.height);
-    }
+    canvas.width = Math.min(Math.max(1, canvas.width),  4096); 
+    canvas.height = Math.min(Math.max(1, canvas.height),  4096); 
 }
 
 function generateMemeCanvas({config={}, data={}}={}){
 
-    console.log("Opts", config);
-    console.log("Data", data);
-    const texts = data.texts;
-
     return new Promise(function(resolve, reject){
-
-        // Load from image url
-        if(data.url) {
-            axios.get(data.url)
-            .then(function (response) { 
-                
-                canvasImg.onload = function() {
-                    calculateCanvasSize();
-                    drawMeme({texts});    
-                    resolve(canvas.toBuffer());
-                }
-                canvasImg.src = data.url;
-                
-            }).catch(function (error) {
-                console.log(error)
-                reject(new Error('The image could not be loaded.'));
-            });
-        }
-        
+        calculateCanvasSize({resizeCanvas: data.canvas?.resizeCanvas, width: data.canvas?.width, height: data.canvas?.height, images: data.loadedImages});
+        drawMeme({texts: data.texts, loadedImages: data.loadedImages});    
+        resolve(canvas.toBuffer());
     });
-};
+}
 
 async function test() { // TODO: Debug function
     const texts = [ [ "Top Text"]];
@@ -206,12 +179,10 @@ function generateName(username) {
 
 
 router.post('/', async function(req, res) {
-    const db = req.db;
+    //const db = req.db;
     /* const users = db.get('users');
     const memes = db.get('memes'); */
 
-    // TODO: Accept array of images
-    // TODO: Explicit canvas sizes
     // TODO: Add to metadata whether the currently authorised user liked the meme
     console.log("Post Request", req.body);
 
@@ -219,7 +190,7 @@ router.post('/', async function(req, res) {
 
     const existingUser = await User.findOne({ username: req.username });
     if(!existingUser) {
-        res.status(401).send();
+        res.status(401).send("User does not exist: " + req.username);
         return;
     }
 
@@ -229,76 +200,76 @@ router.post('/', async function(req, res) {
     };
     const config = Object.assign({}, config_default, req.body.config);
 
-    const templates = req.body.templates ?? [{}];
+    let templates = req.body.templates ?? [{}];
 
     const createdMemes = [];
 
+    if(!Array.isArray(templates) ) {
+        templates = [templates];
+    }
+
     // Generate the meme images from the provided templates, and the text objects
-    if(Array.isArray(templates) ) {
-        for(const i in templates) {
-            const template = templates[i];
-            // Create nice, 0-padded names
-            const paddedIndex = (i + 1).toString().padStart(templates.length.toString().length, '0');
-            const data_default = {
-                memeName: generateName(req.username) + " " + paddedIndex,
-                texts: ["ONE DOES NOT SIMPLY", "USE JS FOR BACKEND PROGRAMMING"], 
-                url: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
-                canvas: {
-                    width: 1000,
-                    height: 1000,
-                    resizeCanvas: true
-                }
-            };
-            const data_template = {};
-            if(template.name) {
-                // Load template from database
-                const templateInDatabase = await Template.findOne({ name: template.name });
-                if(!templateInDatabase) {
-                    res.status(404).send("Template could not be found: " + template.name);
-                    return;
-                }
-                data_template.texts = templateInDatabase.texts;
-                data_template.url = templateInDatabase.url;
+    for(const i in templates) {
+        const template = templates[i];
+        // Create nice, 0-padded names
+        const paddedIndex = (i + 1).toString().padStart(templates.length.toString().length, '0');
+        const data_default = {
+            memeName: generateName(req.username) + " " + paddedIndex,
+            texts: ["ONE DOES NOT SIMPLY", "USE JS FOR BACKEND PROGRAMMING"], 
+            images: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
+            canvas: {
+                width: 1000,
+                height: 1000,
+                resizeCanvas: false
             }
-            const data = Object.assign(data_default, data_template, template); // TODO: Currently does not check whether memeNames collide
-
-            if(Array.isArray(data.images)) {
-                const loadedImages = [];
-                for(const img of data.images) {
-                    const canvas_img = new Image();
-
-                    // Load all images via a get request
-                    await axios.get(img.url)
-                    .then(function (response) {            
-                        canvas_img.src = img.url;
-                        loadedImages.push(canvas_img);
-                    }).catch(function (error) {
-                        res.status(400).send("The image could not be loaded: " + img.url);
-                        return; //FIXME:
-                    });
-                }
-                // Wait until all images were loaded
-                Promise.all(loadedImages
-                .filter(img => !img.complete)
-                .map(img => new Promise(resolve => { img.onload = img.onerror = resolve; })))
-                .then(async () => { //FIXME:
-                    console.log('images finished loading');
-                    // TODO:
-                    data.loadedImages = loadedImages;
-                    const img = await generateMemeCanvas({config, data});
-                    createdMemes.push({img, name: data.memeName});
-                });
+        };
+        const data_template = {};
+        if(template.name) {
+            // Load template from database
+            const templateInDatabase = await Template.findOne({ name: template.name });
+            if(!templateInDatabase) {
+                res.status(404).send("Template could not be found: " + template.name);
+                return;
             }
-
-            const img = await generateMemeCanvas({config, data});
-            createdMemes.push({img, name: data.memeName});
+            data_template.texts = templateInDatabase.texts;
+            data_template.url = templateInDatabase.url;
         }
+        const data = Object.assign(data_default, data_template, template); // TODO: Currently does not check whether memeNames collide
+
+        if(!Array.isArray(data.images)) {
+            data.images = [{url: data.images}];
+        }
+        
+        const loadedImages = [];
+        for (const img of data.images) {
+            const canvas_img = new Image();
+            try {
+                const response = await axios.get(img.url, {responseType: 'arraybuffer'});
+                const imageUrl =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`
+                canvas_img.src = imageUrl;
+                loadedImages.push({
+                    image: canvas_img,
+                    x: img.x,
+                    y: img.y
+                });
+            } catch (error) {
+                res.status(400).send("The image could not be loaded: " + img.url);
+                return;
+            }
+        }
+        // Wait until all images were loaded
+        const promises = loadedImages
+        .filter(img => !img.image.complete)
+        .map(img => new Promise(resolve => {
+            img.image.onload = img.image.onerror = resolve;
+        }));
+
+        await Promise.all(promises);
+        data.loadedImages = loadedImages;
+        const img = await generateMemeCanvas({config, data});
+        createdMemes.push({img, name: data.memeName});
     }
-    else{
-        // TODO: Better error handling
-        res.status(400).send();
-        return;
-    }
+    
 
     if(!config.store){ 
         // The meme should not be stored on the server
