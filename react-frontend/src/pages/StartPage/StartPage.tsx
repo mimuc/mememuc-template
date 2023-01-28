@@ -1,4 +1,4 @@
-import {Divider, Typography} from "antd";
+import {Typography} from "antd";
 import {TemplateList} from "src/components";
 
 const {Title} = Typography;
