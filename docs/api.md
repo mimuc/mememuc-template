@@ -16,7 +16,7 @@
     - /memes        # GET/POST
     - /feed         # user personalized memes, friends, etc.
 - /auth
-    - /             # POST/DELETE (login/logout)
+    - /login        # POST/DELETE (login/logout)
     - /register     # POST/DELETE (create/delete account)
 
 
