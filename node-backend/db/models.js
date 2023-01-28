@@ -5,7 +5,7 @@ const User = mongoose.model('User', new mongoose.Schema({
         displayName: { type: String, required: true },
         password: { type: String, required: true },
         createdAt: { type: Date, default: Date.now },
-        likes: { type: Array, default: []} // Array with ids of memes
+        likes: { type: Array, default: [] } // Array with ids of memes
     })
 );
 
@@ -25,10 +25,11 @@ const Template = mongoose.model('Template', new mongoose.Schema({
         name: { type: String, required: true, unique: true  },
         creator: { type: String },
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
-        image: { type: String, required: true },
+        image: { type: Buffer, required: true },
         url: { type: String, required: true, unique: true },
         contentType: { type: String, default: 'image/png' }, // TODO: Make enum
-        createdAt: { type: Date, default: Date.now }
+        createdAt: { type: Date, default: Date.now },
+        texts: { type: Array }
     })
 );
 
@@ -36,7 +37,7 @@ const Comment = mongoose.model('Comment', new mongoose.Schema({
     content: { type: String, required: true, unique: true  },
     creator: { type: String },
     createdAt: { type: Date, default: Date.now }
-})
+    })
 );
 
 
@@ -53,7 +54,7 @@ const generateUrl = async (model, urlSet) => {
         url = uniqueId();
         document = await model.findOne({ url });
     }
-    urlSet.add(url);
+    if(urlSet) urlSet.add(url);
     return url;
 }
 

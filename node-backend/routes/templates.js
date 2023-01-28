@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const axios = require('axios');
 
 const {Template, generateUrl} = require('../db/models');
 
@@ -20,38 +21,60 @@ router.get('/:name', async function(req, res, next) {
 
 router.post('/', async function(req, res) {
   // TODO: Requires authentication, uses username as creator
-  // TODO: Parse/upload image
   // TODO: Set creator field
   // TODO: Save text with positions
 
-  const image = req.body.image;
-
-  const existingTemplate = await Template.findOne({ name: req.body.name });
-
-  if (!existingTemplate) {
-      const template = new Template({
-        name: req.body.name,
-        image,
-        visibility: req.body.visibility,    
-        contentType: req.body.contentType,
-        url: 't' + await generateUrl(Template)
-      });
-        
-      template.save()
-      .then(function() {
-        res.status(201).json({ message: 'Template created' });
-      })
-      .catch(function(error) {
-          if (error.name === 'ValidationError') {
-              res.status(400).send();
-          } else {
-              res.status(500).send();
-          }
-      });
-      
-  } else {
-      res.status(400).json({ message: 'Template already exists' });
+  if(!req.body.image && !req.body.url) {
+    res.status(400).json({ message: 'Please define a url or a base64 image to upload!' });
+    return;
   }
+  
+  const templateData = {
+    name: req.body.name,
+    visibility: req.body.visibility,
+    image: req.body.image,
+    texts: req.body.texts
+  }
+
+  const existingTemplate = await Template.findOne({ name: templateData.name });
+  if(existingTemplate) {
+    res.status(400).json({ message: 'Template already exists.' });
+    return;
+  }
+
+  if(!templateData.image && req.body.url) {
+    try {
+      const response = await axios.get(req.body.url, {responseType: 'arraybuffer'});
+      const imageBuffer = new Buffer.from(response.data, 'binary');
+      templateData.image = imageBuffer;
+      templateData.contentType = response.headers['content-type'];
+    } catch (error) {
+      res.status(400).send("The image could not be loaded: " + req.body.url);
+      return;
+    }
+  }
+  else {
+    templateData.contentType = templateData.image.split(',')[0].split(':')[1].split(';')[0];
+    templateData.image = Buffer.from(templateData.image, 'base64');
+  }
+  
+  templateData.url = 't' + await generateUrl(Template);
+  
+  const template = new Template(templateData);
+    
+  template.save()
+  .then(function() {
+    res.status(201).json({ message: 'Template created', url: `${req.protocol}://${req.get('host')}/resources/images/${template.url}`});
+  })
+  .catch(function(error) {
+      if (error.name === 'ValidationError') {
+          res.status(400).send("The template data could not be validated.");
+      } else {
+          res.status(500).send();
+      }
+  });
+      
+
 });
 
 
