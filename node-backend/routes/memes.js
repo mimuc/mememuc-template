@@ -111,32 +111,34 @@ function drawMeme({texts=[], loadedImages=[]}={}) {
  * 
  * @param {*} param0 
  */
-function calculateCanvasSize({resizeCanvas=true, scaleImage=false, width=1000, height=1000, images=[]}={}){
+function calculateCanvasSize({resizeCanvas=false, scaleImage=false, width=1000, height=1000, images=[]}={}){
     if(resizeCanvas) {
         // Increase the size of the canvas to fit all images
-        /* let minX = 3000, minY = 3000, maxX = 0, maxY = 0;
+        let minX = 3000, minY = 3000, maxX = 0, maxY = 0;
         for (const img of images) {
-            minX = Math.min(minX, img.x);
-            minY = Math.min(minY, img.y);
-            maxX = Math.max(maxX, img.x + img.image.width);
-            maxY = Math.max(maxY, img.y + img.image.height);
+            const x = img.x ? +img.x : 0;
+            const y = img.y ? +img.y : 0;
+            
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x + +img.image.width);
+            maxY = Math.max(maxY, y + +img.image.height);
         }
         canvas.width = maxX - minX;
-        canvas.height = maxY - minY; */
+        canvas.height = maxY - minY;
     }
     else {
         canvas.width = width;
         canvas.height = height;
     }
+    canvas.width = Math.min(Math.max(1, canvas.width),  4096); 
+    canvas.height = Math.min(Math.max(1, canvas.height),  4096); 
 }
 
 function generateMemeCanvas({config={}, data={}}={}){
 
-    console.log("Opts", config);
-    console.log("Data", data);
-
     return new Promise(function(resolve, reject){
-        calculateCanvasSize({resizeCanvas: data.canvas?.resizeCanvas, width: data.canvas?.width, height: data.canvas?.height});
+        calculateCanvasSize({resizeCanvas: data.canvas?.resizeCanvas, width: data.canvas?.width, height: data.canvas?.height, images: data.loadedImages});
         drawMeme({texts: data.texts, loadedImages: data.loadedImages});    
         resolve(canvas.toBuffer());
     });
