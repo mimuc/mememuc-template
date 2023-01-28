@@ -4,14 +4,19 @@ import Button from '@mui/material/Button';
 import {IconButton} from "@mui/material";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
-class HistoryAndTemplatesView extends Component {
-    state = {};
+interface historyAndTemplatesViewProps {
+    updateTrigger: number,
+}
+class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps> {
+    constructor(props) {
+        super(props);
+    }
 
     render() {
         return (
             <div className="side" id="sideLeft">
                 <HistoryAndTemplatesMenu/>
-                <HistoryAndTemplatesList/>
+                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger}/>
             </div>
         )
 
@@ -38,7 +43,7 @@ class HistoryAndTemplatesMenu extends Component {
 
 
 interface historyAndTemplateListProps {
-
+    updateTrigger: number,
 }
 
 interface historyAndTemplateListState {
@@ -55,6 +60,12 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             memeList: [],
         };
         this.loadMemeList();
+    }
+
+    componentDidUpdate(prevProps: Readonly<historyAndTemplateListProps>, prevState: Readonly<historyAndTemplateListState>, snapshot?: any) {
+        if (prevProps.updateTrigger !== this.props.updateTrigger) {
+            this.loadMemeList();
+        }
     }
 
     showTemplates() {
@@ -95,11 +106,30 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
     }
 
     render() {
+        this.state.memeList.reverse();
         return (
             <div className="MemeList">
                 {
                     this.state.memeList.map((meme) => {
-                        return <MemeTile uid={meme._id} key={meme} base64Image={meme.image} title={meme.title} likes={meme.likes}/>
+                        return <MemeTile
+                            uid={meme._id}
+                            key={meme}
+                            base64Image={meme.image}
+                            title={meme.title}
+                            likes={meme.likes}
+                            text1={meme.text1}
+                            text1XPos={meme.text1XPos}
+                            text1YPos={meme.text1YPos}
+                            text1Bold={meme.text1Bold}
+                            text1Italic={meme.text1Italic}
+                            text1Color={meme.text1Color}
+                            text2={meme.text2}
+                            text2Bold={meme.text2Bold}
+                            text2XPos={meme.text2XPos}
+                            text2YPos={meme.text2YPos}
+                            text2Italic={meme.text2Italic}
+                            text2Color={meme.text2Color}
+                        />
                     })
                 }
             </div>
@@ -113,6 +143,18 @@ interface MemeTileProps {
     title: string;
     likes: number,
     uid: string,
+    text1: string,
+    text2: string,
+    text1XPos: number,
+    text1YPos: number,
+    text1Bold: string,
+    text1Italic: "",
+    text1Color: string,
+    text2Bold: string,
+    text2XPos: number,
+    text2YPos: number,
+    text2Italic: string,
+    text2Color: string,
 }
 interface MemeTileState {
     likes: number,
@@ -157,9 +199,9 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
                 if (listOfLiked === undefined || listOfLiked === null) {
                     localStorage.setItem('listOfLiked', JSON.stringify([this.props.uid]));
                 } else {
-                    listOfLiked = JSON.parse(listOfLiked);
-                    listOfLiked.push(this.props.uid);
-                    localStorage.setItem('listOfLiked', JSON.stringify(listOfLiked));
+                    let newlistOfLiked: string[] = JSON.parse(listOfLiked);
+                    newlistOfLiked.push(this.props.uid);
+                    localStorage.setItem('listOfLiked', JSON.stringify(newlistOfLiked));
                 }
             });
         }

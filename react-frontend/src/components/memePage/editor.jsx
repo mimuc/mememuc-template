@@ -19,7 +19,6 @@ import FormControl from '@mui/material/FormControl';
 import { color } from '@mui/system';
 //Vgl. https://mui.com/material-ui/react-text-field/
 //
-
 class Editor extends Component {
     
 
@@ -31,6 +30,7 @@ class Editor extends Component {
         this.downloadMeme = this.downloadMeme.bind(this);
         this.handleTextInfo = this.handleTextInfo.bind(this);
         this.handleImageInfo = this.handleImageInfo.bind(this);
+        this.handleImageUploaded = props.handleImageUploaded;
     }
 
 
@@ -74,7 +74,8 @@ class Editor extends Component {
             credentials: "include"
         }).then((res) =>{
             console.log(res.status);
-        })
+            this.handleImageUploaded();
+        });
 
         //console.log(memeData);
         

@@ -21,6 +21,7 @@ router.post('/insert', function(req, res, next) {
       text1Bold: req.body.text1Bold,
       text1Italic: req.body.text1Italic,
       text1Color: req.body.text1Color,
+        text2: req.body.text2,
       text2Bold: req.body.text2Bold,
       text2XPos: req.body.text2XPos,
       text2YPos: req.body.text2YPos,

@@ -13,16 +13,22 @@ import {useState} from "react";
 
 function MemePageIfLoggedIn () {
     const navigate = useNavigate();
+    const [triggerUpdate, setTriggerUpdate] = useState(0);
     const profileFabClicked = () => {
         console.log("Redirecting to Profilepage.");
         navigate('/profile');
     }
 
+    const handleImageUploaded = () => {
+        console.log("Image uploaded");
+        setTriggerUpdate(triggerUpdate + 1);
+    };
+
     return (
         <div>
             <div className="Screenlayout" >
-                <HistoryAndTemplatesView/>
-                <Editor/>
+                <HistoryAndTemplatesView updateTrigger={triggerUpdate}/>
+                <Editor handleImageUploaded={handleImageUploaded}/>
             </div>
             <Fab id="profileBtn" color="secondary" size="large" onClick={profileFabClicked}>
                 <Person2RoundedIcon fontSize="large"/>
