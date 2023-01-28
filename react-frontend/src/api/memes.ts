@@ -60,6 +60,10 @@ const get = (memeId: string) => {
     return Promise.resolve<Meme>(mock.find(m => m.id === memeId) as Meme)
 }
 
+const getRandomMeme = () => {
+    return Promise.resolve<Meme>(mock[0])
+}
+
 const upvote = (memeId: string) => {
     return Promise.resolve()
 }
@@ -68,4 +72,4 @@ const downvote = (memeId: string) => {
     return Promise.resolve()
 }
 
-export const memes = {all, get, upvote, downvote};
+export const memes = {all, get, getRandomMeme,upvote, downvote};
