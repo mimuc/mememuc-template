@@ -1,6 +1,7 @@
 import {ReactNode} from "react";
-import {Layout} from "antd";
-import {Header, Navigation} from "src/components";
+import {Button, Input, Layout} from "antd";
+import {Header, Sider} from "src/components";
+import {PlusOutlined} from "@ant-design/icons";
 
 const {Content} = Layout;
 
@@ -11,17 +12,23 @@ type AppLayoutProps = {
 export const AppLayout = ({children}: AppLayoutProps) => {
     return (
         <Layout>
-            <Header>
-                <Navigation />
-            </Header>
-            <Content
-                style={{
-                    paddingBlock: 50,
-                    paddingInline: 50,
-                    overflow: 'auto',
-                }}>
-                {children}
-            </Content>
+            <Sider/>
+            <Layout>
+                <Header>
+                    <Input.Search style={{width: 400, marginLeft: 50}} enterButton size={'large'}/>
+                    <Button style={{marginLeft: 'auto'}} type={'primary'} size={'large'}>
+                        <PlusOutlined/>Neues Meme
+                    </Button>
+                </Header>
+                <Content
+                    style={{
+                        paddingBlock: 50,
+                        paddingInline: 50,
+                        overflow: 'auto',
+                    }}>
+                    {children}
+                </Content>
+            </Layout>
         </Layout>
     );
 }
