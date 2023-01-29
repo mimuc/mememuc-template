@@ -4,16 +4,35 @@ const bcrypt = require('bcrypt');
 
 const {User} = require('../db/models');
 const {authenticate} = require('../db/authentication');
+const jwt = require('jsonwebtoken');
 
-router.post('/login', authenticate, (req, res) => {
-    const token = jwt.sign({ username: req.username }, 'secret_key');
-    res.send({ token });
+router.post('/login', async (req, res) => {
+    // TODO: Implement cookie saving
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(401).send({ message: 'Username and password are required' });
+    }
+
+    const user = await User.findOne({ username });
+    if (!user) {
+        return res.status(401).send({ message: 'Invalid username or password' });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        return res.status(401).send({ message: 'Invalid username or password' });
+    }
+    // Use the database id to sign the user, as it is unique, and should be kept secret anyway
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token, displayName: user.displayName });
 });
 
-router.delete('/logout', authenticate, (req, res) => {
+/* router.delete('/logout', authenticate, (req, res) => {
     req.session.destroy();
-    res.json({message: 'You have been logged out.'});
-});
+    res.json({message: 'You have been logged out'});
+}); */
 
 router.post('/register', async (req, res) => {
     try {
