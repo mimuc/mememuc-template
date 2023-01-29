@@ -14,6 +14,7 @@
     - upload image from multiple sources (wecam, screenshot, image, url, etc.)
 
 - [ ] Can only upvote if logged in
+- [ ] Add logo
 
 ## Tests
 - [ ] Test API page '/api'
