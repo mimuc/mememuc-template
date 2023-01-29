@@ -31,3 +31,7 @@ export type Comment = {
 export type User = {
     name: string
 }
+
+export type Session = {
+    id: string
+}
