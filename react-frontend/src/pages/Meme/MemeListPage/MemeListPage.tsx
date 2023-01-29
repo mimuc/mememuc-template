@@ -58,7 +58,7 @@ const MemeItem = ({meme}: ItemProps) => {
     );
 }
 
-export const MemesPage = () => {
+export const MemeListPage = () => {
     const [memes,] = useMemesState() as [Meme[], any];
 
     return (
