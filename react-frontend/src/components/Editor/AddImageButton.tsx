@@ -35,11 +35,8 @@ export const AddImageButton = ({onClick}: AddImageButtonProps) => {
             } else if (key === 'screenshot') {
                 // TODO: Screenshot does not capture the entire screen
                 const stream = await navigator.mediaDevices.getDisplayMedia();
-                console.log("STREAM:", stream)
                 const track = stream.getTracks()[0];
-                console.log("TRACK:", track);
                 const imageCapture = new ImageCapture(track);
-                console.log("IMAGE CAPTURE:", imageCapture);
                 const data = await imageCapture.grabFrame().then((bitmap) => {
                     var MAX_WIDTH = 300;
                     var MAX_HEIGHT = 300;
@@ -60,11 +57,9 @@ export const AddImageButton = ({onClick}: AddImageButtonProps) => {
                         }
                     }
 
-                    console.log("BITMAP:", bitmap.height, bitmap.width);
                     let canvas = document.createElement('canvas');
                     let context = canvas.getContext('2d') as CanvasRenderingContext2D;
                     context.drawImage(bitmap, 0, 0, width, height)
-                    console.log("CANVAS:", canvas.height, canvas.width)
                     return canvas.toDataURL();
                 });
                 track.stop()
