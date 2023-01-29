@@ -1,2 +1,2 @@
-export * from './AppLayout/AppLayout';
+export * from './BasicLayout/BasicLayout';
 export * from './MemeLayout/MemeLayout';

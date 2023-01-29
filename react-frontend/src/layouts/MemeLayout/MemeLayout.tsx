@@ -1,13 +1,21 @@
 import {ReactNode, useEffect} from "react";
 import {useAsync} from "react-use";
-import {Segmented} from "antd";
+import {Input, Layout, Segmented} from "antd";
 import {ClockCircleOutlined, HeartOutlined} from "@ant-design/icons";
 import {api} from "src/api";
 import {useMemesState} from "src/states";
+import {Header} from "src/components";
+import styled from "styled-components";
 
 type MemeLayoutProps = {
     children: ReactNode;
 }
+
+const Content = styled(Layout.Content)`
+  margin-top: 100px;
+  padding-inline: 100px !important;
+`;
+
 
 export const MemeLayout = ({children}: MemeLayoutProps) => {
     const memesLoadable = useAsync(api.memes.all)
@@ -24,40 +32,31 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
     // TODO: apply sorter 'popular' | 'latest'
     // TODO: add filter
     // TODO: load memes based on filter and sort
-    return <>
-        <div style={{
-            position: 'fixed',
-            zIndex: 100,
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-around',
-            alignItems: 'center',
-            backgroundColor: 'white',
-            paddingBlock: 10,
-            boxShadow: "0 0 4px 0 rgba(0, 0, 0, 0.08), 0 2px 4px 0 rgba(0, 0, 0, 0.12)"
-        }}>
-            <div>
+    return (
+        <Layout>
+            <Header>
+                <Input.Search style={{width: 400, marginRight: 20}} enterButton/>
                 {/* TODO: filters*/}
-            </div>
-            <div>
-                <Segmented
-                    options={[
-                        {
-                            value: 'latest',
-                            label: 'Latest',
-                            icon: <ClockCircleOutlined/>,
-                        },
-                        {
-                            value: 'popular',
-                            label: 'Popular',
-                            icon: <HeartOutlined/>,
-                        },
-                    ]}
-                />
-            </div>
-        </div>
-        <div style={{paddingTop: 120}}>
-            {children}
-        </div>
-    </>
+                <div style={{display: 'inline-block'}}>
+                    <Segmented
+                        options={[
+                            {
+                                value: 'latest',
+                                label: 'Latest',
+                                icon: <ClockCircleOutlined/>,
+                            },
+                            {
+                                value: 'popular',
+                                label: 'Popular',
+                                icon: <HeartOutlined/>,
+                            },
+                        ]}
+                    />
+                </div>
+            </Header>
+            <Content>
+                {children}
+            </Content>
+        </Layout>
+    );
 }
