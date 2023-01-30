@@ -1,6 +1,6 @@
 import {Outlet, RouteObject} from "react-router-dom";
 import {BasicLayout, MemeLayout} from "src/layouts";
-import {ApiPage, LoginPage, MemePage, MemesPage, NewPage, ProfilePage, RegisterPage} from "src/pages";
+import {ApiPage, EditorPage, LoginPage, MemeListPage, ProfilePage, RegisterPage, SingleMemePage} from "src/pages";
 import {ErrorPage} from "./ErrorPage/ErrorPage";
 
 const BasicWrapper = () => {
@@ -15,7 +15,7 @@ const MemeWrapper = () => {
     return (
         <MemeLayout>
             <Outlet/>
-            <MemesPage/>
+            <MemeListPage/>
         </MemeLayout>
     );
 }
@@ -31,7 +31,7 @@ export const routes: RouteObject[] = [
                 children: [
                     {
                         path: ':memeId',
-                        element: <MemePage/>
+                        element: <SingleMemePage/>
                     }
                 ]
             },
@@ -40,7 +40,7 @@ export const routes: RouteObject[] = [
                 children: [
                     {
                         index: true,
-                        element: <NewPage/>
+                        element: <EditorPage/>
                     },
                     {
                         path: 'profile',

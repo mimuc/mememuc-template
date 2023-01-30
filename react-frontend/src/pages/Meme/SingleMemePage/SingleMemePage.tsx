@@ -72,7 +72,7 @@ const ModalHeader = ({meme}: { meme: Meme }) => {
 }
 
 // TODO: make components resize themselves
-export const MemePage = () => {
+export const SingleMemePage = () => {
     const params = useParams();
     const navigate = useNavigate()
     const [view, setView] = useState<'meme' | 'stats'>("meme")

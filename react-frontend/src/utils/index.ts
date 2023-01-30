@@ -48,3 +48,12 @@ export const getTimeSince = (date: Date) => {
     const yearsAgo = Math.floor(monthsAgo / 12);
     return `${yearsAgo} year${yearsAgo > 1 ? 's' : ''} ago`;
 }
+
+/**
+ * Verify if the url is an image
+ * https://www.zhenghao.io/posts/verify-image-url
+ * @param url
+ */
+export function isImgUrl(url: string) {
+    return /\.(jpg|jpeg|png|webp|avif|gif)$/.test(url)
+}
