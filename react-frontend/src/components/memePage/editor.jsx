@@ -51,6 +51,7 @@ class Editor extends Component {
             hasImage: false,
             imageFile: null,
             image: null, imageWidth: 0, imageHeight: 0,
+            memeToEdit : null,
             xPosT1: 0, yPosT1: 0, xPosT2: 0, yPosT2: 0,
             boldT1: "", boldT2: "", italicT1: "", italicT2: "", colorT1: "", colorT2: "", imageOption: "",
             showCameraPopUp: false
@@ -61,6 +62,7 @@ class Editor extends Component {
         this.handleTextInfo = this.handleTextInfo.bind(this);
         this.handleImageInfo = this.handleImageInfo.bind(this);
         this.handleWebcamButtonClicked = this.handleWebcamButtonClicked.bind(this);
+        this.handleMemeEditClicked = this.handleMemeEditClicked.bind(this);
     }
 
 
@@ -93,6 +95,7 @@ class Editor extends Component {
             text2Color: state.colorT2,
             title: document.getElementById("titleInput").value,
         }
+        console.log(memeData);
         fetch("http://localhost:3001/createdMemes/insert", {
             headers: {
                 'Access-Control-Allow-Origin': '*',
@@ -162,13 +165,47 @@ class Editor extends Component {
         this.setState({ showCameraPopUp: true });
     }
 
+    handleTemplateClicked(){
+
+    }
+
+    handleMemeEditClicked(){
+        console.log("edit clicked");
+        var image = this.state.image;
+        var memeTestData = {
+            image,
+            imgWidth: 777,
+            imgHeight: 777,
+            text1: "HALLO",
+            text1XPos: 488,
+            text1YPos: 176,
+            text1Bold: "bold",
+            text1Italic: "",
+            text1Color: "#000",
+            text2: "TEST",
+            text2XPos: 42,
+            text2YPos: 437,
+            text2Bold: "",
+            text2Italic: "italic",
+            text2Color: "#FFF",
+            title: "editTestdata",
+        }
+        console.log(memeTestData);
+
+        //Ab hier wichtig, davor löschen
+        this.state.imageFile = memeTestData.image;
+        this.state.memeToEdit = memeTestData;
+        this.state.imageOption = "editMeme";
+        this.setState({ hasImage: true });
+    }
+
     render() {
         return (
             <div className="side" id="sideRight">
                 {this.state.showCameraPopUp && <PopUp showCamera={true} handleScreenshot={(image) => { this.handleWebcamGotScreenshot(image) }} />}
-                <EditorTopMenu getImage={this.handleGetImage} downloadMeme={this.downloadMeme} saveMeme={this.saveMeme} webcamButtonClicked={this.handleWebcamButtonClicked} />
+                <EditorTopMenu handleMemeEditClicked={this.handleMemeEditClicked} getImage={this.handleGetImage} downloadMeme={this.downloadMeme} saveMeme={this.saveMeme} webcamButtonClicked={this.handleWebcamButtonClicked} />
                 <div className="editorContainer">
-                    <EditorCanvas setImage={this.state.hasImage} image={this.state.imageFile} setMeme={this.handleMeme} handleTextInfo={this.handleTextInfo} handleImageInfo={this.handleImageInfo} imageOption={this.state.imageOption}/>
+                    <EditorCanvas setImage={this.state.hasImage} image={this.state.imageFile} setMeme={this.handleMeme} handleTextInfo={this.handleTextInfo} handleImageInfo={this.handleImageInfo} imageOption={this.state.imageOption} memeToEdit={this.state.memeToEdit}/>
                 </div>
             </div>
         )
@@ -194,6 +231,7 @@ class EditorTopMenu extends Component {
         this.props.getImage(event.target.files[0]);
     }
 
+
     //<Camera onClick={() => console.log("Webcam")}/>
     render() {
         return (
@@ -204,6 +242,9 @@ class EditorTopMenu extends Component {
                     onChange={this.imageUploadHandler}
                     ref={fileInput => this.fileInput = fileInput} />
                 <Fab className="upperBtn" id="btnFileUpload" variant="extended" size="medium" color="background" onClick={() => this.fileInput.click()}>
+                    <FileUploadIcon />
+                </Fab>
+                <Fab className="upperBtn" id="btnFileUpload" variant="extended" size="medium" color="background" onClick={this.props.handleMemeEditClicked}>
                     <FileUploadIcon />
                 </Fab>
                 <Fab className="upperBtn" id="btnCameraUpload" variant="extended" size="medium" color="background" onClick={this.props.webcamButtonClicked}>
@@ -227,15 +268,6 @@ class EditorCanvas extends Component {
         this.state = { imageCanvas: false, update: 0 };
         this.handleImage = this.handleImage.bind(this)
         this.handleTextData = this.handleTextData.bind(this);
-        this.handleImageLoaded = this.handleImageLoaded.bind(this);
-    }
-
-
-    handleImageLoaded = (img) =>{
-        
-
-
-        
     }
 
 
@@ -254,19 +286,16 @@ class EditorCanvas extends Component {
             var reader = new FileReader();
             var img = new Image();
             
+            
             var canvas = document.getElementById("imageCanavas");
             var mergingCanavas = document.getElementById("mergingCanvas");
             var mergeCtx = mergingCanavas.getContext("2d");
             var ctx = canvas.getContext("2d");
             var props = this.props;
 
-            var handleImageLoaded = this.handleImageLoaded();
-
             if(this.props.imageOption === "ImageFile"){
                 reader.onload = function (event) {
                     img.src = event.target.result;
-                    console.log("Loaded");
-                    console.log(img);
                     if (img.height > img.width) {
                         scaleFactor = MAX_HEIGHT / img.height;
                         img.height = MAX_HEIGHT;
@@ -299,7 +328,10 @@ class EditorCanvas extends Component {
                 };
 
                 reader.readAsDataURL(selectedFile);
-            }else if(this.props.imageOption === "CameraImage"){
+            }else if((this.props.imageOption === "CameraImage") || (this.props.imageOption === "editMeme")){
+                if(this.props.imageOption === "editMeme"){
+                    document.getElementById("titleInput").value = this.props.memeToEdit.title;
+                }
                 img.onload = function(){
                     if (img.height > img.width) {
                         scaleFactor = MAX_HEIGHT / img.height;
@@ -331,8 +363,6 @@ class EditorCanvas extends Component {
                     props.handleImageInfo(imgString, img.width, img.height);
                 }
                 img.src = selectedFile;
-                
-                
             }
         }
 
@@ -365,8 +395,8 @@ class EditorCanvas extends Component {
                         </div>
                         <Input placeholder="Title" type="string" id="titleInput" />
                         <p className="inputFieldDescription"></p>
-                        <CanvasText idNameEdit="setPositionIcon1" idNameTextInput="inputField" nameTextPlaceHolder="Text 1" idNameTextCanvas="textCanvas" updateText={this.state.update} idNameX="xpositionInputField1" idNameY="ypositionInputField1" image={this.props.image} classNameCanvas="canvasText" boldIcon="iconsTextFormatting" italicIcon="italicIconsTextFormatting" colorIcon="colorIconsTextFormatting" handleTextData={this.handleTextData} imageOption={this.props.imageOption}></CanvasText>
-                        <CanvasText idNameEdit="setPositionIcon2" idNameTextInput="inputField2" nameTextPlaceHolder="Text 2" idNameTextCanvas="textCanvas2" updateText={this.state.update} idNameX="xpositionInputField2" idNameY="ypositionInputField2" image={this.props.image} classNameCanvas="canvasText2" boldIcon="iconsTextFormatting2" italicIcon="italicIconsTextFormatting2" colorIcon="colorIconsTextFormatting2" handleTextData={this.handleTextData} imageOption={this.props.imageOption}></CanvasText>
+                        <CanvasText idNameEdit="setPositionIcon1" idNameTextInput="inputField" nameTextPlaceHolder="Text 1" idNameTextCanvas="textCanvas" updateText={this.state.update} idNameX="xpositionInputField1" idNameY="ypositionInputField1" image={this.props.image} classNameCanvas="canvasText" boldIcon="iconsTextFormatting" italicIcon="italicIconsTextFormatting" colorIcon="colorIconsTextFormatting" handleTextData={this.handleTextData} imageOption={this.props.imageOption} text={(this.props.memeToEdit!==null)?this.props.memeToEdit.text1:""} textXPos={(this.props.memeToEdit!==null)?this.props.memeToEdit.text1XPos:""} textYPos={(this.props.memeToEdit!==null)?this.props.memeToEdit.text1YPos:""} bold={(this.props.memeToEdit!==null)?this.props.memeToEdit.text1Bold:""} italic={(this.props.memeToEdit!==null)?this.props.memeToEdit.text1Italic:""} color={(this.props.memeToEdit!==null)?this.props.memeToEdit.text1Color:""}></CanvasText>
+                        <CanvasText idNameEdit="setPositionIcon2" idNameTextInput="inputField2" nameTextPlaceHolder="Text 2" idNameTextCanvas="textCanvas2" updateText={this.state.update} idNameX="xpositionInputField2" idNameY="ypositionInputField2" image={this.props.image} classNameCanvas="canvasText2" boldIcon="iconsTextFormatting2" italicIcon="italicIconsTextFormatting2" colorIcon="colorIconsTextFormatting2" handleTextData={this.handleTextData} imageOption={this.props.imageOption} text={(this.props.memeToEdit!==null)?this.props.memeToEdit.text2:""} textXPos={(this.props.memeToEdit!==null)?this.props.memeToEdit.text2XPos:""} textYPos={(this.props.memeToEdit!==null)?this.props.memeToEdit.text2YPos:""} bold={(this.props.memeToEdit!==null)?this.props.memeToEdit.text2Bold:""} italic={(this.props.memeToEdit!==null)?this.props.memeToEdit.text2Italic:""} color={(this.props.memeToEdit!==null)?this.props.memeToEdit.text2Color:""}></CanvasText>
 
                     </div>
                 </div>
@@ -407,6 +437,9 @@ class CanvasText extends Component {
 
             var textCanvas = document.getElementById(this.props.idNameTextCanvas);
             var ctxText = textCanvas.getContext("2d");
+            var handleUpdateTextData = this.handleUpdateTextData;
+            var props = this.props;
+            var state = this.state;
 
             if(this.props.imageOption === "ImageFile"){
                 reader.onload = function (event) {
@@ -437,7 +470,7 @@ class CanvasText extends Component {
                     ctxText.canvas.height = img.height;
                 };
                 reader.readAsDataURL(selectedFile);
-            }else if(this.props.imageOption === "CameraImage"){
+            }else if((this.props.imageOption === "CameraImage") || (this.props.imageOption === "editMeme")){
                 img.onload = function(){
                     if (img.height > img.width) {
                         scaleFactor = MAX_HEIGHT / img.height;
@@ -462,10 +495,22 @@ class CanvasText extends Component {
                     }
                     ctxText.canvas.width = img.width;
                     ctxText.canvas.height = img.height;
+
+
+                    if(props.imageOption === "editMeme"){
+                        state.bold = props.bold;
+                        state.italic = props.italic;
+                        state.color = props.color;
+                        document.getElementById(props.idNameTextInput).value = props.text;
+                        document.getElementById(props.idNameX).value = props.textXPos;
+                        document.getElementById(props.idNameY).value = props.textYPos;
+                        handleUpdateTextData();
+                    }
                 }
                 img.src = selectedFile;
-            }
 
+                
+            }
         }
 
     }
@@ -488,6 +533,11 @@ class CanvasText extends Component {
 
     handleUpdateTextData() {
         if (this.props.image != null) {
+            console.log("Input text handler");
+            console.log(document.getElementById(this.props.idNameTextInput).value);
+            console.log(document.getElementById(this.props.idNameX).value);
+            console.log(document.getElementById(this.props.idNameY).value);
+
             const canvasText = document.getElementById(this.props.idNameTextCanvas);
 
             const ctxText = canvasText.getContext("2d");
@@ -502,10 +552,10 @@ class CanvasText extends Component {
             var x = Math.trunc(xPos1.value);
             var y = Math.trunc(yPos1.value);
             ctxText.fillText(text1.value, x, y);
+            console.log(ctxText);
 
 
             this.props.handleTextData(this.props.nameTextPlaceHolder, x, y, this.state.bold, this.state.italic, this.state.color);
-            //TextNr, xPos, yPos, bold, italic, color
         }
 
     }
