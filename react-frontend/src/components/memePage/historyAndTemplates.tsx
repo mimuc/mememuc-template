@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Component } from 'react';
 import Button from '@mui/material/Button';
+import TextToSpeech from './textToSpeech';
+import SpeechToText from './speechToText';
 
 class HistoryAndTemplatesView extends Component {
     state = {};

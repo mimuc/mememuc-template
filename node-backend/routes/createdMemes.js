@@ -21,7 +21,7 @@ router.post('/insert', function(req, res, next) {
       text1Bold: req.body.text1Bold,
       text1Italic: req.body.text1Italic,
       text1Color: req.body.text1Color,
-      text2Bold: req.body.text2Bold,
+      text2: req.body.text2,
       text2XPos: req.body.text2XPos,
       text2YPos: req.body.text2YPos,
       text2Bold: req.body.text2Bold,
@@ -31,20 +31,6 @@ router.post('/insert', function(req, res, next) {
     });
     res.status(200).send();
   });
-
-  /*
-[
-            {
-                textNr: req.text_number
-                textContent: req.text_contex,
-                xPosition: req.xPosition,
-                yPosition: req.yPosition,
-                bold: req.bold,
-                italic: req.italic,
-                color: req.color
-            }
-        ] 
-  */
 
 // Get created meme
 router.post('/find', function(req, res, next) {
