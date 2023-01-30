@@ -4,15 +4,15 @@ var router = express.Router();
 
 const {Meme, Template} = require('../db/models');
 
-router.get('/:type/:url', async function(req, res, next) {
+router.get('/:type/:publicId', async function(req, res, next) {
   const type = req.params.type;
-  const url  = req.params.url;
-  console.log("REQUEST", type, url)
+  const publicId  = req.params.publicId;
+
   if(type === 'images') {
 
-    if(url.startsWith('m')) {
+    if(publicId.startsWith('m')) {
       try {
-        const meme = await Meme.findOne({ url });
+        const meme = await Meme.findOne({ publicId });
         if (!meme) {
             return res.status(404).send('Image not found');
         }
@@ -22,9 +22,9 @@ router.get('/:type/:url', async function(req, res, next) {
           res.status(500).send(err);
       }
     }
-    else if(url.startsWith('t')) {
+    else if(publicId.startsWith('t')) {
       try {
-        const template = await Template.findOne({ url });
+        const template = await Template.findOne({ publicId });
         if (!template) {
             return res.status(404).send('Image not found');
         }

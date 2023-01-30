@@ -1,5 +1,12 @@
 const mongoose = require('mongoose');
 
+// TODO: Implement auth
+// TODO: Change url to $id, map url in response to proper url, get rid of image buffer in responses
+// TODO: Implement like/unlike on memes
+// TODO: Implement comment GET/POST
+
+const url = `http://localhost:3001/resources/images/`; // FIXME:
+
 const User = mongoose.model('User', new mongoose.Schema({
         username: { type: String, required: true, unique: true },
         displayName: { type: String, required: true },
@@ -14,19 +21,28 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
         creator: { type: String, required: true },
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
         image: { type: Buffer, required: true },
-        url: { type: String, required: true, unique: true },
+        publicId: { type: String, required: true, unique: true },
         contentType: { type: String, default: 'image/png' }, // TODO: Make enum
         createdAt: { type: Date, default: Date.now },
         likes: {type: Number, default: 0 }
+    }, 
+    {
+        id: false,
+        toObject: { virtuals: true },
+        toJSON: { virtuals: true }
     })
 );
+
+Meme.schema.virtual('url').get(function() {
+    return `${url}${this.publicId}`;
+});
 
 const Template = mongoose.model('Template', new mongoose.Schema({
         name: { type: String, required: true, unique: true  },
         creator: { type: String },
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
         image: { type: Buffer, required: true },
-        url: { type: String, required: true, unique: true },
+        publicId: { type: String, required: true, unique: true },
         contentType: { type: String, default: 'image/png' }, // TODO: Make enum
         createdAt: { type: Date, default: Date.now },
         texts: { type: Array }
@@ -45,22 +61,22 @@ const uniqueId = () => {
     return Date.now() + '' + Math.floor(Math.random() * 100000);
 }
 
-const generateUrl = async (model, urlSet) => {
+const generatePublicId = async (model, publicIdSet) => {
 
-    let url = uniqueId();
-    let document = await model.findOne({ url });
+    let publicId = uniqueId();
+    let document = await model.findOne({ publicId });
     
-    while(document || (urlSet ? urlSet.has(url) : false)) { // Ensure that the url is unique
-        url = uniqueId();
-        document = await model.findOne({ url });
+    while(document || (publicIdSet ? publicIdSet.has(publicId) : false)) { // Ensure that the publicId is unique
+        publicId = uniqueId();
+        document = await model.findOne({ publicId });
     }
-    if(urlSet) urlSet.add(url);
-    return url;
+    if(publicIdSet) publicIdSet.add(publicId);
+    return publicId;
 }
 
 module.exports = {
     User,
     Meme,
     Template,
-    generateUrl
+    generatePublicId
 }

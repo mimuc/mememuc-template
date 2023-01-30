@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const axios = require('axios');
 
-const {Template, generateUrl} = require('../db/models');
+const {Template, generatePublicId} = require('../db/models');
 
 router.get('/', async function(req, res, next) {
   // TODO: Restrict GET to templates the user can see
@@ -58,13 +58,13 @@ router.post('/', async function(req, res) {
     templateData.image = Buffer.from(templateData.image, 'base64');
   }
   
-  templateData.url = 't' + await generateUrl(Template);
+  templateData.publicId = 't' + await generatePublicId(Template);
   
   const template = new Template(templateData);
     
   template.save()
   .then(function() {
-    res.status(201).json({ message: 'Template created', url: `${req.protocol}://${req.get('host')}/resources/images/${template.url}`});
+    res.status(201).json({ message: 'Template created', url: `${req.protocol}://${req.get('host')}/resources/images/${template.publicId}`});
   })
   .catch(function(error) {
       if (error.name === 'ValidationError') {

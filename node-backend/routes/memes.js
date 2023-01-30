@@ -10,13 +10,15 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, generateUrl} = require('../db/models');
+const {Meme, User, Template, generatePublicId} = require('../db/models');
 const mongoose = require("mongoose");
 
 const Image = Canvas.Image;
 
 const canvas = Canvas.createCanvas(1000, 1000);
 const ctx = canvas.getContext('2d');
+
+const EXCLUDE_PROPERTIES = { image: 0, _id: 0, __v: 0 };
 
 /**
  * Adds text to the canvas context.
@@ -182,8 +184,10 @@ router.post('/', async function(req, res) {
     //const db = req.db;
     /* const users = db.get('users');
     const memes = db.get('memes'); */
-
+    // TODO: Convert URL on json get, and exclude base64 image
     // TODO: Add to metadata whether the currently authorised user liked the meme
+    // TODO: Accept base64 as images .img
+    // TODO: Set content type
     console.log("Post Request", req.body);
 
     req.username = req.body.username; // TODO: ???
@@ -232,7 +236,7 @@ router.post('/', async function(req, res) {
                 return;
             }
             data_template.texts = templateInDatabase.texts;
-            data_template.url = templateInDatabase.url;
+            data_template.url = templateInDatabase.publicId; // TODO: Implement
         }
         const data = Object.assign(data_default, data_template, template); // TODO: Currently does not check whether memeNames collide
 
@@ -305,9 +309,9 @@ router.post('/', async function(req, res) {
             contentType: 'image/png', // TODO:
         }});
 
-        let urlSet = new Set();
+        let publicIdSet = new Set();
         for(const m of storeMemes) {
-            m.url = 'm' + await generateUrl(Meme, urlSet);
+            m.publicId = 'm' + await generatePublicId(Meme, publicIdSet);
         }
 
         Meme.create(storeMemes)
@@ -336,11 +340,11 @@ router.post('/', async function(req, res) {
             }
             else if( config.return === 'image-url' ) {
                 // Url to the image itself
-                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.url}`) });
+                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.publicId}`) });
                 return;
             }
             else { // TODO: Sending by single-view url is standard
-                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/memes/${m.url}`) });
+                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/memes/${m.publicId}`) });
                 return;
             }
             
@@ -356,22 +360,28 @@ router.post('/', async function(req, res) {
     }
 });
 
-router.get('/:url', async function(req, res, next) {
+router.get('/:publicId', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
 
-    const url  = req.params.url;
-    Meme.findOne({ url })
+    const publicId  = req.params.publicId;
+    Meme.findOne({ publicId })
     .then((docs) => res.json(docs))
     .catch((e) => res.status(500).send());
   });
 
-router.post('/:url/like', async function(req, res, next) {
-// TODO: Like the meme with the currently authorised user
+router.put('/:publicId/like', async function(req, res, next) {
+// TODO: Like the meme with the currently authorised user.
 
 
 });
 
-router.get('/:url/like', async function(req, res, next) {
+router.delete('/:publicId/like', async function(req, res, next) {
+// TODO: UnLike the meme with the currently authorised user.
+
+
+});
+
+router.get('/:publicId/like', async function(req, res, next) {
 // TODO: Check if currently authorised user liked the meme
 
 
@@ -381,6 +391,7 @@ router.get('/:url/like', async function(req, res, next) {
 router.get('/', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
     // TODO: Take out error sends
+    // TODO: Convert URL on json get, and exclude base64 image
 
     // Example request:
     // /memes?limit=50&skip=50&sort=newest
@@ -409,14 +420,16 @@ router.get('/', async function(req, res, next) {
         switch(config.sort){
             case 'all':
                 // TODO: Debug function
-                documents = await Meme.find({})
-                .select('-image');
+                documents = await Meme.find({}, EXCLUDE_PROPERTIES);
                 break;
             case 'random': {
 
                 const pipeline = [
                     {
                         $sample: { size: config.limit }
+                    },
+                    {
+                        $project: EXCLUDE_PROPERTIES
                     }
                 ];
 
@@ -424,6 +437,7 @@ router.get('/', async function(req, res, next) {
                 if(config.creator) pipeline.push({$match: { creator: config.creator }});
 
                 documents = await Meme.aggregate(pipeline);
+                documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
                 break;
             }   
             case 'newest': // Same as oldest but with different sortOrder
@@ -438,6 +452,9 @@ router.get('/', async function(req, res, next) {
                     },
                     {
                         $skip: config.skip
+                    },
+                    {
+                        $project: EXCLUDE_PROPERTIES
                     }
                 ];
 
@@ -445,6 +462,7 @@ router.get('/', async function(req, res, next) {
                 if(config.creator) pipeline.push({$match: { creator: config.creator }})
 
                 documents = await Meme.aggregate(pipeline);
+                documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
                 break;
             }
             default:
@@ -489,13 +507,13 @@ router.get('/', async function(req, res, next) {
             return;
         case 'image-url':
             // Url to the image itself
-            res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.url}`) });
+            res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.publicId}`) });
             return;
         case 'single-view':
             // TODO: Implement
             // TODO: Retrieve port and address
             console.log("PORT", process.env.PORT);
-            res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.url}`) });
+            res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.publicId}`) });
             return;
     }
 });
