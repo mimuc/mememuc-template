@@ -86,6 +86,31 @@ router.get('/all', function (req, res) {
            res.json(docs);
        });
 });
+
+router.post('/next', function (req, res) {
+    const db = req.db;
+    const offset = req.body.page;
+    const size = req.body.pageSize;
+    console.log(req.body);
+    console.log(offset);
+    console.log(size);
+    const createdMemes = db.get('createdMemes');
+    const allMemes = createdMemes.find({})
+        .then((docs) => {
+            docs = docs.reverse();
+            console.log(docs[offset*size].title);
+            const nextMemes = docs.slice(offset*size, offset*size+size);
+            let hasMore = true;
+            if (offset*size+size >= docs.length) {
+                hasMore = false;
+            }
+            const nextResponse = {
+                nextMemes,
+                hasMore
+            }
+            res.json(nextResponse);
+        });
+});
   
 
 

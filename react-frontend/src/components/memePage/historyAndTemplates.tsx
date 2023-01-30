@@ -41,7 +41,6 @@ class HistoryAndTemplatesMenu extends Component {
     }
 }
 
-
 interface historyAndTemplateListProps {
     updateTrigger: number,
 }
@@ -49,36 +48,95 @@ interface historyAndTemplateListProps {
 interface historyAndTemplateListState {
     showHistory: boolean,
     memeList: any[],
+    page: number,
+    loading: boolean,
+    error: boolean,
+    hasMore: boolean,
 }
 
 class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, historyAndTemplateListState> {
+    private interSectionRef: React.RefObject<IntersectionObserver | null>;
 
     constructor(props) {
         super(props);
         this.state = {
             showHistory: true,
             memeList: [],
+            page: 0,
+            loading: true,
+            error: false,
+            hasMore: true,
         };
-        this.loadMemeList();
+        this.interSectionRef = React.createRef();
+    }
+
+    componentDidMount() {
+        this.loadNextMemes();
     }
 
     componentDidUpdate(prevProps: Readonly<historyAndTemplateListProps>, prevState: Readonly<historyAndTemplateListState>, snapshot?: any) {
         if (prevProps.updateTrigger !== this.props.updateTrigger) {
-            this.loadMemeList();
+            this.setState({memeList: [], page: 0})
+            this.loadNextMemes();
         }
     }
 
     showTemplates() {
         if(this.state.showHistory) {
-            this.setState({showHistory: false, memeList: []});
-            this.loadMemeList();
+            this.setState({showHistory: false, memeList: [], page: 0});
+            this.loadNextMemes();
         }
     }
 
     showHistory() {
         if(!this.state.showHistory) {
-            this.setState({showHistory: true, memeList: []});
-            this.loadMemeList();
+            this.setState({showHistory: true, memeList: [], page: 0});
+            this.loadNextMemes();
+        }
+    }
+
+    loadNextMemes() {
+        console.log("Loading memes...");
+        if (this.state.hasMore) {
+            this.setState({loading: true, error: false});
+            let data = {
+                page: this.state.page,
+                pageSize: 6, // TODO: Select 2*visible
+            }
+            console.log(data);
+            if(this.state.showHistory) {
+                fetch('http://localhost:3001/createdMemes/next', {
+                    method: 'POST',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(data)
+                }).then((res) => {
+                    if(res.ok) {
+                        return res.json();
+                    } else {
+                        console.log(res.status);
+                    }
+                }).then((res) => {
+                    console.log(res);
+                    // this.setState({memeList: res});
+                    this.setState({
+                        memeList: [...this.state.memeList, ...res.nextMemes],
+                        loading: false,
+                        error: false,
+                        hasMore: res.hasMore,
+                        page: this.state.page + 1,
+                    });
+                })
+                .catch((err) => {
+                    this.setState({loading: false, error: true});
+                    console.log(err);
+                });
+            } else {
+                // TODO: Handle for templates
+            }
         }
     }
 
@@ -105,33 +163,71 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         }
     }
 
+    intersectionCallback(lastElement) {
+        if (this.state.loading) return;
+        if (this.interSectionRef.current) this.interSectionRef.current.disconnect();
+        // @ts-ignore
+        this.interSectionRef.current = new IntersectionObserver(entries => {
+            if(entries[0].isIntersecting && this.state.hasMore) {
+                this.loadNextMemes();
+            }
+        });
+        this.interSectionRef.current.observe(lastElement);
+    }
+
     render() {
         this.state.memeList.reverse();
         return (
             <div className="MemeList">
                 {
-                    this.state.memeList.map((meme) => {
-                        return <MemeTile
-                            uid={meme._id}
-                            key={meme}
-                            base64Image={meme.image}
-                            title={meme.title}
-                            likes={meme.likes}
-                            text1={meme.text1}
-                            text1XPos={meme.text1XPos}
-                            text1YPos={meme.text1YPos}
-                            text1Bold={meme.text1Bold}
-                            text1Italic={meme.text1Italic}
-                            text1Color={meme.text1Color}
-                            text2={meme.text2}
-                            text2Bold={meme.text2Bold}
-                            text2XPos={meme.text2XPos}
-                            text2YPos={meme.text2YPos}
-                            text2Italic={meme.text2Italic}
-                            text2Color={meme.text2Color}
-                        />
+                    this.state.memeList.map((meme, index) => {
+                        if(index === this.state.memeList.length) {
+                            return <MemeTile
+                                uid={meme._id}
+                                callback={this.intersectionCallback.bind(this)}
+                                key={meme}
+                                base64Image={meme.image}
+                                title={meme.title}
+                                likes={meme.likes}
+                                text1={meme.text1}
+                                text1XPos={meme.text1XPos}
+                                text1YPos={meme.text1YPos}
+                                text1Bold={meme.text1Bold}
+                                text1Italic={meme.text1Italic}
+                                text1Color={meme.text1Color}
+                                text2={meme.text2}
+                                text2Bold={meme.text2Bold}
+                                text2XPos={meme.text2XPos}
+                                text2YPos={meme.text2YPos}
+                                text2Italic={meme.text2Italic}
+                                text2Color={meme.text2Color}
+                            />;
+                        } else {
+                            return <MemeTile
+                                uid={meme._id}
+                                callback={-1}
+                                key={meme}
+                                base64Image={meme.image}
+                                title={meme.title}
+                                likes={meme.likes}
+                                text1={meme.text1}
+                                text1XPos={meme.text1XPos}
+                                text1YPos={meme.text1YPos}
+                                text1Bold={meme.text1Bold}
+                                text1Italic={meme.text1Italic}
+                                text1Color={meme.text1Color}
+                                text2={meme.text2}
+                                text2Bold={meme.text2Bold}
+                                text2XPos={meme.text2XPos}
+                                text2YPos={meme.text2YPos}
+                                text2Italic={meme.text2Italic}
+                                text2Color={meme.text2Color}
+                            />
+                        }
                     })
                 }
+                <div>{this.state.loading && 'Loading...'}</div>
+                <div>{this.state.error && 'ERROR!'}</div>
             </div>
         );
     }
@@ -139,6 +235,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
 
 
 interface MemeTileProps {
+    callback: any,
     base64Image: string;
     title: string;
     likes: number,
@@ -164,6 +261,9 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
     constructor(props) {
         super(props);
         this.state = {likes: this.props.likes};
+        if (this.props.callback != -1) {
+            this.props.callback(this);
+        }
     }
 
     private updateLikeDisplay() {
