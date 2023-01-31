@@ -417,10 +417,14 @@ router.delete('/:publicId/like', authenticate(), async function(req, res, next) 
     else return res.status(204).send();
 });
 
-// Checks whether the currently authorized user liked the meme
-router.get('/:publicId/like', authenticate, async function(req, res, next) {
-// TODO: Get username from somewhere else
-    
+// Checks whether the authenticated user liked the meme
+router.get('/:publicId/like', authenticate(), async function(req, res, next) {
+    const username = req.username;
+    const memePublicId = req.params.publicId;
+    if(username == undefined) return res.status(401).send();
+    const like = await Like.findOne({ username, memePublicId });
+    if(like) req.send(200, {"liked": true});
+    else req.send(200, {"liked": false});
 });
 
 
@@ -448,7 +452,7 @@ router.get('/', authenticate(false), async function(req, res, next) {
 
     if(config.id) {
         // ID was given. The meme with the id is return inside an array.
-        documents = await Meme.find({ _id: config.id });
+        documents = await Meme.find({ _id: config.id }); // TODO: permissions
     }
     else {
         // Search for the memes, according to the config options
