@@ -360,12 +360,20 @@ router.post('/', async function(req, res) {
     }
 });
 
-router.get('/:publicId', async function(req, res, next) {
-    // TODO: Check for privileges, whether unlisted/private should be shown
+// Gets the meme associated with publicId as json, only if the user is authorized to see it
+router.get('/:publicId', authenticate(false), async function(req, res, next) {
 
     const publicId  = req.params.publicId;
     Meme.findOne({ publicId })
-    .then((docs) => res.json(docs))
+    .then(doc => {
+        if (!doc) {
+            return res.status(404).send({ error: "Meme not found" });
+        }
+        if (doc.visibility === 'public' || ((doc.visibility === 'private' || doc.visibility === 'unlisted') && req.username === doc.creator) ) {
+            return res.json(doc);
+        }
+        return res.status(401).send();
+    })
     .catch((e) => res.status(500).send());
   });
 
@@ -407,7 +415,7 @@ router.get('/:publicId/like', authenticate, async function(req, res, next) {
 });
 
 
-router.get('/', async function(req, res, next) {
+router.get('/', authenticate(false), async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
     // TODO: Take out error sends
 
@@ -438,11 +446,24 @@ router.get('/', async function(req, res, next) {
         switch(config.sort){
             case 'all':
                 // TODO: Debug function
-                documents = await Meme.find({}, EXCLUDE_PROPERTIES);
+                documents = await Meme.find({
+                    $or: [
+                        { visibility: 'public' },
+                        { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
+                      ]
+                }, EXCLUDE_PROPERTIES);
                 break;
             case 'random': {
 
                 const pipeline = [
+                    {
+                        $match: {
+                            $or: [
+                                { visibility: 'public' },
+                                { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
+                            ]
+                        }
+                    },
                     {
                         $sample: { size: config.limit }
                     },
@@ -462,6 +483,14 @@ router.get('/', async function(req, res, next) {
             case 'oldest': {
                 const sortOrder = config.sort === 'newest' ? -1 : 1;
                 const pipeline = [
+                    {
+                        $match: {
+                            $or: [
+                                { visibility: 'public' },
+                                { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
+                            ]
+                        }
+                    },
                     {
                         $sort: { createdAt: sortOrder }
                     },
