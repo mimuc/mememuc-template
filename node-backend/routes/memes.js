@@ -377,29 +377,38 @@ router.get('/:publicId', authenticate(false), async function(req, res, next) {
     .catch((e) => res.status(500).send());
   });
 
-// Like the meme with the currently authorized user
-router.put('/:publicId/like', authenticate, async function(req, res, next) {
+// Like the meme with the currently authenticated user
+router.put('/:publicId/like', authenticate(), async function(req, res, next) {
     const username = req.username;
-    if(!username) return res.status(401).send();
-    const existingLike = await Like.findOne({ username, memePublicId: publicId });
+    const memePublicId = req.params.publicId;
+
+    if(username == undefined) return res.status(401).send();
+
+    const existingLike = await Like.findOne({ username, memePublicId })
+    .catch(function(error) {
+        return res.status(500).send();
+    });
+
     if (existingLike) {
         return res.status(204).send("Meme was already liked by the user");
     }
 
-    const like = new Like({ username, memePublicId: publicId });
+    const like = new Like({ username, memePublicId });
     like.save()
     .then(function() {
-        res.status(201).json({ message: 'Meme was liked by the user'});
+        return res.status(201).json({ message: 'Meme was liked by the user'});
     })
     .catch(function(error) {
-        res.status(500).send();
+        return res.status(500).send();
     });
 });
 
-// Unlikes the meme with the currently authorized user
-router.delete('/:publicId/like', authenticate, async function(req, res, next) {
+// Unlikes the meme with the currently authenticated user
+router.delete('/:publicId/like', authenticate(), async function(req, res, next) {
     const username = req.username;
-    const like = await Like.findOneAndDelete({ username, memePublicId: publicId })
+    const memePublicId = req.params.publicId;
+    if(username == undefined) return res.status(401).send();
+    const like = await Like.findOneAndDelete({ username, memePublicId })
     .catch(function(error) {
         res.status(500).send();
     }); 

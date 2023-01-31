@@ -61,7 +61,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.delete('/register', authenticate, async (req, res) => {
+router.delete('/register', authenticate(), async (req, res) => {
     try {
         const user = await User.findOneAndDelete({username: req.username});
         if (!user) {
