@@ -7,6 +7,7 @@ const {Meme, Template} = require('../db/models');
 router.get('/:type/:publicId', async function(req, res, next) {
   const type = req.params.type;
   const publicId  = req.params.publicId;
+  // TODO: CHeck permissions
 
   if(type === 'images') {
 
@@ -34,7 +35,9 @@ router.get('/:type/:publicId', async function(req, res, next) {
           res.status(500).send(err);
       }
     }
-
+    else {
+      res.status(404).send();
+    }
     
   }
   else {
