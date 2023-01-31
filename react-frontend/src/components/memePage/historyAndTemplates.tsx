@@ -3,6 +3,8 @@ import { Component } from 'react';
 import Button from '@mui/material/Button';
 import {IconButton} from "@mui/material";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+// import TextToSpeech from './textToSpeech';
+import SpeechToText from './speechToText';
 
 interface historyAndTemplatesViewProps {
     updateTrigger: number,

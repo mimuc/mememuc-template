@@ -34,20 +34,6 @@ router.post('/insert', function(req, res, next) {
     res.status(200).send();
   });
 
-  /*
-[
-            {
-                textNr: req.text_number
-                textContent: req.text_contex,
-                xPosition: req.xPosition,
-                yPosition: req.yPosition,
-                bold: req.bold,
-                italic: req.italic,
-                color: req.color
-            }
-        ] 
-  */
-
 // Get created meme
 router.post('/find', function(req, res, next) {
     const db = req.db;
