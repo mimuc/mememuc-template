@@ -3,22 +3,30 @@ import { Component } from 'react';
 import Button from '@mui/material/Button';
 import {IconButton} from "@mui/material";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import CreateIcon from '@mui/icons-material/Create';
 // import TextToSpeech from './textToSpeech';
 import SpeechToText from './speechToText';
 
 interface historyAndTemplatesViewProps {
     updateTrigger: number,
+    handleEditMeme: any
 }
 class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps> {
     constructor(props) {
         super(props);
     }
 
+    handleEditMeme(memeData) {
+        console.log("In History and TemplatesView-handleEditMeme");
+        // console.log(memeData);
+        this.props.handleEditMeme(memeData);
+    }
+
     render() {
         return (
             <div className="side" id="sideLeft">
                 <HistoryAndTemplatesMenu/>
-                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger}/>
+                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger} handleEditMeme={this.handleEditMeme.bind(this)}/>
             </div>
         )
 
@@ -45,6 +53,7 @@ class HistoryAndTemplatesMenu extends Component {
 
 interface historyAndTemplateListProps {
     updateTrigger: number,
+    handleEditMeme: any,
 }
 
 interface historyAndTemplateListState {
@@ -105,7 +114,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 page: this.state.page,
                 pageSize: 6, // TODO: Select 2*visible
             }
-            console.log(data);
+            // console.log(data);
             if(this.state.showHistory) {
                 fetch('http://localhost:3001/createdMemes/next', {
                     method: 'POST',
@@ -122,7 +131,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                         console.log(res.status);
                     }
                 }).then((res) => {
-                    console.log(res);
+                    // console.log(res);
                     // this.setState({memeList: res});
                     this.setState({
                         memeList: [...this.state.memeList, ...res.nextMemes],
@@ -157,7 +166,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                     console.log(res.status);
                 }
             }).then((res) => {
-                console.log(res);
+                // console.log(res);
                 this.setState({memeList: res});
             });
         } else {
@@ -175,6 +184,12 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             }
         });
         this.interSectionRef.current.observe(lastElement);
+    }
+
+    onEditMeme(memeData) {
+        console.log("In on Edit Meme");
+        //console.log(memeData);
+        this.props.handleEditMeme(memeData);
     }
 
     render() {
@@ -203,6 +218,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                                 text2YPos={meme.text2YPos}
                                 text2Italic={meme.text2Italic}
                                 text2Color={meme.text2Color}
+                                onEditClicked={this.onEditMeme.bind(this)}
                             />;
                         } else {
                             return <MemeTile
@@ -224,6 +240,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                                 text2YPos={meme.text2YPos}
                                 text2Italic={meme.text2Italic}
                                 text2Color={meme.text2Color}
+                                onEditClicked={this.onEditMeme.bind(this)}
                             />
                         }
                     })
@@ -254,6 +271,7 @@ interface MemeTileProps {
     text2YPos: number,
     text2Italic: string,
     text2Color: string,
+    onEditClicked: any
 }
 interface MemeTileState {
     likes: number,
@@ -345,16 +363,28 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
             info = info.substring(0, 55) + "...";
         }
 
+        let memeObj = JSON.parse(JSON.stringify(this.props));
+        delete memeObj.onEditClicked;
+        delete memeObj.callback;
+        // console.log(memeObj);
+
         return (
             <div id="MemeTile">
                 <img className="ImageMeme" src={imageCanvas.toDataURL('image/png')} alt={this.props.title}></img>
                 <p className="TitleMeme">Title: {this.props.title}</p>
                 <p className="InfoMeme">Info: {info}</p>
-                <div className="likeContainer">
-                    <IconButton onClick={this.increaseLikeCount.bind(this)}>
-                        <ThumbUpIcon color={'success'}/>
-                    </IconButton>
-                    <a className="likeCount">{this.state.likes}</a>
+                <div className="lowerElements">
+                    <div className="likeContainer buttonColumn">
+                        <IconButton onClick={this.increaseLikeCount.bind(this)}>
+                            <ThumbUpIcon color={'success'}/>
+                        </IconButton>
+                        <a className="likeCount">{this.state.likes}</a>
+                    </div>
+                    <div className="EditContainer buttonColumn">
+                        <IconButton onClick={() => { this.props.onEditClicked(memeObj) }}>
+                            <CreateIcon color={'primary'}/>
+                        </IconButton>
+                    </div>
                 </div>
             </div>
         );

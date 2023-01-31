@@ -538,3 +538,21 @@ input[type=text] {
   text-align: center;
   font-family: "Arial Black";
 }
+
+.lowerElements {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.buttonColumn {
+  width: 50%;
+}
+
+.EditContainer {
+  display: flex;
+  justify-self: end;
+  float: right;
+  justify-content: end;
+  justify-items: end;
+}

@@ -65,6 +65,14 @@ class Editor extends Component {
         this.handleMemeEditClicked = this.handleMemeEditClicked.bind(this);
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        console.log("Component did update");
+        // console.log(this.props.receivedMemeData);
+        if(prevProps.receivedMemeData !== this.props.receivedMemeData) {
+            this.handleMemeEditClicked(this.props.receivedMemeData);
+        }
+    }
+
 
     handleGetImage = (image) => {
         this.state.imageFile = image;
@@ -172,32 +180,11 @@ class Editor extends Component {
 
     }
 
-    handleMemeEditClicked(){
+    handleMemeEditClicked(memeData){
         console.log("edit clicked");
-        var image = this.state.image;
-        var memeTestData = {
-            image,
-            imgWidth: 777,
-            imgHeight: 777,
-            text1: "HALLO",
-            text1XPos: 488,
-            text1YPos: 176,
-            text1Bold: "bold",
-            text1Italic: "",
-            text1Color: "#000",
-            text2: "TEST",
-            text2XPos: 42,
-            text2YPos: 437,
-            text2Bold: "",
-            text2Italic: "italic",
-            text2Color: "#FFF",
-            title: "editTestdata",
-        }
-        console.log(memeTestData);
 
-        //Ab hier wichtig, davor löschen
-        this.state.imageFile = memeTestData.image;
-        this.state.memeToEdit = memeTestData;
+        this.state.imageFile = memeData.base64Image;
+        this.state.memeToEdit = memeData;
         this.state.imageOption = "editMeme";
         this.setState({ hasImage: true });
     }
@@ -245,9 +232,6 @@ class EditorTopMenu extends Component {
                     onChange={this.imageUploadHandler}
                     ref={fileInput => this.fileInput = fileInput} />
                 <Fab className="upperBtn" id="btnFileUpload" variant="extended" size="medium" color="background" onClick={() => this.fileInput.click()}>
-                    <FileUploadIcon />
-                </Fab>
-                <Fab className="upperBtn" id="btnFileUpload" variant="extended" size="medium" color="background" onClick={this.props.handleMemeEditClicked}>
                     <FileUploadIcon />
                 </Fab>
                 <Fab className="upperBtn" id="btnCameraUpload" variant="extended" size="medium" color="background" onClick={this.props.webcamButtonClicked}>

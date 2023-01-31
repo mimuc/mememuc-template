@@ -14,6 +14,7 @@ import {useState} from "react";
 function MemePageIfLoggedIn () {
     const navigate = useNavigate();
     const [triggerUpdate, setTriggerUpdate] = useState(0);
+    const [updateMeme, setUpdateMeme] = useState({});
     const profileFabClicked = () => {
         console.log("Redirecting to Profilepage.");
         navigate('/profile');
@@ -24,11 +25,17 @@ function MemePageIfLoggedIn () {
         setTriggerUpdate(triggerUpdate + 1);
     };
 
+    const handleEditMeme = (memeData) => {
+        console.log("In MemePage-handleEditMeme");
+        // console.log(memeData);
+        setUpdateMeme(memeData);
+    }
+
     return (
         <div>
             <div className="Screenlayout" >
-                <HistoryAndTemplatesView updateTrigger={triggerUpdate}/>
-                <Editor handleImageUploaded={handleImageUploaded}/>
+                <HistoryAndTemplatesView updateTrigger={triggerUpdate} handleEditMeme={handleEditMeme}/>
+                <Editor handleImageUploaded={handleImageUploaded} receivedMemeData={updateMeme}/>
             </div>
             <Fab id="profileBtn" color="secondary" size="large" onClick={profileFabClicked}>
                 <Person2RoundedIcon fontSize="large"/>
