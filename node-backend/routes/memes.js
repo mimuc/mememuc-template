@@ -10,8 +10,9 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, generatePublicId} = require('../db/models');
+const {Meme, User, Template, Like, generatePublicId} = require('../db/models');
 const mongoose = require("mongoose");
+const {authenticate} = require('../db/authentication');
 
 const Image = Canvas.Image;
 
@@ -184,7 +185,6 @@ router.post('/', async function(req, res) {
     //const db = req.db;
     /* const users = db.get('users');
     const memes = db.get('memes'); */
-    // TODO: Convert URL on json get, and exclude base64 image
     // TODO: Add to metadata whether the currently authorised user liked the meme
     // TODO: Accept base64 as images .img
     // TODO: Set content type
@@ -369,29 +369,47 @@ router.get('/:publicId', async function(req, res, next) {
     .catch((e) => res.status(500).send());
   });
 
-router.put('/:publicId/like', async function(req, res, next) {
-// TODO: Like the meme with the currently authorised user.
+// Like the meme with the currently authorized user
+router.put('/:publicId/like', authenticate, async function(req, res, next) {
+    const username = req.username;
+    if(!username) return res.status(401).send();
+    const existingLike = await Like.findOne({ username, memePublicId: publicId });
+    if (existingLike) {
+        return res.status(204).send("Meme was already liked by the user");
+    }
 
-
+    const like = new Like({ username, memePublicId: publicId });
+    like.save()
+    .then(function() {
+        res.status(201).json({ message: 'Meme was liked by the user'});
+    })
+    .catch(function(error) {
+        res.status(500).send();
+    });
 });
 
-router.delete('/:publicId/like', async function(req, res, next) {
-// TODO: UnLike the meme with the currently authorised user.
-
-
+// Unlikes the meme with the currently authorized user
+router.delete('/:publicId/like', authenticate, async function(req, res, next) {
+    const username = req.username;
+    const like = await Like.findOneAndDelete({ username, memePublicId: publicId })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+    
+    if(like) return res.status(200).send();
+    else return res.status(204).send();
 });
 
-router.get('/:publicId/like', async function(req, res, next) {
-// TODO: Check if currently authorised user liked the meme
-
-
+// Checks whether the currently authorized user liked the meme
+router.get('/:publicId/like', authenticate, async function(req, res, next) {
+// TODO: Get username from somewhere else
+    
 });
 
 
 router.get('/', async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
     // TODO: Take out error sends
-    // TODO: Convert URL on json get, and exclude base64 image
 
     // Example request:
     // /memes?limit=50&skip=50&sort=newest

@@ -56,6 +56,11 @@ const Comment = mongoose.model('Comment', new mongoose.Schema({
     })
 );
 
+const Like = mongoose.model('Like', new mongoose.Schema({
+    username: { type: String, required: true },
+    memePublicId: { type: String, required: true } // Uses the publicId, because that requires less operations in this case
+    })
+);
 
 const uniqueId = () => {
     return Date.now() + '' + Math.floor(Math.random() * 100000);
@@ -78,5 +83,6 @@ module.exports = {
     User,
     Meme,
     Template,
+    Like,
     generatePublicId
 }
