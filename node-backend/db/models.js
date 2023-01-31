@@ -11,8 +11,7 @@ const User = mongoose.model('User', new mongoose.Schema({
         username: { type: String, required: true, unique: true },
         displayName: { type: String, required: true },
         password: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now },
-        likes: { type: Array, default: [] } // Array with ids of memes
+        createdAt: { type: Date, default: Date.now }
     })
 );
 
@@ -24,7 +23,7 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
         publicId: { type: String, required: true, unique: true },
         contentType: { type: String, default: 'image/png' }, // TODO: Make enum
         createdAt: { type: Date, default: Date.now },
-        likes: {type: Number, default: 0 }
+        //likes: {type: Number, default: 0 }
     }, 
     {
         id: false,
@@ -36,6 +35,11 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
 Meme.schema.virtual('url').get(function() {
     return `${url}${this.publicId}`;
 });
+
+const getLikes = async function(memePublicId) {
+    const likes = await Like.countDocuments({ memePublicId });
+    return likes;
+}
 
 const Template = mongoose.model('Template', new mongoose.Schema({
         name: { type: String, required: true, unique: true  },
@@ -84,5 +88,6 @@ module.exports = {
     Meme,
     Template,
     Like,
-    generatePublicId
+    generatePublicId,
+    getLikes
 }
