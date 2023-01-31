@@ -1,12 +1,18 @@
 var express = require('express');
 var router = express.Router();
 const axios = require('axios');
+const {authenticate} = require('../db/authentication');
 
 const {Template, generatePublicId} = require('../db/models');
 
-router.get('/', async function(req, res, next) {
-  // TODO: Restrict GET to templates the user can see
-  Template.find({})
+router.get('/', authenticate(false), async function(req, res, next) {
+
+  Template.find({
+    $or: [
+      { visibility: 'public' },
+      { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
+    ]
+  })
   .then((docs) => res.json(docs))
   .catch((e) => res.status(500).send())
 });
