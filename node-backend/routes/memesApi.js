@@ -28,4 +28,18 @@ router.post('/', function(req, res, next) {
     });
 });
 
+router.get("/all", function(req, res, next) {
+    fetch("https://api.imgflip.com/get_memes", {
+        method:"GET"
+    })
+    .then((data) => {
+        return data.json();
+    }).then((json) => {
+        let memeArray = json.data.memes;
+        //console.log(memeArray);
+        res.json(memeArray);
+    });
+
+});
+
 module.exports = router;

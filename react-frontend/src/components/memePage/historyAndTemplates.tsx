@@ -90,6 +90,18 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 this.setState({memeList: res});
             });
         } else {
+            fetch('http://localhost:3001/memesApi/all', {
+                method: 'GET',
+            }).then((res) => {
+                if(res.ok) {
+                    return res.json();
+                } else {
+                    console.log(res.status);
+                }
+            }).then((res) => {
+                console.log(res);
+                this.setState({memeList: res});
+            });
             // TODO: fetch data for template
         }
     }
