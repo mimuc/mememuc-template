@@ -34,9 +34,7 @@ router.get('/:name', authenticate(false), async function(req, res, next) {
   .catch((e) => res.status(500).send());
 });
 
-router.post('/', async function(req, res) {
-  // TODO: Requires authentication, uses username as creator
-  // TODO: Set creator field
+router.post('/', authenticate(), async function(req, res) {
   // TODO: Save text with positions
 
   if(!req.body.image && !req.body.url) {
@@ -48,7 +46,8 @@ router.post('/', async function(req, res) {
     name: req.body.name,
     visibility: req.body.visibility,
     image: req.body.image,
-    texts: req.body.texts
+    texts: req.body.texts,
+    creator: req.username
   }
 
   const existingTemplate = await Template.findOne({ name: templateData.name });
