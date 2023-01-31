@@ -17,11 +17,18 @@ router.get('/', authenticate(false), async function(req, res, next) {
   .catch((e) => res.status(500).send())
 });
 
-router.get('/:name', async function(req, res, next) {
-  // TODO: Throw error if the user has no permission to see the template
+router.get('/:name', authenticate(false), async function(req, res, next) {
   const name  = req.params.name;
   Template.findOne({ name })
-  .then((docs) => res.json(docs))
+  .then((doc) => {
+    if (!doc) {
+      return res.status(404).send({ error: "Template not found" });
+    }
+    if (doc.visibility === 'public' || ((doc.visibility === 'private' || doc.visibility === 'unlisted') && req.username === doc.creator) ) {
+      return res.json(doc);
+    }
+    return res.status(401).send();
+  })
   .catch((e) => res.status(500).send());
 });
 
