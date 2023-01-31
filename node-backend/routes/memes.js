@@ -10,7 +10,7 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, Like, generatePublicId} = require('../db/models');
+const {Meme, User, Template, Like, generatePublicId, getLikes} = require('../db/models');
 const mongoose = require("mongoose");
 const {authenticate} = require('../db/authentication');
 
@@ -364,13 +364,13 @@ router.post('/', async function(req, res) {
 router.get('/:publicId', authenticate(false), async function(req, res, next) {
 
     const publicId  = req.params.publicId;
-    Meme.findOne({ publicId })
-    .then(doc => {
+    Meme.findOne({ publicId }, EXCLUDE_PROPERTIES)
+    .then( async doc => {
         if (!doc) {
             return res.status(404).send({ error: "Meme not found" });
         }
         if (doc.visibility === 'public' || ((doc.visibility === 'private' || doc.visibility === 'unlisted') && req.username === doc.creator) ) {
-            return res.json(doc);
+            return res.json({...doc.toObject(), likes: await getLikes(doc.publicId)});
         }
         return res.status(401).send();
     })
@@ -485,7 +485,6 @@ router.get('/', authenticate(false), async function(req, res, next) {
                 if(config.creator) pipeline.push({$match: { creator: config.creator }});
 
                 documents = await Meme.aggregate(pipeline);
-                documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
                 break;
             }   
             case 'newest': // Same as oldest but with different sortOrder
@@ -518,7 +517,7 @@ router.get('/', authenticate(false), async function(req, res, next) {
                 if(config.creator) pipeline.push({$match: { creator: config.creator }})
 
                 documents = await Meme.aggregate(pipeline);
-                documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
+                //documents = documents.map(doc => Meme.hydrate(doc)); 
                 break;
             }
             default:
@@ -526,13 +525,16 @@ router.get('/', authenticate(false), async function(req, res, next) {
                 return;
         }
     }
-
+    
     // Document was no found
     if(!documents) {
         res.status(404).send();
         return;
     }
+    documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
+    documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), likes: await getLikes(doc.publicId)}) ) ); // Append the likes (this was surprisingly hard to to)
 
+    console.log("DOCS", documents)
     // Return the found memes
     switch(config.return) {
         case 'json':
