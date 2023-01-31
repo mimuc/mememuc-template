@@ -181,20 +181,16 @@ function generateName(username) {
 
 
 
-router.post('/', async function(req, res) {
-    //const db = req.db;
-    /* const users = db.get('users');
-    const memes = db.get('memes'); */
-    // TODO: Add to metadata whether the currently authorised user liked the meme
+router.post('/', authenticate(), async function(req, res) {
     // TODO: Accept base64 as images .img
     // TODO: Set content type
-    console.log("Post Request", req.body);
 
-    req.username = req.body.username; // TODO: ???
+    const username = req.username;
+    if(username == undefined) return res.status(401).send();
 
-    const existingUser = await User.findOne({ username: req.username });
+    const existingUser = await User.findOne({ username });
     if(!existingUser) {
-        res.status(401).send("User does not exist: " + req.username);
+        res.status(401).send("User does not exist: " + username);
         return;
     }
 
@@ -218,7 +214,7 @@ router.post('/', async function(req, res) {
         // Create nice, 0-padded names
         const paddedIndex = (i + 1).toString().padStart(templates.length.toString().length, '0');
         const data_default = {
-            memeName: generateName(req.username) + " " + paddedIndex,
+            memeName: generateName(username) + " " + paddedIndex,
             texts: ["ONE DOES NOT SIMPLY", "USE JS FOR BACKEND PROGRAMMING"], 
             images: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
             canvas: {
@@ -304,7 +300,7 @@ router.post('/', async function(req, res) {
         const storeMemes = createdMemes.map(m => {return {
             image: m.img, 
             visibility: config.store, 
-            creator: req.username, 
+            creator: username, 
             name: m.name,
             contentType: 'image/png', // TODO:
         }});
@@ -431,6 +427,7 @@ router.get('/:publicId/like', authenticate(), async function(req, res, next) {
 router.get('/', authenticate(false), async function(req, res, next) {
     // TODO: Check for privileges, whether unlisted/private should be shown
     // TODO: Take out error sends
+    // TODO: Add to metadata whether the currently authorised user liked the meme
 
     // Example request:
     // /memes?limit=50&skip=50&sort=newest
