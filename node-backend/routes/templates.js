@@ -5,6 +5,8 @@ const {authenticate} = require('../db/authentication');
 
 const {Template, generatePublicId} = require('../db/models');
 
+const EXCLUDE_PROPERTIES = { image: 0, _id: 0, __v: 0 };
+
 router.get('/', authenticate(false), async function(req, res, next) {
 
   Template.find({
@@ -12,14 +14,14 @@ router.get('/', authenticate(false), async function(req, res, next) {
       { visibility: 'public' },
       { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
     ]
-  })
+  }, EXCLUDE_PROPERTIES)
   .then((docs) => res.json(docs))
   .catch((e) => res.status(500).send())
 });
 
 router.get('/:name', authenticate(false), async function(req, res, next) {
   const name  = req.params.name;
-  Template.findOne({ name })
+  Template.findOne({ name }, EXCLUDE_PROPERTIES)
   .then((doc) => {
     if (!doc) {
       return res.status(404).send({ error: "Template not found" });
