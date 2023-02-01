@@ -1,10 +1,18 @@
 ## Endpoints
 
-- /templates
-- /memes            # POST
-    - <memeID>      # GET (comments, likes)
-        - /likes    # POST/DELETE (only one per user)
-        - /comments # POST/DELETE
+### Fully implemented
+
+- /templates                # GET/POST
+    - <templateName>        # GET
+- /memes                    # POST/GET (+ numComments, numLikes)
+    - <memeID>              # GET (+ numComments, numLikes)
+        - /like             # PUT/DELETE/GET (only one per user)
+        - /comments         # POST/GET
+            - <commentID>   # DELETE/GET
+
+
+### Not fully implemented
+
 - /users
     - /             # Shows all users
     - /<username>     # Shows specific user
@@ -18,6 +26,7 @@
 - /auth
     - /login        # POST/DELETE (login/logout)
     - /register     # POST/DELETE (create/delete account)
+    
 
 
 ## Schema
