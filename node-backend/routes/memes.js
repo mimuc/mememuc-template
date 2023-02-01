@@ -10,7 +10,7 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, Like, generatePublicId, getLikes} = require('../db/models');
+const {Meme, User, Template, Like, Comment, generatePublicId, getLikes, getNumComments} = require('../db/models');
 const mongoose = require("mongoose");
 const {authenticate} = require('../db/authentication');
 
@@ -368,10 +368,66 @@ router.get('/:publicId', authenticate(false), async function(req, res, next) {
         if ((doc.visibility === 'private') && req.username !== doc.creator ) {
             return res.status(401).send();
         }
-        return res.json({...doc.toObject(), likes: await getLikes(doc.publicId)});
+        return res.json({...doc.toObject(), likes: await getLikes(doc.publicId), comments: await getNumComments(doc.publicId)});
     })
     .catch((e) => res.status(500).send());
   });
+
+router.post('/:publicId/comments', authenticate(), async function(req, res, next) {
+    const username = req.username;
+    const memePublicId = req.params.publicId;
+    const content = req.body.content;
+    if(!content) return res.status(400).send("No content provided");
+    // TODO: Check visibility permissions of meme
+
+    if(username == undefined) return res.status(401).send();
+    const commentId = await generatePublicId(Comment, 'c');
+
+    const comment = new Comment({ username, memePublicId, content, publicId: commentId });
+    comment.save()
+    .then(function() {
+        return res.status(201).json({ message: 'Comment created'});
+    })
+    .catch(function(error) {
+        return res.status(500).send();
+    });
+});
+
+router.get('/:publicId/comments', authenticate(false), async function(req, res, next) {
+    // TODO: Check visibility permissions of meme
+    const memePublicId = req.params.publicId;
+    const comments = await Comment.find({ memePublicId }, { _id: 0, __v: 0 })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+    res.json(comments);
+});
+
+router.get('/:publicId/comments/:commentId', authenticate(false), async function(req, res, next) {
+    // TODO: Check visibility permissions of meme
+    const memePublicId = req.params.publicId;
+    const commentId = req.params.commentId;
+    const comments = await Comment.findOne({ memePublicId, publicId: commentId }, { _id: 0, __v: 0 })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+    res.json(comments);
+});
+
+router.delete('/:publicId/comments/:commentId', authenticate(), async function(req, res, next) {
+    const username = req.username;
+    const memePublicId = req.params.publicId;
+    const commentId = req.params.commentId;
+    if(username == undefined) return res.status(401).send();
+    const comment = await Comment.findOneAndDelete({ username, memePublicId, publicId: commentId })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+    
+    if(comment) return res.status(200).send();
+    else return res.status(204).send(); // FIXME: Correct status code?
+});
+
 
 // Like the meme with the currently authenticated user
 router.put('/:publicId/like', authenticate(), async function(req, res, next) {
@@ -386,7 +442,7 @@ router.put('/:publicId/like', authenticate(), async function(req, res, next) {
     });
 
     if (existingLike) {
-        return res.status(204).send("Meme was already liked by the user");
+        return res.status(204).send("Meme was already liked by the user"); // FIXME: Correct status code?
     }
 
     const like = new Like({ username, memePublicId });
@@ -410,7 +466,7 @@ router.delete('/:publicId/like', authenticate(), async function(req, res, next) 
     }); 
     
     if(like) return res.status(200).send();
-    else return res.status(204).send();
+    else return res.status(204).send(); // FIXME: Correct status code?
 });
 
 // Checks whether the authenticated user liked the meme
@@ -425,8 +481,6 @@ router.get('/:publicId/like', authenticate(), async function(req, res, next) {
 
 
 router.get('/', authenticate(false), async function(req, res, next) {
-    // TODO: Check for privileges, whether unlisted/private should be shown
-    // TODO: Take out error sends
     // TODO: Add to metadata whether the currently authorised user liked the meme
 
     // Example request:
@@ -543,7 +597,7 @@ router.get('/', authenticate(false), async function(req, res, next) {
         return;
     }
     documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
-    documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), likes: await getLikes(doc.publicId)}) ) ); // Append the likes (this was surprisingly hard to to)
+    documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), likes: await getLikes(doc.publicId), comments: await getNumComments(doc.publicId)}) ) ); // Append the likes (this was surprisingly hard to to)
 
     console.log("DOCS", documents)
     // Return the found memes
@@ -586,5 +640,5 @@ router.get('/', authenticate(false), async function(req, res, next) {
             return;
     }
 });
-console.log(process.env.DOMAIN)
+
 module.exports = router;

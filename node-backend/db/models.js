@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// TODO: Implement comment GET/POST
 
 const url = `http://localhost:3001/resources/images/`; // FIXME:
 
@@ -38,6 +37,11 @@ const getLikes = async function(memePublicId) {
     return likes;
 }
 
+const getNumComments = async function(memePublicId) {
+    const count = await Comment.countDocuments({ memePublicId });
+    return count;
+}
+
 const Template = mongoose.model('Template', new mongoose.Schema({
         name: { type: String, required: true, unique: true  },
         creator: { type: String },
@@ -60,9 +64,11 @@ Template.schema.virtual('url').get(function() {
 });
 
 const Comment = mongoose.model('Comment', new mongoose.Schema({
-    content: { type: String, required: true, unique: true  },
-    creator: { type: String },
-    createdAt: { type: Date, default: Date.now }
+    content: { type: String, required: true },
+    username: { type: String, required: true },
+    memePublicId: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    publicId: { type: String, required: true, unique: true },
     })
 );
 
@@ -94,6 +100,8 @@ module.exports = {
     Meme,
     Template,
     Like,
+    Comment,
     generatePublicId,
-    getLikes
+    getLikes,
+    getNumComments
 }
