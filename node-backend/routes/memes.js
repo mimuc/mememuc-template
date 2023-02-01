@@ -365,10 +365,10 @@ router.get('/:publicId', authenticate(false), async function(req, res, next) {
         if (!doc) {
             return res.status(404).send({ error: "Meme not found" });
         }
-        if (doc.visibility === 'public' || ((doc.visibility === 'private' || doc.visibility === 'unlisted') && req.username === doc.creator) ) {
-            return res.json({...doc.toObject(), likes: await getLikes(doc.publicId)});
+        if ((doc.visibility === 'private') && req.username !== doc.creator ) {
+            return res.status(401).send();
         }
-        return res.status(401).send();
+        return res.json({...doc.toObject(), likes: await getLikes(doc.publicId)});
     })
     .catch((e) => res.status(500).send());
   });
@@ -449,7 +449,17 @@ router.get('/', authenticate(false), async function(req, res, next) {
 
     if(config.id) {
         // ID was given. The meme with the id is return inside an array.
-        documents = await Meme.find({ _id: config.id }); // TODO: permissions
+        const publicId  = config.id;
+        documents = await Meme.find({ publicId }, EXCLUDE_PROPERTIES).catch((e) => res.status(500).send());
+        if(!documents) {
+            return res.status(404).send({ error: "Meme not found" });
+        }
+        for(const doc of documents) {
+            if (((doc.visibility === 'private') && req.username !== doc.creator) ) {
+                return res.status(401).send();
+            }
+        }
+        
     }
     else {
         // Search for the memes, according to the config options
