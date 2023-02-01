@@ -1,36 +1,60 @@
 import * as React from 'react';
 import { Component } from 'react';
 import Button from '@mui/material/Button';
-import {IconButton} from "@mui/material";
+import { IconButton } from "@mui/material";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
-class HistoryAndTemplatesView extends Component {
-    state = {};
+
+interface historyAndTemplatesViewState {
+    valueRendered: boolean
+}
+
+class HistoryAndTemplatesView extends Component<historyAndTemplatesViewState> {
+    constructor(props) {
+        super(props);
+        this.state = {
+            valueRendered: true
+        };
+        this.btnClickedCallback = this.btnClickedCallback.bind(this);
+    }
+
+    btnClickedCallback(value, event) {
+        this.setState({ valueRendered: value });
+        event.stopPropagation();
+    }
 
     render() {
         return (
             <div className="side" id="sideLeft">
-                <HistoryAndTemplatesMenu/>
-                <HistoryAndTemplatesList/>
+                <HistoryAndTemplatesMenu btnClickCallback={this.btnClickedCallback} />
+                <HistoryAndTemplatesList isHistory={this.state.valueRendered} />
             </div>
         )
-
     }
 }
 
-class HistoryAndTemplatesMenu extends Component {
+interface historyAndTemplatesMenuProps {
+    btnClickCallback: any
+}
 
-    state={activeListView: "History"};
+interface historyAndTemplateMenuState {
+    activeListView: String
+}
 
-    setListView(listView){
-        this.setState({activeListView: listView})
+class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, historyAndTemplateMenuState> {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            activeListView: "History"
+        }
     }
 
     render() {
         return (
             <div className="MemeMenu">
-                    <button type="button" id="historyBtn" onClick={() => {this.setListView("History")}}  className={(this.state.activeListView==="History")?"active":"notActive"}>HISTORY</button>
-                    <button type="button" id="templateBtn" onClick={() => {this.setListView("Templates")}} className={(this.state.activeListView==="Templates")?"active":"notActive"}>TEMPLATES</button>
+                <button type="button" id="historyBtn" onClick={(e) => this.props.btnClickCallback(true, e)} className={(this.state.activeListView === "History") ? "active" : "notActive"}>HISTORY</button>
+                <button type="button" id="templateBtn" onClick={(e) => this.props.btnClickCallback(false, e)} className={(this.state.activeListView === "Templates") ? "active" : "notActive"}>TEMPLATES</button>
             </div>
         );
     }
@@ -38,12 +62,12 @@ class HistoryAndTemplatesMenu extends Component {
 
 
 interface historyAndTemplateListProps {
-
+    isHistory: boolean
 }
 
 interface historyAndTemplateListState {
     showHistory: boolean,
-    memeList: any[],
+    memeList: any[]
 }
 
 class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, historyAndTemplateListState> {
@@ -51,28 +75,37 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
     constructor(props) {
         super(props);
         this.state = {
-            showHistory: true,
-            memeList: [],
+            showHistory: this.props.isHistory,
+            memeList: []
         };
+        this.loadMemeList();
+        this.resetMemeList = this.resetMemeList.bind(this);
+    }
+
+    resetMemeList(isHistory) {
+        console.log(isHistory);
+        this.setState({ showHistory: isHistory, memeList: [] }, this.stateSet)
+    }
+
+    stateSet() {
+        console.log("current state: ");
+        console.log(this.state);
         this.loadMemeList();
     }
 
-    showTemplates() {
-        if(this.state.showHistory) {
-            this.setState({showHistory: false, memeList: []});
-            this.loadMemeList();
-        }
-    }
-
-    showHistory() {
-        if(!this.state.showHistory) {
-            this.setState({showHistory: true, memeList: []});
-            this.loadMemeList();
+    componentDidUpdate(prevProps: Readonly<historyAndTemplateListProps>, prevState: Readonly<historyAndTemplateListState>, snapshot?: any): void {
+        if (prevProps.isHistory !== this.props.isHistory) {
+            console.log("Checking props: ");
+            console.log(this.props);
+            this.resetMemeList(this.props.isHistory);
         }
     }
 
     loadMemeList() {
-        if(this.state.showHistory) {
+        console.log("MEME List loading.... ")
+        console.log(this.state.showHistory);
+        if (this.state.showHistory) {
+            console.log("Catching old meme data");
             fetch('http://localhost:3001/createdMemes/all', {
                 method: 'GET',
                 headers: {
@@ -80,40 +113,56 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 },
                 credentials: "include",
             }).then((res) => {
-                if(res.ok) {
+                if (res.ok) {
                     return res.json();
                 } else {
                     console.log(res.status);
                 }
             }).then((res) => {
                 console.log(res);
-                this.setState({memeList: res});
+                this.setState({ memeList: res });
             });
         } else {
+            console.log("Catching api meme data");
             fetch('http://localhost:3001/memesApi/all', {
                 method: 'GET',
             }).then((res) => {
-                if(res.ok) {
+                if (res.ok) {
                     return res.json();
                 } else {
                     console.log(res.status);
                 }
             }).then((res) => {
                 console.log(res);
-                this.setState({memeList: res});
+                this.setState({ memeList: res });
             });
-            // TODO: fetch data for template
         }
     }
 
     render() {
         return (
             <div className="MemeList">
-                {
-                    this.state.memeList.map((meme) => {
-                        return <MemeTile uid={meme._id} key={meme} base64Image={meme.image} title={meme.title} likes={meme.likes}/>
-                    })
-                }
+                {this.state.memeList.map((meme) => (
+                    <div key={meme.id}>
+                        {this.state.showHistory ? (
+                            <MemeTile
+                                uid={meme._id}
+                                key={meme}
+                                base64Image={meme.image}
+                                title={meme.title}
+                                likes={meme.likes}
+                            />
+                        ) : (
+                            <MemeTile
+                                uid={meme.id}
+                                key={meme.id}
+                                base64Image={meme.url}
+                                title={meme.name}
+                                likes={0}
+                            />
+                        )}
+                    </div>
+                ))}
             </div>
         );
     }
@@ -133,11 +182,11 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
 
     constructor(props) {
         super(props);
-        this.state = {likes: this.props.likes};
+        this.state = { likes: this.props.likes };
     }
 
     private updateLikeDisplay() {
-        this.setState({likes: this.state.likes + 1});
+        this.setState({ likes: this.state.likes + 1 });
     }
 
     increaseLikeCount() {
@@ -191,7 +240,7 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
                 <p className="InfoMeme">Info: {this.props.title}</p>
                 <div className="likeContainer">
                     <IconButton onClick={this.increaseLikeCount.bind(this)}>
-                        <ThumbUpIcon color={'success'}/>
+                        <ThumbUpIcon color={'success'} />
                     </IconButton>
                     <a className="likeCount">{this.state.likes}</a>
                 </div>
