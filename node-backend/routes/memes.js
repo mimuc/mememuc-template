@@ -307,7 +307,7 @@ router.post('/', authenticate(), async function(req, res) {
 
         let publicIdSet = new Set();
         for(const m of storeMemes) {
-            m.publicId = 'm' + await generatePublicId(Meme, publicIdSet);
+            m.publicId = await generatePublicId(Meme, 'm', publicIdSet);
         }
 
         Meme.create(storeMemes)

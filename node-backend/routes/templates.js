@@ -72,7 +72,7 @@ router.post('/', authenticate(), async function(req, res) {
     templateData.image = Buffer.from(templateData.image, 'base64');
   }
   
-  templateData.publicId = 't' + await generatePublicId(Template);
+  templateData.publicId = await generatePublicId(Template, 't');
   
   const template = new Template(templateData);
     

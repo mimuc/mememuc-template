@@ -76,9 +76,9 @@ const uniqueId = () => {
     return Date.now() + '' + Math.floor(Math.random() * 100000);
 }
 
-const generatePublicId = async (model, publicIdSet) => {
+const generatePublicId = async (model, identifier="", publicIdSet) => {
 
-    let publicId = uniqueId();
+    let publicId = identifier + uniqueId();
     let document = await model.findOne({ publicId });
     
     while(document || (publicIdSet ? publicIdSet.has(publicId) : false)) { // Ensure that the publicId is unique
