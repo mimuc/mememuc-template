@@ -9,6 +9,7 @@ export default function Navbar(){
         <CustomLink to = "/create">Create</CustomLink>
         <CustomLink to = "/discover">Discover</CustomLink>
         <CustomLink to = "/profile">Profile</CustomLink>
+        <CustomLink to = "/editor">Editor</CustomLink>
     </ul>
 </nav>;
 };
