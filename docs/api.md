@@ -3,7 +3,7 @@
 ### Fully implemented
 
 - /templates                # GET/POST
-    - <templateName>        # GET
+    - [templateName]        # GET
 - /memes                    # POST/GET (+ numComments, numLikes)
     - <memeID>              # GET (+ numComments, numLikes)
         - /like             # PUT/DELETE/GET (only one per user)
