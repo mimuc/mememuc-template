@@ -26,10 +26,10 @@ router.get('/:name', authenticate(false), async function(req, res, next) {
     if (!doc) {
       return res.status(404).send({ error: "Template not found" });
     }
-    if (doc.visibility === 'public' || ((doc.visibility === 'private' || doc.visibility === 'unlisted') && req.username === doc.creator) ) {
-      return res.json(doc);
+    if ((doc.visibility === 'private') && req.username !== doc.creator ) {
+      return res.status(401).send();
     }
-    return res.status(401).send();
+    return res.json(doc);
   })
   .catch((e) => res.status(500).send());
 });
