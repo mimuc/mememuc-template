@@ -238,12 +238,15 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
                 <img className="ImageMeme" src={this.props.base64Image} alt={this.props.title}></img>
                 <p className="TitleMeme">Title: {this.props.title}</p>
                 <p className="InfoMeme">Info: {this.props.title}</p>
-                <div className="likeContainer">
-                    <IconButton onClick={this.increaseLikeCount.bind(this)}>
-                        <ThumbUpIcon color={'success'} />
-                    </IconButton>
-                    <a className="likeCount">{this.state.likes}</a>
-                </div>
+                {this.state.likes ?
+                    <div className="likeContainer">
+                        <IconButton onClick={this.increaseLikeCount.bind(this)}>
+                            <ThumbUpIcon color={'success'} />
+                        </IconButton>
+                        <a className="likeCount">{this.state.likes}</a>
+                    </div>
+                    : <></>
+                }
             </div>
         );
     }
