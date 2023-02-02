@@ -63,10 +63,12 @@ interface historyAndTemplateListState {
     loading: boolean,
     error: boolean,
     hasMore: boolean,
+    loadingText: string
 }
 
 class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, historyAndTemplateListState> {
-    private interSectionRef: React.RefObject<IntersectionObserver | null>;
+    private intersectionRef: React.RefObject<any>;
+    private observer;
 
     constructor(props) {
         super(props);
@@ -74,11 +76,13 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             showHistory: true,
             memeList: [],
             page: 0,
-            loading: true,
+            loading: false,
             error: false,
             hasMore: true,
+            loadingText: "loading..."
         };
-        this.interSectionRef = React.createRef();
+        this.intersectionRef = React.createRef();
+        this.observer = new IntersectionObserver(this.reloadIntersectionCallback.bind(this));
     }
 
     componentDidMount() {
@@ -108,12 +112,13 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
 
     loadNextMemes() {
         console.log("Loading memes...");
-        if (this.state.hasMore) {
+        if (this.state.hasMore && !this.state.loading) {
             this.setState({loading: true, error: false});
             let data = {
                 page: this.state.page,
                 pageSize: 6, // TODO: Select 2*visible
             }
+            console.log(data);
             // console.log(data);
             if(this.state.showHistory) {
                 fetch('http://localhost:3001/createdMemes/next', {
@@ -133,6 +138,13 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 }).then((res) => {
                     // console.log(res);
                     // this.setState({memeList: res});
+                    console.log(res);
+                    for (let i = 0; i < this.state.memeList.length; i++) {
+                        if (this.state.memeList[i]._id === res.nextMemes[0]._id) {
+                            console.log("Meme already in list");
+                            return;
+                        }
+                    }
                     this.setState({
                         memeList: [...this.state.memeList, ...res.nextMemes],
                         loading: false,
@@ -140,6 +152,11 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                         hasMore: res.hasMore,
                         page: this.state.page + 1,
                     });
+                    if (!res.hasMore) {
+                        this.setState({
+                            loadingText: "All memes loaded."
+                        });
+                    }
                 })
                 .catch((err) => {
                     this.setState({loading: false, error: true});
@@ -174,16 +191,25 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         }
     }
 
-    intersectionCallback(lastElement) {
+    reloadIntersectionCallback(entries) {
+        if(entries[0].isIntersecting && this.state.hasMore) {
+            console.log("Intersecting");
+            console.log(this.intersectionRef.current);
+            this.observer.unobserve(this.intersectionRef.current);
+            this.loadNextMemes();
+        }
+        if (!this.state.hasMore) {
+            console.log("No more");
+        }
+    }
+
+    initialIntersectionCallback() {
+        this.intersectionRef.current = document.querySelector(".MemeList").lastChild;
+        console.log(this.intersectionRef);
         if (this.state.loading) return;
-        if (this.interSectionRef.current) this.interSectionRef.current.disconnect();
-        // @ts-ignore
-        this.interSectionRef.current = new IntersectionObserver(entries => {
-            if(entries[0].isIntersecting && this.state.hasMore) {
-                this.loadNextMemes();
-            }
-        });
-        this.interSectionRef.current.observe(lastElement);
+        // if (this.interSectionRef.current) this.interSectionRef.current.disconnect();
+        this.observer = new IntersectionObserver(this.reloadIntersectionCallback.bind(this));
+        this.observer.observe(this.intersectionRef.current);
     }
 
     onEditMeme(memeData) {
@@ -193,16 +219,16 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
     }
 
     render() {
-        this.state.memeList.reverse();
+        // this.state.memeList.reverse();
         return (
             <div className="MemeList">
                 {
                     this.state.memeList.map((meme, index) => {
-                        if(index === this.state.memeList.length) {
+                        if(index === this.state.memeList.length-1) {
                             return <MemeTile
                                 uid={meme._id}
-                                callback={this.intersectionCallback.bind(this)}
-                                key={meme}
+                                callback={this.initialIntersectionCallback.bind(this)}
+                                key={meme._id}
                                 base64Image={meme.image}
                                 title={meme.title}
                                 likes={meme.likes}
@@ -245,7 +271,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                         }
                     })
                 }
-                <div>{this.state.loading && 'Loading...'}</div>
+                <div id="loadingText">{this.state.loading && this.state.loadingText}</div>
                 <div>{this.state.error && 'ERROR!'}</div>
             </div>
         );
@@ -282,7 +308,9 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
         super(props);
         this.state = {likes: this.props.likes};
         if (this.props.callback != -1) {
-            this.props.callback(this);
+            console.log("Last Meme: ");
+            console.log(this);
+            this.props.callback();
         }
     }
 

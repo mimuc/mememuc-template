@@ -84,12 +84,15 @@ router.post('/next', function (req, res) {
     const allMemes = createdMemes.find({})
         .then((docs) => {
             docs = docs.reverse();
-            console.log(docs[offset * size].title);
             const nextMemes = docs.slice(offset * size, offset * size + size);
+            console.log("Low index: " + offset * size + " high index: " + (offset * size + size))
+            console.log(nextMemes.length);
             let hasMore = true;
+            console.log(nextMemes[nextMemes.length-1].title);
             if (offset * size + size >= docs.length) {
                 hasMore = false;
             }
+            console.log("Has more: " + hasMore);
             const nextResponse = {
                 nextMemes,
                 hasMore
