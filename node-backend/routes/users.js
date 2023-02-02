@@ -22,10 +22,9 @@ router.get('/:username', async function(req, res, next) {
     return res.status(500).send();
   }
   if(!user) {
-    res.status(404).send("User not found");
+    return res.status(404).send("User not found");
   }
-  res.json({...user.toObject(), likesCount: await user.getLikesCount(), commentCount: await user.getCommentsCount(), memesCount: await user.getMemesCount()});
-
+  return res.json({...user.toObject(), likesCount: await user.getLikesCount(), commentCount: await user.getCommentsCount(), memesCount: await user.getMemesCount()});
 });
 
 router.get('/:username/memes', async function(req, res, next) {
@@ -39,7 +38,7 @@ router.get('/:username/memes', async function(req, res, next) {
     return res.status(500).send();
   }
   if(!user) {
-    res.status(404).send("User not found");
+    return res.status(404).send("User not found");
   }
   req.query = {
     sort: 'newest',
