@@ -13,14 +13,17 @@
     - /             # GET Shows all users
     - /[username]   # GET Shows specific user (+ likeCount, commentCount, memesCount)
         - /memes    # GET
+- /my
+    - /             # GET (user profile)
+    - /templates    # GET
+    - /memes        # GET
 
 ### Not fully implemented
 
 
 - /my
-    - /
-    - /templates    # GET/POST
-    - /memes        # GET/POST
+    - /templates    # POST
+    - /memes        # POST
     - /feed         # user personalized memes, friends, etc.
 - /auth
     - /login        # POST/DELETE (login/logout)
