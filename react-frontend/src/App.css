@@ -213,6 +213,30 @@ div.MemeList{
   box-shadow: 3px 3px 8px #060606;
 }
 
+.ShuffleMenu {
+  display: flex;
+  flex-flow: row;
+}
+
+.shuffleBtn {
+  margin: 0vh .35vw !important;
+  margin-bottom: 1.1vh !important;
+  padding: .7vh .7vw !important;
+  background-color: #333 !important;
+  color: white !important;
+}
+
+.shuffleBtn:disabled {
+  background-color: #444;
+  color:#555 !important;
+}
+
+#shuffleText {
+  margin-top: .6vh !important;
+  margin-left: 1.2vw !important;
+  color: white;
+}
+
 .leftBtn {
   margin: 1vh .35vw !important;
   margin-left: .5vw !important;
