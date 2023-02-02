@@ -2,47 +2,55 @@ var express = require('express');
 const mongoose = require('mongoose');
 var router = express.Router();
 
-const {User} = require('../db/models');
+const {User, handleGetMemeRequest} = require('../db/models');
 
+const EXCLUDE_PROPERTIES = { password: 0, _id: 0, __v: 0 };
 
 router.get('/', async function(req, res, next) {
-  User.find({})
-  .select('-password -basicauthtoken')
-  .then((docs) => res.json(docs))
-  .catch((e) => res.status(500).send())
-});
-
-router.get('/:username', async function(req, res, next) {
-  const username  = req.params.username;
-  User.findOne({ username })
-  .select('-password -basicauthtoken')
+  User.find({}, EXCLUDE_PROPERTIES)
   .then((docs) => res.json(docs))
   .catch((e) => res.status(500).send());
 });
 
-// TODO: DEBUG For user creation
-router.post('/', async function(req, res) {
-  const { username } = req.body;
-
-  const existingUser = await User.findOne({ username });
-
-  if (!existingUser) {
-      const user = new User(req.body);
-      user.save()
-      .then(function() {
-        res.status(201).json({ message: 'User created' });
-      })
-      .catch(function(error) {
-          if (error.name === 'ValidationError') {
-              res.status(400).send();
-          } else {
-              res.status(500).send();
-          }
-      });
-      
-  } else {
-      res.status(400).json({ message: 'User already exists' });
+router.get('/:username', async function(req, res, next) {
+  const username  = req.params.username;
+  let user;
+  try {
+    user = await User.findOne({ username }, EXCLUDE_PROPERTIES)
   }
+  catch {
+    return res.status(500).send();
+  }
+  if(!user) {
+    res.status(404).send("User not found");
+  }
+  res.json({...user.toObject(), likesCount: await user.getLikesCount(), commentCount: await user.getCommentsCount(), memesCount: await user.getMemesCount()});
+
 });
+
+router.get('/:username/memes', async function(req, res, next) {
+  const username  = req.params.username;
+
+  let user;
+  try {
+    user = await User.findOne({ username }, EXCLUDE_PROPERTIES)
+  }
+  catch {
+    return res.status(500).send();
+  }
+  if(!user) {
+    res.status(404).send("User not found");
+  }
+  req.query = {
+    sort: 'newest',
+    limit: req.query.limit ? req.query.limit : 10,
+    creator: username,
+    skip: req.query.skip ? req.query.skip : 0,
+    return: 'json'
+  };
+
+  handleGetMemeRequest(req,res,next);
+});
+
 
 module.exports = router;
