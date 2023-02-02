@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 var router = express.Router();
 
 const {User, handleGetMemeRequest} = require('../db/models');
+const {authenticate} = require('../db/authentication');
 
 const EXCLUDE_PROPERTIES = { password: 0, _id: 0, __v: 0 };
 
