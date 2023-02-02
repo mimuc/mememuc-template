@@ -35,6 +35,7 @@ var templatesRouter = require('./routes/templates');
 var memesRouter = require('./routes/memes');
 var resourcesRouter = require('./routes/resources');
 var authRouter = require('./routes/auth');
+var myRouter = require('./routes/my');
 
 var app = express();
 
@@ -77,6 +78,7 @@ app.use('/users', usersRouter);
 app.use('/templates', templatesRouter);
 app.use('/resources', resourcesRouter);
 app.use('/auth', authRouter);
+app.use('/my', myRouter);
 
 app.use(bodyParser.json());
 app.use('/memes', memesRouter);
