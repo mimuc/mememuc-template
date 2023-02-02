@@ -173,7 +173,7 @@ const handleGetMemeRequest = async (req, res, next) => {
                 ];
 
                 // Restrict to creator parameter
-                if(config.creator) pipeline.push({$match: { creator: config.creator }});
+                if(config.creator) pipeline.unshift({$match: { creator: config.creator }});
 
                 documents = await Meme.aggregate(pipeline);
                 break;
@@ -194,10 +194,10 @@ const handleGetMemeRequest = async (req, res, next) => {
                         $sort: { createdAt: sortOrder }
                     },
                     {
-                        $limit: config.limit
+                        $skip: config.skip
                     },
                     {
-                        $skip: config.skip
+                        $limit: config.limit
                     },
                     {
                         $project: MEME_EXCLUDE_PROPERTIES
@@ -205,7 +205,7 @@ const handleGetMemeRequest = async (req, res, next) => {
                 ];
 
                 // Restrict to creator parameter
-                if(config.creator) pipeline.push({$match: { creator: config.creator }})
+                if(config.creator) pipeline.unshift({$match: { creator: config.creator }})
 
                 documents = await Meme.aggregate(pipeline);
                 //documents = documents.map(doc => Meme.hydrate(doc)); 
