@@ -10,7 +10,7 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, Like, Comment, generatePublicId, getLikes, getNumComments} = require('../db/models');
+const {Meme, User, Template, Like, Comment, generatePublicId, getLikes, getNumComments, handleGetMemeRequest} = require('../db/models');
 const mongoose = require("mongoose");
 const {authenticate} = require('../db/authentication');
 
@@ -184,6 +184,7 @@ function generateName(username) {
 router.post('/', authenticate(), async function(req, res) {
     // TODO: Accept base64 as images .img
     // TODO: Set content type
+    // TODO: Fix generated names. It should be memeCount + 1 (no zero padding anymore)
 
     const username = req.username;
     if(username == undefined) return res.status(401).send();
