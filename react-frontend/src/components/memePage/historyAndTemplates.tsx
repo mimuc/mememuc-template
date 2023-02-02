@@ -91,22 +91,20 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
 
     componentDidUpdate(prevProps: Readonly<historyAndTemplateListProps>, prevState: Readonly<historyAndTemplateListState>, snapshot?: any) {
         if (prevProps.updateTrigger !== this.props.updateTrigger) {
-            this.setState({memeList: [], page: 0})
-            this.loadNextMemes();
+            console.log("Memelist updated");
+            this.setState({memeList: [], page: 0, hasMore: true}, () => this.loadNextMemes());
         }
     }
 
     showTemplates() {
         if(this.state.showHistory) {
-            this.setState({showHistory: false, memeList: [], page: 0});
-            this.loadNextMemes();
+            this.setState({showHistory: false, memeList: [], page: 0, hasMore: true}, () => this.loadNextMemes());
         }
     }
 
     showHistory() {
         if(!this.state.showHistory) {
-            this.setState({showHistory: true, memeList: [], page: 0});
-            this.loadNextMemes();
+            this.setState({showHistory: true, memeList: [], page: 0, hasMore: true}, () => this.loadNextMemes());
         }
     }
 
@@ -224,7 +222,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             <div className="MemeList">
                 {
                     this.state.memeList.map((meme, index) => {
-                        if(index === this.state.memeList.length-1) {
+                        if(index === this.state.memeList.length-3) {
                             return <MemeTile
                                 uid={meme._id}
                                 callback={this.initialIntersectionCallback.bind(this)}
