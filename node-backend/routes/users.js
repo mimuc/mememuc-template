@@ -27,7 +27,7 @@ router.get('/:username', async function(req, res, next) {
   return res.json({...user.toObject(), likesCount: await user.getLikesCount(), commentCount: await user.getCommentsCount(), memesCount: await user.getMemesCount()});
 });
 
-router.get('/:username/memes', async function(req, res, next) {
+router.get('/:username/memes', authenticate(false), async function(req, res, next) {
   const username  = req.params.username;
 
   let user;
