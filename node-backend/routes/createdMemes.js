@@ -55,7 +55,7 @@ router.post('/like', function (req, res) {
     const db = req.db;
     const createdMemes = db.get('createdMemes');
     createdMemes.find({_id: req.body.uid}).then((docs) => {
-        console.log(typeof docs);
+        // console.log(typeof docs);
         let currLikes = docs[0].likes;
         createdMemes.update({_id: req.body.uid}, {$set: {likes: currLikes + 1}});
         console.log('updated likes');
@@ -85,14 +85,14 @@ router.post('/next', function (req, res) {
         .then((docs) => {
             docs = docs.reverse();
             const nextMemes = docs.slice(offset * size, offset * size + size);
-            console.log("Low index: " + offset * size + " high index: " + (offset * size + size))
-            console.log(nextMemes.length);
+            // console.log("Low index: " + offset * size + " high index: " + (offset * size + size))
+            // console.log(nextMemes.length);
             let hasMore = true;
-            console.log(nextMemes[nextMemes.length-1].title);
+            // console.log(nextMemes[nextMemes.length-1].title);
             if (offset * size + size >= docs.length) {
                 hasMore = false;
             }
-            console.log("Has more: " + hasMore);
+            // console.log("Has more: " + hasMore);
             const nextResponse = {
                 nextMemes,
                 hasMore
