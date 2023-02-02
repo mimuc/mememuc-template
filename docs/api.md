@@ -9,15 +9,14 @@
         - /like             # PUT/DELETE/GET (only one per user)
         - /comments         # POST/GET
             - [commentID]   # DELETE/GET
-
+- /users
+    - /             # GET Shows all users
+    - /[username]   # GET Shows specific user (+ likeCount, commentCount, memesCount)
+        - /memes    # GET
 
 ### Not fully implemented
 
-- /users
-    - /             # Shows all users
-    - /[username]     # Shows specific user
-        - /         # Show profile
-        - /memes    # GET
+
 - /my
     - /
     - /templates    # GET/POST
