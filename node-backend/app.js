@@ -9,6 +9,7 @@ const fs = require('fs');
 // ### Your backend project has to switch the MongoDB port like this
 // ### Thus copy paste this block to your project
 const MONGODB_PORT = process.env.DBPORT || '27017';
+
 const db = require('monk')(`127.0.0.1:${MONGODB_PORT}/omm-2223`);// connect to database omm-2021
 db.then(() => {
   console.log('Successfully connected to the database omm-2223');
@@ -21,6 +22,7 @@ db.then(() => {
 }).catch(error => {
   console.error('Error connecting to the database: ', error);
 });
+
 console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
 
 // ######
