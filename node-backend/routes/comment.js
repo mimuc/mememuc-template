@@ -49,4 +49,24 @@ router.get('/:user_id', (req, res) => {
 });
 
 
+//search comments from a post_id
+router.get('/:comment_id', (req, res) => {
+    const db = req.db;
+    const posts = db.collection('comments');
+    posts.find({ user_id: req.params.comment_id }).toArray()
+    .then(post => {
+        if (!posts || !posts.length) {
+            res.status(404).send('Post not found');
+            return;
+        }
+        // Send the post as a response
+        res.status(200).json(post);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).send('Error retrieving post');
+    });
+});
+
+
 module.exports = router;

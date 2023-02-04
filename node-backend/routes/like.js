@@ -11,7 +11,7 @@ router.post('/create', function(req, res, next) {
         post_id: data.post_id,
         user_id: data.user_id,
         date: data.date,
-        genre: "like"
+        genre: data.genre
     
     
     

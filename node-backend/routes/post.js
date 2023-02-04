@@ -90,6 +90,52 @@ router.get('/gethistory/:user_id', (req, res) => {
 
 
 
+async function performRedirects(comments) {
+    const redirects = comments.map((id) => {
+      return new Promise((resolve, reject) => {
+        res.redirect(307, `/comment/${id}`, () => {
+          resolve();
+        });
+      });
+    });
+  
+    await Promise.all(redirects);
+  }
+
+// get comments from a post id using a counter 
+
+router.get('/getcomments/:post_id', (req, res) => {
+    const db = req.db;
+    const images = db.collection('posts');
+    const commentsid = [];
+    const comments =[];
+    const counter = req.query.counter;
+    images.find({ _id: ObjectId(req.params.post_id) }, { comments: { $slice: [counter, -1] } }).then (post => {
+        
+        if (!post) {
+            res.status(404).send('Image not found');
+            return;
+        }
+        commentsid.append(...post.comments)
+        
+        let results = [];
+        comments.forEach((id) => {
+        fetch(`/comment/${id}`)
+        .then(res => res.json())
+        .then(data => {
+            results.push(data);
+        });
+});
+
+
+        }).catch(err =>{
+            console.log(err);
+            res.status(500).send('Error getting history');
+
+        });
+});
+
+
 
 module.exports = router;
         
