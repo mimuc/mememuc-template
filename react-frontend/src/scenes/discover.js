@@ -13,10 +13,11 @@ const style = {
 
 const Discover =() =>{
     //like button function
-    //need to set it to the like of the specific post
+    //need to set usestate of 'like' to the # of the specific post
     const [like, setLike] = useState(456),
     [isLike, setIsLike] = useState(false),
     
+    // function for when the like button is clicked
     onLikeButtonClick = () => {
         setLike(like + (isLike ? -1 : 1));
         setIsLike (!isLike);
@@ -34,11 +35,6 @@ const Discover =() =>{
     
     const [comExp, setComExp] = useState(false),
     onCommentButtonClick = () => {
-        <Input
-        
-        placeholder="Type in your comment here"
-        
-      />
         setComExp (!comExp);
     }
     
