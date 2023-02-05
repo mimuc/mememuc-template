@@ -6,7 +6,7 @@ export default function Create() {
     return(
     <>
         <h1>Create</h1>
-        <button onClick={() => navigate('/discover')}>Editor</button>
+        <button onClick={() => navigate('/discover')}>Click me</button>
     </>
     ) 
 }
