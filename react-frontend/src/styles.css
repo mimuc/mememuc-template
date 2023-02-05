@@ -57,9 +57,36 @@ body{
 
 .square {
     display: flex;
-    width: 100px;
-    height: 100px;
-    background-color: red;
+    align-items: center;
+    justify-content: center;
+    width: 30%;
+    aspect-ratio: 1;
+    background-color: rgb(148, 148, 148);
   }
+
+.postbox{
+    background-color: #d4d4d4;
+    border: "3px #40A62F";
+    margin: 20;
+    padding: 20;
+}
+
+.username{
+    color:#40A62F;
+    display:flex;
+    font-weight: 500;
+    justify-content: space-between;
+    align-items:stretch;
+    font-style: italic;
+}
+
+.postdescr{
+    color:#2c2c2c;
+    display:flex;
+    font-weight: 400;
+    justify-content: space-between;
+    align-items:stretch;
+    font-style: italic;
+}
 
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Button from "../components/button";
-import Input from "../components/input";
+import Post from "../components/post";
+
 
 const style = {
     border:"3px solid green",
@@ -12,36 +12,6 @@ const style = {
 
 
 const Discover =() =>{
-    //like button function
-    //need to set it to the like of the specific post
-    const [like, setLike] = useState(456),
-    [isLike, setIsLike] = useState(false),
-    
-    onLikeButtonClick = () => {
-        setLike(like + (isLike ? -1 : 1));
-        setIsLike (!isLike);
-        if (isDislike){setDislike (dislike - 1); setIsDislike(!isDislike)};
-    }
-
-    const [dislike, setDislike] = useState(12),
-    [isDislike, setIsDislike] = useState(false),
-    
-    onDislikeButtonClick = () => {
-        setDislike(dislike + (isDislike ? -1 : 1));
-        setIsDislike (!isDislike);
-        if (isLike){setLike (like - 1); setIsLike(!isLike)};
-    }
-    
-    const [comExp, setComExp] = useState(false),
-    onCommentButtonClick = () => {
-        <Input
-        
-        placeholder="Type in your comment here"
-        
-      />
-        setComExp (!comExp);
-    }
-    
     //Add in the data source from the posts here
     const [dataSource, setDataSource] = useState(Array.from({length:10}))
     const [hasMore, setHasMore] = useState(true)
@@ -56,7 +26,11 @@ const Discover =() =>{
             setHasMore(false);
         }
     }
-    return <><h1>Wow look at these memes :o</h1><InfiniteScroll 
+    // Need to replace infinite scroll with list of posts. One post example from the por=st component is at the top
+    return <>
+    <h1>Wow look at these memes :o</h1>
+    <Post></Post>
+    <InfiniteScroll 
         dataLength={dataSource.length} 
         next={fetchMoreData} 
         hasMore={hasMore}
@@ -67,60 +41,6 @@ const Discover =() =>{
             return( 
             <div style={style}>
                 This is post #{index+1} inside the infinite scroll
-                
-                <div class = 'parent'
-                style= {{
-                    display: "flex",
-                    justifyContent: "right",
-                    gap: "30px",
-                }}>
-                <div class ='child'
-                style= {{
-                    display: "inline-block",
-                    gap: "15px",
-                }}>
-                <Button 
-                    variant = {isLike? "liked":"like"}
-                    onClick = {onLikeButtonClick}
-                    >
-                        ▲ {like}
-                    </Button>
-                <Button                    
-                    variant = {isDislike? "disliked":"dislike"}
-                    onClick = {onDislikeButtonClick}
-                    >
-                        ▼ {dislike}
-                    </Button>
-                </div>
-                <div class = 'child'
-                style= {{
-                    display: "inline-block",
-                    alignItems: "right",
-                    justifyContent: "right",
-                    gap: "10px",
-                }}>
-                <Button
-                //if(comExp)  
-                // bool for whether comment button is changed, if yes, expand just like for likes and dislikes
-                    variant ={comExp? "dark":"light"}
-                    onClick = {onCommentButtonClick}
-                    >
-                        Comments
-                 </Button>  
-                </div>
-                </div>
-                <div style= {{
-                    display: "flex",
-                    justifyContent: "left",
-                    gap: "20px",
-                }}>
-                
-                {comExp? 
-                <Input
-                placeholder="Type your comment here..."/>
-                :""}
-                
-                </div>            
             </div>
             );
         })}
