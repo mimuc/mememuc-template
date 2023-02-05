@@ -156,6 +156,7 @@ div.MemeList{
   height: 20vh;
   width: 18vw;
   border-radius: 5px;
+  object-fit: cover;
 }
 
 .TitleMeme{
@@ -163,6 +164,10 @@ div.MemeList{
   font-weight: 500;
   margin-left: 1vw;
   margin-top: 0.5vh;
+}
+
+.likeCount{
+  color: #999;
 }
 
 .InfoMeme{
@@ -532,4 +537,22 @@ input[type=text] {
   width: 100%;
   text-align: center;
   font-family: "Arial Black";
+}
+
+.lowerElements {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.buttonColumn {
+  width: 50%;
+}
+
+.EditContainer {
+  display: flex;
+  justify-self: end;
+  float: right;
+  justify-content: end;
+  justify-items: end;
 }
