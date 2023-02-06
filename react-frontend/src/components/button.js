@@ -9,12 +9,15 @@ const ButtonComponent = styled.button`
     text-align: center;
     text-decoration: none;
     vertical-align: middle;
-    
+    margin: 0.18rem;
+    cursor: pointer;
     user-select: none;
     border-radius: 0.3rem;
     padding: 0 
         ${props => props.size === "sm" 
         ? "1.1rem" 
+        : props.size === "xs" 
+        ? "0.8rem" 
         : props.size === "md" 
         ? "1.4rem" 
         : props.size === "1g" 
@@ -23,6 +26,8 @@ const ButtonComponent = styled.button`
     height: ${(props) =>
       props.size === "sm" 
       ? "34px" 
+      :props.size === "xs" 
+      ? "28px"
       : props.size === "md" 
       ? "37px"
       : props.size === "lg" 
