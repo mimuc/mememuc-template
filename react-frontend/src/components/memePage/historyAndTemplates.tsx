@@ -370,13 +370,20 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         }
     }
 
-    initialIntersectionCallback() {
-        this.intersectionRef.current = document.querySelector(".MemeList").lastChild;
-        console.log(this.intersectionRef);
+    initialIntersectionCallback(uid) {
+        let string = "MemeTile-"+uid;
+        console.log("Last Element id = " + uid);
+        this.intersectionRef.current = document.getElementById(string);
+        console.log(this.intersectionRef.current);
         if (this.state.loading) return;
         // if (this.interSectionRef.current) this.interSectionRef.current.disconnect();
         this.observer = new IntersectionObserver(this.reloadIntersectionCallback.bind(this));
-        this.observer.observe(this.intersectionRef.current);
+        try{
+            this.observer.observe(this.intersectionRef.current);
+        } catch(e) {
+            console.log("not working");
+        }
+        console.log(this.observer);
     }
 
     onEditMeme(memeData) {
@@ -392,8 +399,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 {
                     this.state.memeList.map((meme, index) => {
                         if (index === this.state.memeList.length - 3) {
-                            return
-                            <div key={meme.id}>
+                            return <div key={meme.id}>
                                 {this.state.showHistory ? (
                                     <MemeTile
                                         uid={meme._id}
@@ -500,10 +506,13 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
     constructor(props) {
         super(props);
         this.state = {likes: this.props.likes};
+    }
+
+    componentDidMount(): void {
         if (this.props.callback != -1) {
             console.log("Last Meme: ");
             console.log(this);
-            this.props.callback();
+            this.props.callback(this.props.uid);
         }
     }
 
@@ -588,9 +597,10 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
         delete memeObj.onEditClicked;
         delete memeObj.callback;
         // console.log(memeObj);
+        // let cuid = this.props.uid;
 
         return (
-            <div id="MemeTile">
+            <div id={"MemeTile-" + this.props.uid} className="MemeTile">
                 <img className="ImageMeme" src={imageCanvas.toDataURL('image/png')} alt={this.props.title}></img>
                 <p className="TitleMeme">Title: {this.props.title}</p>
                 <p className="InfoMeme">Info: {info}</p>
@@ -606,11 +616,6 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
                             <CreateIcon color={'primary'}/>
                         </IconButton>
                     </div>
-                </div>
-                <div className="EditContainer buttonColumn">
-                    <IconButton onClick={() => { this.props.onEditClicked(memeObj) }}>
-                        <CreateIcon color={'primary'} />
-                    </IconButton>
                 </div>
             </div>
         );
