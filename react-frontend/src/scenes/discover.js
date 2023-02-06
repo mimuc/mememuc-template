@@ -32,14 +32,13 @@ const Discover =() =>{
     return <>
     <p>Wow look at these memes :o</p>
     <Post></Post>
-    <div className="scrolldiv" id="scrollableDiv">
     <InfiniteScroll 
         dataLength={dataSource.length} 
         next={fetchMoreData} 
         hasMore={hasMore}
         loader={<p>Fetching more memes...</p>}
-        endMessage={<p>That's all there is to discover! Go make your own meme now :p</p>}
-        scrollableTarget ="scrollableDiv">
+        endMessage={<p>That's all there is to discover! Go make your own meme now :p</p>}>
+
 
         {dataSource.map((item,index)=>{
             return( 
@@ -50,7 +49,7 @@ const Discover =() =>{
         })}
 
     </InfiniteScroll>
-    </div>
+
     </>
 }
 
