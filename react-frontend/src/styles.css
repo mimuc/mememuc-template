@@ -13,6 +13,9 @@ body{
 
 .nav{
     background-color:#EBFBDB;
+    position: sticky;
+    top: 0;
+    z-index: 1;
     color:#40A62F;
     display:flex;
     font-weight: 500;
@@ -88,5 +91,27 @@ body{
     align-items:stretch;
     font-style: italic;
 }
+
+.backgroundimg{
+    background-image: url("https://digwallpapers.com/wallpapers/full/d/d/4/125072-1920x1080-shiba-inu-background-image-desktop-hd.jpg");
+    position: fixed;
+    min-width: 100%;
+    min-height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.background{
+    background-color: rgb(255, 255, 255);
+    height: 100%;
+}
+
+/*Change this in the end according to height after posts are placed inside the infinite scroll*/
+.scrolldiv{
+    height: calc(100vh - 450px);
+    overflow-y: scroll;
+}
+
+
 
 

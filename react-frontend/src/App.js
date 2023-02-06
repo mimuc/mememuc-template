@@ -8,6 +8,7 @@ import {Route, Routes} from "react-router-dom";
 function App() {
   return (
   <>
+  <div className="background">
   <Navbar />
   <div className="container">
     <Routes>
@@ -16,6 +17,7 @@ function App() {
       <Route path="/create" element={<Create />}/>
       <Route path="/profile" element={<Profile />}/>
     </Routes>
+    </div>
     </div>
   </>)
 }

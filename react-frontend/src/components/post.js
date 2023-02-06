@@ -7,6 +7,7 @@ const style = {
     //border: "4px solid #9CC694",
     margin: 20,
     padding: 20,
+    backgroundColor: 'white',
     borderRadius: '10px',
     boxShadow: '#A0BB9D 0px 5px 5px 3px ',
     whiteSpace: "pre-line",
@@ -66,14 +67,14 @@ const PostComponent = () => {
     //Here is the format of the post component, replace username and description with the corresponding one from the post ID
     return (
         <div style={style}>
-            <div class ="username"
+            <div className ="username"
             style={{
                 display: "flex",
                 alignItems: "left",
                 justifyContent: "left",
             }}>
                 Username</div>
-            <div class = "postdescr">This is the description of the meme!</div>
+            <div className = "postdescr">This is the description of the meme!</div>
             <br></br>
             <div
             style={{
@@ -86,14 +87,13 @@ const PostComponent = () => {
             </div>
             </div>
             <br></br>
-
-            <div class='parent'
+            <div className ='parent'
                 style={{
                     display: "flex",
                     justifyContent: "right",
                     gap: "30px",
                 }}>
-                <div class='child'
+                <div className ='child'
                     style={{
                         display: "inline-block",
                         gap: "15px",
@@ -111,7 +111,7 @@ const PostComponent = () => {
                         ▼ {dislike}
                     </Button>
                 </div>
-                <div class='child'
+                <div className ='child'
                     style={{
                         display: "inline-block",
                         alignItems: "right",

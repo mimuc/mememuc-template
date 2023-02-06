@@ -7,6 +7,8 @@ const style = {
     border:"3px solid green",
     margin: 20,
     padding: 20,
+    height: "100%",
+    backgroundColor: 'white',
     whiteSpace: "pre-line",
 }
 
@@ -28,14 +30,16 @@ const Discover =() =>{
     }
     // Need to replace infinite scroll with list of posts. One post example from the por=st component is at the top
     return <>
-    <h1>Wow look at these memes :o</h1>
+    <p>Wow look at these memes :o</p>
     <Post></Post>
+    <div className="scrolldiv" id="scrollableDiv">
     <InfiniteScroll 
         dataLength={dataSource.length} 
         next={fetchMoreData} 
         hasMore={hasMore}
         loader={<p>Fetching more memes...</p>}
-        endMessage={<p>That's all there is to discover! Go make your own meme now :p</p>}>
+        endMessage={<p>That's all there is to discover! Go make your own meme now :p</p>}
+        scrollableTarget ="scrollableDiv">
 
         {dataSource.map((item,index)=>{
             return( 
@@ -45,7 +49,9 @@ const Discover =() =>{
             );
         })}
 
-    </InfiniteScroll></>
+    </InfiniteScroll>
+    </div>
+    </>
 }
 
 export default Discover;
