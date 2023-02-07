@@ -1,7 +1,26 @@
 import React from "react";
 import {Text, Image, View, StyleSheet} from "react-native";
 
-
+/*
+Names of each component:
+1. Image 1 = background image
+2. Rectangle 7 = bar with Download/Share; Save Draft; Post buttons
+3. Rectangle 9 = Post button
+4. Rectangle 11 = Download/Share button
+5. Reactangle 1 = bar with Meme Generato; Create; Discover; Karni buttons
+6. Meme Generator = textbox home-page
+7. Rectangle 3 = Karni button
+8. Karni = text box profile-page
+9. Rectangle 2 = Create button
+10.Create = textbox create-page
+11.Discover = textbox discover-page
+12.Rectangle 8 = top-part of the canvas (where there is the edited meme)
+13.Image 8 = editor/canvas commands and options --> VERY IMPORTANT TO CREATE FROM SCRATCH
+14.flat-550x5500x075xf1 = god meme image
+15.Download/Share = textbox download/share command
+16.Save Draft = textbox save draft command
+17.Post = textbox post command
+*/
 
 export default function Create(){
     return (
