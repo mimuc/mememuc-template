@@ -248,7 +248,7 @@ const handleGetMemeRequest = async (req, res, next) => {
             return;
         case 'download':
             // Send ZIP
-            const metaData = JSON.stringify({ image: undefined, ...documents });
+            const metaData = JSON.stringify({ image: undefined, ...documents }, null, 2);
             const archive = archiver('zip', { zlib: { level: 9 } });
             res.attachment('memes.zip');
             archive.pipe(res);
@@ -257,7 +257,7 @@ const handleGetMemeRequest = async (req, res, next) => {
                     const response = await axios.get(documents[i].url, {responseType: 'arraybuffer'});
                     //const imageBase64 =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
                     const imgData = Buffer.from(response.data, 'binary');
-                    const paddedIndex = (i + 1).toString().padStart(documents.length.toString().length, '0');
+                    const paddedIndex = (i + 1).toString().padStart(documents.length.toString().length, '0'); // TODO: Fix the names (only rename when they clash)
                     const extension = documents[i].contentType.split('/')[1];
                     const name = `meme_${documents[i].name}_${paddedIndex}.${extension}`;
                     archive.append(imgData, { name });
