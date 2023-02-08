@@ -225,17 +225,18 @@ router.post('/', authenticate(), async function(req, res) {
         };
         const data_template = {};
         if(template.name) {
+            console.log("Load template", template.name)
             // Load template from database
-            const templateInDatabase = await Template.findOne({ name: template.name });
+            let templateInDatabase = await Template.findOne({ name: template.name }, { image: 0, _id: 0, __v: 0 });
             if(!templateInDatabase) {
                 res.status(404).send("Template could not be found: " + template.name);
                 return;
             }
+            templateInDatabase = templateInDatabase.toObject();
             data_template.texts = templateInDatabase.texts;
-            data_template.url = templateInDatabase.publicId; // TODO: Implement
+            data_template.images = [{url: templateInDatabase.url}];
         }
         const data = Object.assign(data_default, data_template, template); // TODO: Currently does not check whether memeNames collide
-
         if(!Array.isArray(data.images)) {
             data.images = [{url: data.images}];
         }
