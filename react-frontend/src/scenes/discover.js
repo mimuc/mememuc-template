@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Post from "../components/post";
 
-
 const style = {
     border:"3px solid green",
     margin: 20,
