@@ -9,7 +9,7 @@ cd mememuc-launcher && npm run installall && npm start
 
 The template contains two folders that are relevant to you. Your implementation is supposed to go in these two folders.
 * `./node-backend`: The backend of your project using NodeJS
-* `./react-frontend`: The front of your project using React
+* `./react-frontend`: The frontend of your project using React
 
 Currently, both folder are filled with some dummy projects.
 
@@ -34,12 +34,14 @@ The other two folders __must not be changed__!
   This database is not persistent and will reset with each restart. It is meant for testing your submission with a consistent data state, independent of the computer on which it runs.
   You _can_ add files to the `./mongoserver/data` subdirectory.
 
+Regarding the other two folder, `node-backend` and `react-frontend`, you are free to edit everything. However if you want to use a database and include demodata in your submission, it makes sense to stick to the code that connects the backend to the in-memory database (see comments at the top of `node-backend/app.js`)
+
 
 ## How To Use
 
 ### During Development
 
-During development we recommend to ruin the two project (`./node-backend` and `./react-frontend`) individually. However if you prefer, you can use the NodeJS scripts from `./mememuc-launcher` during development too, with the following commands:
+During development we recommend to run the two projects (`./node-backend` and `./react-frontend`) individually. However if you prefer, you can use the NodeJS scripts from `./mememuc-launcher` during development too, with the following commands:
 
 ```
 cd mememuc-launcher
@@ -58,10 +60,9 @@ starts the backend project. It will connect to a local MongoDB instance (assumin
 
 ### How To Prepare Your Submission
 
-- Export the MongoDB database state that you want us to user for evaluating your submission from your local MongoDB as json files. You can use, e.g., the `mongoexport` command:
-`mongoexport --uri="mongodb://localhost:27017/omm-ws2223" --collection=users --out=omm-ws2223.json`
-- Put any exportet json files into the `./mongoserver/data` folder. The in-memory database server (`./mongoserver`) will import these files as default data whenever you (re)launch the project (_not implemented yet_).
-- You can test whether you application will run in the test setup using the commands below.
+- Export the MongoDB database state that you want us to user for evaluating your submission from your local MongoDB as bson files using `mongodump`, e.g.: `mongodump mongodb://127.0.0.1:27017 --db=omm-ws2223`
+- Place all created *.bson and *.metadata.json files in `mongoserver/data`
+- The in-memory database server (`./mongoserver`) will import these files as default data whenever you (re)launch the project.
 
 ### How We Will Test Your Submission
 

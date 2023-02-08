@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"384edd84ae224654a6cc81e251bd1412","collectionName":"meme","type":"collection"}
