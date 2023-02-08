@@ -3,7 +3,7 @@ var router = express.Router();
 const axios = require('axios');
 const {authenticate} = require('../db/authentication');
 
-const {Template, generatePublicId} = require('../db/models');
+const {Template} = require('../db/models');
 
 const EXCLUDE_PROPERTIES = { image: 0, _id: 0, __v: 0 };
 
@@ -72,7 +72,7 @@ router.post('/', authenticate(), async function(req, res) {
     templateData.image = Buffer.from(templateData.image, 'base64');
   }
   
-  templateData.publicId = await generatePublicId(Template, 't');
+  templateData.publicId = await Template.generatePublicId();
   
   const template = new Template(templateData);
     

@@ -10,8 +10,7 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, Like, Comment, generatePublicId, getLikes, getNumComments, handleGetMemeRequest} = require('../db/models');
-const mongoose = require("mongoose");
+const {Meme, User, Template, Like, Comment, handleGetMemeRequest} = require('../db/models');
 const {authenticate} = require('../db/authentication');
 
 const Image = Canvas.Image;
@@ -308,7 +307,7 @@ router.post('/', authenticate(), async function(req, res) {
 
         let publicIdSet = new Set();
         for(const m of storeMemes) {
-            m.publicId = await generatePublicId(Meme, 'm', publicIdSet);
+            m.publicId = await Meme.generatePublicId(publicIdSet);
         }
 
         Meme.create(storeMemes)
@@ -369,7 +368,7 @@ router.get('/:publicId', authenticate(false), async function(req, res, next) {
         if ((doc.visibility === 'private') && req.username !== doc.creator ) {
             return res.status(401).send();
         }
-        return res.json({...doc.toObject(), likes: await getLikes(doc.publicId), comments: await getNumComments(doc.publicId)});
+        return res.json({...doc.toObject(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()});
     })
     .catch((e) => res.status(500).send());
   });
@@ -382,7 +381,7 @@ router.post('/:publicId/comments', authenticate(), async function(req, res, next
     // TODO: Check visibility permissions of meme
 
     if(username == undefined) return res.status(401).send();
-    const commentId = await generatePublicId(Comment, 'c');
+    const commentId = await Comment.generatePublicId();
 
     const comment = new Comment({ username, memePublicId, content, publicId: commentId });
     comment.save()

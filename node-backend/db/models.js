@@ -38,23 +38,26 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
     {
         id: false,
         toObject: { virtuals: true },
-        toJSON: { virtuals: true }
+        toJSON: { virtuals: true },
+        methods: {
+            async getLikesCount() {
+                return await Like.countDocuments({ memePublicId: this.publicId });
+            },
+            async getCommentsCount() {
+                return await Comment.countDocuments({ memePublicId: this.publicId });
+            }
+        },
+        statics: {
+            async generatePublicId(publicIdSet) {
+                return await generatePublicId(Meme, "m", publicIdSet);
+            }
+        }
     })
 );
 
 Meme.schema.virtual('url').get(function() {
     return `${url}${this.publicId}`;
 });
-
-const getLikes = async function(memePublicId) {
-    const likes = await Like.countDocuments({ memePublicId });
-    return likes;
-}
-
-const getNumComments = async function(memePublicId) {
-    const count = await Comment.countDocuments({ memePublicId });
-    return count;
-}
 
 const Template = mongoose.model('Template', new mongoose.Schema({
         name: { type: String, required: true, unique: true  },
@@ -69,7 +72,12 @@ const Template = mongoose.model('Template', new mongoose.Schema({
     {
         id: false,
         toObject: { virtuals: true },
-        toJSON: { virtuals: true }
+        toJSON: { virtuals: true },
+        statics: {
+            async generatePublicId(publicIdSet) {
+                return await generatePublicId(Template, "t", publicIdSet);
+            }
+        }
     })
 );
 
@@ -83,6 +91,12 @@ const Comment = mongoose.model('Comment', new mongoose.Schema({
     memePublicId: { type: String, required: true },
     createdAt: { type: Date, default: Date.now },
     publicId: { type: String, required: true, unique: true },
+    }, {
+        statics: {
+            async generatePublicId(publicIdSet) {
+                return await generatePublicId(Comment, "c", publicIdSet);
+            }
+        }
     })
 );
 
@@ -108,7 +122,7 @@ const generatePublicId = async (model, identifier="", publicIdSet) => {
     if(publicIdSet) publicIdSet.add(publicId);
     return publicId;
 }
-
+// TODO: Virtual property?
 const MEME_EXCLUDE_PROPERTIES = { image: 0, _id: 0, __v: 0 };
 
 const handleGetMemeRequest = async (req, res, next) => {
@@ -223,7 +237,7 @@ const handleGetMemeRequest = async (req, res, next) => {
         return;
     }
     documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
-    documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), likes: await getLikes(doc.publicId), comments: await getNumComments(doc.publicId)}) ) ); // Append the likes (this was surprisingly hard to to)
+    documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()}) ) ); // Append the likes (this was surprisingly hard to to)
 
     console.log("DOCS", documents)
     // Return the found memes
@@ -273,8 +287,5 @@ module.exports = {
     Template,
     Like,
     Comment,
-    generatePublicId,
-    getLikes,
-    getNumComments,
     handleGetMemeRequest
 }
