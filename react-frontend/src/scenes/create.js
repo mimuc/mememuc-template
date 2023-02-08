@@ -1,10 +1,12 @@
 import React from "react";
 import {Text, Image, View, StyleSheet} from "react-native";
+import { ImageBackground } from "react-native-web";
 
 /*
 Names of each component:
 1. Image 1 = background image
 2. Rectangle 7 = bar with Download/Share; Save Draft; Post buttons
+    2.1.Rectangle 10 = Mix color effect of the button of Safe Draft
 3. Rectangle 9 = Post button
 4. Rectangle 11 = Download/Share button
 5. Reactangle 1 = bar with Meme Generato; Create; Discover; Karni buttons
@@ -26,24 +28,29 @@ export default function Create(){
     return (
         <>
             <h1>Create</h1>
-            <Image style = {ourStyleSheet.styleImage1} source = {{uri: "https://nyc3.digitaloceanspaces.com/sizze-storage/mdia/images/8Vy5x5uX5RBNdOtig8VIgXij.png"}}></Image>
-            <View style = {ourStyleSheet.styleRectangle7}> </View>
+            <ImageBackground style = {ourStyleSheet.styleImage1} source = {{uri: "https://nyc3.digitaloceanspaces.com/sizze-storage/mdia/images/8Vy5x5uX5RBNdOtig8VlgXij.png"}}> </ImageBackground>
             <View style = {ourStyleSheet.styleRectangle9}> </View>
             <View style = {ourStyleSheet.styleRectangle11}> </View>
-            <View style = {ourStyleSheet.styleRectangle10}> </View>
-            <View style = {ourStyleSheet.styleRectangle1}> </View>
-            <Text style = {ourStyleSheet.styleMemeGenerator}> Meme Generator </Text>
-            <View style = {ourStyleSheet.styleRectangle3}> </View>
-            <Text style = {ourStyleSheet.styleKarni}> Karni </Text>
-            <View style = {ourStyleSheet.styleRectangle2}> </View>
-            <Text style = {ourStyleSheet.styleCreate}> Create </Text>
-            <Text style = {ourStyleSheet.styleDiscover}> Discover </Text>
+            <View style = {ourStyleSheet.styleRectangle1}> 
+                <Text style = {ourStyleSheet.styleMemeGenerator}> Meme Generator </Text>
+                <View style = {ourStyleSheet.styleRectangle3}> 
+                    <Text style = {ourStyleSheet.styleKarni}> Karni </Text>
+                </View>
+                <View style = {ourStyleSheet.styleRectangle2}> 
+                    <Text style = {ourStyleSheet.styleCreate}> Create </Text>
+                </View>
+                <Text style = {ourStyleSheet.styleDiscover}> Discover </Text>
+            </View>
+            <View style = {ourStyleSheet.styleRectangle7}> 
+                <Text style = {ourStyleSheet.styleDownloadShare}> Download/Share </Text>
+                <View style = {ourStyleSheet.styleRectangle10}> 
+                <Text style = {ourStyleSheet.styleSaveDraft}> Save draft </Text>
+                </View> 
+                <Text style = {ourStyleSheet.stylePost}> Post </Text>
+            </View>
             <View style = {ourStyleSheet.styleRectangle8}> </View>
-            <Image style = {ourStyleSheet.styleImage8} source = {{uri: "https://nyc3.digitaloceanspaces.com/sizze-storage/mdia/images/1OC9AYf4A2ctDAml6VJdTe9D.png"}}></Image>
-            <Image style = {ourStyleSheet.styleFlat55x550075F1} source = {{uri: "https://nyc3.digitaloceanspaces.com/sizze-storage/mdia/images/wCcAzCp721T5gGzETiGoI.png"}}></Image>
-            <Text style = {ourStyleSheet.styleDownloadShare}> Download/Share </Text>
-            <Text style = {ourStyleSheet.styleSaveDraft}> Save draft </Text>
-            <Text style = {ourStyleSheet.stylePost}> Post </Text>
+            <Image style = {ourStyleSheet.styleImage8} source = {{uri: "https://nyc3.digitaloceanspaces.com/sizze-storage/mdia/images/1OC9AYf4A2ctDAml6VJdTe9D.png"}}> </Image>
+            <Image style = {ourStyleSheet.styleFlat550x550075F1} source = {{uri: "https://nyc3.digitaloceanspaces.com/sizze-storage/mdia/images/wCcAzCp721T5gGzETiGoIV9Z.png"}}> </Image>
         </>
     )
 }
@@ -53,9 +60,16 @@ const ourStyleSheet = StyleSheet.create({
         position:"absolute",
         left: 0,
         top: 81,
-        //borderRadius: null,
         width: 1728,
         height: 1036,
+    },
+
+    styleRectangle10: {
+        position:"absolute",
+        left: 1237,
+        top: 1,
+        width: 158,
+        height: 62,
     },
 
     styleRectangle7: {
@@ -79,14 +93,6 @@ const ourStyleSheet = StyleSheet.create({
         left: 1183,
         top: 81,
         width: 201,
-        height: 62,
-    },
-
-    styleRectangle10: {
-        position:"absolute",
-        left: 1384,
-        top: 82,
-        width: 158,
         height: 62,
     },
 
@@ -120,7 +126,7 @@ const ourStyleSheet = StyleSheet.create({
         height: 81,
     },
 
-    styleMKarni: {
+    styleKarni: {
         position: "absolute",
         left: 1594,
         top: 26,
@@ -193,7 +199,6 @@ const ourStyleSheet = StyleSheet.create({
         position: "absolute",
         left: 80,
         top: 144,
-        //borderRadius: null,
         width: 1588,
         height: 939.
     },
@@ -202,7 +207,6 @@ const ourStyleSheet = StyleSheet.create({
         position: "absolute",
         left: 318,
         top: 244,
-        //borderRadius: null,
         width: 762,
         height: 756.
     },
@@ -215,7 +219,7 @@ const ourStyleSheet = StyleSheet.create({
         color: "rgba(76,121,69,1)",
         fontSize: 20,
         fontFamily: "Rubik",
-        fontWeight: 400,
+        fontWeight: 300,
         letterSpacing: 0,
         fontStyle: "normal",
         textAlign: "left",
@@ -229,7 +233,7 @@ const ourStyleSheet = StyleSheet.create({
         color: "rgba(214,238,211,1)",
         fontSize: 20,
         fontFamily: "Rubik",
-        fontWeight: 400,
+        fontWeight: 300,
         letterSpacing: 0,
         fontStyle: "normal",
         textAlign: "left",
@@ -243,16 +247,9 @@ const ourStyleSheet = StyleSheet.create({
         color: "rgba(255,255,255,1)",
         fontSize: 20,
         fontFamily: "Rubik",
-        fontWeight: 400,
+        fontWeight: 300,
         letterSpacing: 0,
         fontStyle: "normal",
         textAlign: "left",
     },
-
-    /*styleStyleName: {
-        position: "relative",
-        width: Dimensions.get("window").width,
-        height: 117,
-        backgroundColor: "rgba(255,255,255,1)",
-    },*/
 });
