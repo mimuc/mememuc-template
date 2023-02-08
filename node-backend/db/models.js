@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-
+const archiver = require('archiver');
+const axios = require('axios');
 
 const url = `http://localhost:3001/resources/images/`; // FIXME:
 
@@ -135,6 +136,7 @@ const handleGetMemeRequest = async (req, res, next) => {
         return: 'json' // single-view, image-url, download, json
     };
     const config = Object.assign({}, config_default, req.query);
+    console.log("CONFIG", config)
     config.limit = +config.limit;
     config.skip = +config.skip;
 
@@ -239,34 +241,35 @@ const handleGetMemeRequest = async (req, res, next) => {
     documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
     documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()}) ) ); // Append the likes (this was surprisingly hard to to)
 
-    console.log("DOCS", documents)
     // Return the found memes
     switch(config.return) {
         case 'json':
             res.json(documents);
             return;
         case 'download':
-            if(documents.length === 1) {
-                // Return a single image
-                // TODO: Add metadata
-                res.set('Content-Type', 'image/png');
-                res.send(documents[0].image);
-            }
-            else {
-                // Send ZIP
-                // TODO: Add metadata
-                const archive = archiver('zip', { zlib: { level: 9 } });
-                res.attachment('memes.zip');
-                archive.pipe(res);
-                for(let i = 0; i < documents.length; i++) {
-                    // Create nice, 0-padded names
+            // Send ZIP
+            const metaData = JSON.stringify({ image: undefined, ...documents });
+            const archive = archiver('zip', { zlib: { level: 9 } });
+            res.attachment('memes.zip');
+            archive.pipe(res);
+            for(let i = 0; i < documents.length; i++) {
+                try {
+                    const response = await axios.get(documents[i].url, {responseType: 'arraybuffer'});
+                    //const imageBase64 =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
+                    const imgData = Buffer.from(response.data, 'binary');
                     const paddedIndex = (i + 1).toString().padStart(documents.length.toString().length, '0');
                     const extension = documents[i].contentType.split('/')[1];
                     const name = `meme_${documents[i].name}_${paddedIndex}.${extension}`;
-                    archive.append(documents[i].image, { name });
+                    archive.append(imgData, { name });
                 }
-                archive.finalize();
+                catch (error){
+                    console.log(error);
+                    return res.status(500).send();
+                }
             }
+            archive.append(metaData, {name: "meta-data.json"});
+            archive.finalize();
+            
             return;
         case 'image-url':
             // Url to the image itself

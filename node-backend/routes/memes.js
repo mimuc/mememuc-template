@@ -246,7 +246,7 @@ router.post('/', authenticate(), async function(req, res) {
             const canvas_img = new Image();
             try {
                 const response = await axios.get(img.url, {responseType: 'arraybuffer'});
-                const imageUrl =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`
+                const imageUrl =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
                 canvas_img.src = imageUrl;
                 loadedImages.push({
                     image: canvas_img,
