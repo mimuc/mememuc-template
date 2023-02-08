@@ -16,9 +16,7 @@ const authenticate = (isRequired = true) => async (req, res, next) => {
   if (authHeader.startsWith("Bearer")) {
     const token = authHeader.split(' ')[1];
       try {
-        console.log("tok", token)
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("DECO", decoded)
 
         const user = await User.findById(decoded.id);
         if (!user) {
