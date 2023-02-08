@@ -29,12 +29,12 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
             shuffleAlphabetically: false
         };
         this.btnClickedCallback = this.btnClickedCallback.bind(this);
-        this.shuffleCallback = this.shuffleCallback.bind(this);
+        this.sortCallback = this.sortCallback.bind(this);
         this.shuffleFinished = this.shuffleFinished.bind(this);
     }
 
     handleEditMeme(memeData) {
-        console.log("In History and TemplatesView-handleEditMeme");
+        //console.log("In History and TemplatesView-handleEditMeme");
         // console.log(memeData);
         this.props.handleEditMeme(memeData);
     }
@@ -44,8 +44,8 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
         event.stopPropagation();
     }
 
-    shuffleCallback(value) {
-        console.log(value);
+    sortCallback(value) {
+        //console.log("Sort using: " + value);
         if (value === "random") {
             document.getElementById("alphabetShuffleBtn").disabled = true;
             document.getElementById("randomShuffleBtn").disabled = true;
@@ -77,7 +77,7 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
     render() {
         return (
             <div className="side" id="sideLeft">
-                <HistoryAndTemplatesMenu modeSwitchBtnCallback={this.btnClickedCallback} shuffleCallback={this.shuffleCallback} />
+                <HistoryAndTemplatesMenu modeSwitchBtnCallback={this.btnClickedCallback} shuffleCallback={this.sortCallback} />
                 <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger} handleEditMeme={this.handleEditMeme.bind(this)} isHistory={this.state.valueRendered} shuffleRandomly={this.state.shuffleRandom} shuffleAlphabetically={this.state.shuffleAlphabetically} />
             </div>
         )
@@ -116,10 +116,10 @@ class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, hi
                 </div>
                 <div className="ShuffleMenu">
                     <p id="shuffleText">Shuffle:</p>
-                    <Fab className="shuffleBtn" variant="extended" size="small" id="randomShuffleBtn" onClick={() => this.props.shuffleCallback("random")} className={"shuffleBtn"}>
+                    <Fab className="shuffleBtn" variant="extended" size="small" id="randomShuffleBtn" onClick={() => this.props.shuffleCallback("random")}>
                         <ShuffleIcon></ShuffleIcon>Randomly
                     </Fab>
-                    <Fab className="shuffleBtn" variant="extended" size="small" id="alphabetShuffleBtn" onClick={() => this.props.shuffleCallback("alphabet")} className={"shuffleBtn"}>
+                    <Fab className="shuffleBtn" variant="extended" size="small" id="alphabetShuffleBtn" onClick={() => this.props.shuffleCallback("alphabet")}>
                         <TextRotateVerticalIcon></TextRotateVerticalIcon>Alphabetically
                     </Fab>
                 </div>
@@ -151,15 +151,17 @@ interface historyAndTemplateListState {
 class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, historyAndTemplateListState> {
     private intersectionRef: React.RefObject<any>;
     private observer;
+    private currentlyIntersecting: boolean;
 
     // private alphabeticalShuffleMemes;
 
+    // Change limit to how many memes you want to get
     constructor(props) {
         super(props);
         this.state = {
             showHistory: this.props.isHistory,
             memeList: [],
-            limit: 10,
+            limit: 6,
             offset: 0,
             page: 0,
             loading: false,
@@ -172,18 +174,12 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         // this.alphabeticalShuffleMemes = this.alphabeticalShuffleMemes.bind(this);
         this.intersectionRef = React.createRef();
         this.observer = new IntersectionObserver(this.reloadIntersectionCallback.bind(this));
+        this.currentlyIntersecting = false;
     }
 
     resetMemeList(isHistory) {
-        console.log("Resetting Meme List");
-        console.log(isHistory);
-        this.setState({showHistory: isHistory, memeList: []}, this.stateSetAfterReset)
-    }
-
-    stateSetAfterReset() {
-        //console.log("current state: ");
-        //console.log(this.state);
-        this.loadMemeList();
+        console.log("Resetting Meme List, now showing: " + isHistory);
+        this.setState({ showHistory: isHistory, memeList: [], page: 0, hasMore: true, offset: 0 }, () => this.loadNextMemes());
     }
 
     componentDidUpdate(prevProps: Readonly<historyAndTemplateListProps>, prevState: Readonly<historyAndTemplateListState>, snapshot?: any): void {
@@ -193,16 +189,13 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             this.resetMemeList(this.props.isHistory);
         }
         if ((prevProps.shuffleAlphabetically !== this.props.shuffleAlphabetically) && this.props.shuffleAlphabetically) {
-            console.log("Shuffling per alphabet");
             this.alphabeticalShuffleMemes();
         }
         if ((prevProps.shuffleRandomly !== this.props.shuffleRandomly) && this.props.shuffleRandomly) {
-            console.log("Random shuffle...");
             this.randomShuffleMemes();
         }
         if (prevProps.updateTrigger !== this.props.updateTrigger) {
-            console.log("Memelist updated");
-            this.setState({memeList: [], page: 0, hasMore: true}, () => this.loadNextMemes());
+            this.resetMemeList(this.props.isHistory);
         }
     }
 
@@ -222,100 +215,31 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         this.loadNextMemes();
     }
 
-    showTemplates() {
-        if (this.state.showHistory) {
-            this.setState({showHistory: false, memeList: [], page: 0, hasMore: true}, () => this.loadNextMemes());
-        }
-    }
-
-    showHistory() {
-        if (!this.state.showHistory) {
-            this.setState({showHistory: true, memeList: [], page: 0, hasMore: true}, () => this.loadNextMemes());
-        }
-    }
-
     loadNextMemes() {
-        console.log("Loading memes...");
+        //console.log("current state: ");
+        //console.log(this.state);
+        console.log("Loading even more memes...");
         if (this.state.hasMore && !this.state.loading) {
-            this.setState({loading: true, error: false});
-            let data = {
-                page: this.state.page,
-                pageSize: 6, // TODO: Select 2*visible
-            }
-            console.log(data);
-            // console.log(data);
-            if (this.state.showHistory) {
-                fetch('http://localhost:3001/createdMemes/next', {
-                    method: 'POST',
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: "include",
-                    body: JSON.stringify(data)
-                }).then((res) => {
-                    if (res.ok) {
-                        return res.json();
-                    } else {
-                        console.log(res.status);
-                    }
-                }).then((res) => {
-                    // console.log(res);
-                    // this.setState({memeList: res});
-                    console.log(res);
-                    for (let i = 0; i < this.state.memeList.length; i++) {
-                        if (this.state.memeList[i]._id === res.nextMemes[0]._id) {
-                            console.log("Meme already in list");
-                            return;
-                        }
-                    }
-                    this.setState({
-                        memeList: [...this.state.memeList, ...res.nextMemes],
-                        loading: false,
-                        error: false,
-                        hasMore: res.hasMore,
-                        page: this.state.page + 1,
-                    });
-                    if (!res.hasMore) {
-                        this.setState({
-                            loadingText: "All memes loaded."
-                        });
-                    }
-                })
-                    .catch((err) => {
-                        this.setState({loading: false, error: true});
-                        console.log(err);
-                    });
-            } else {
-                // TODO: Handle for templates
-            }
+            this.setState({ loading: true, error: false }, this.getNextMemes.bind(this));
         }
-
     }
 
-    alphabeticalShuffleMemes() {
-        let memeListCopy = this.state.memeList,
-            shuffleAttribute = "title";
-        if (!this.state.showHistory) {
-            shuffleAttribute = "name"
+    getNextMemes() {
+        let data = {
+            page: this.state.page,
+            pageSize: 6, // TODO: Select 2*visible
         }
-        memeListCopy.sort((a, b) => (a[shuffleAttribute] > b[shuffleAttribute] ? 1 : -1))
-        this.setState({
-            memeList: memeListCopy
-        })
-    }
-
-    loadMemeList() {
-        console.log("Reloading Meme List .... ")
-        //console.log(this.state.showHistory);
+        //console.log(data);
+        // console.log(data);
         if (this.state.showHistory) {
-            console.log("Catching old meme data");
-            fetch('http://localhost:3001/createdMemes/all', {
-                method: 'GET',
+            fetch('http://localhost:3001/createdMemes/next', {
+                method: 'POST',
                 headers: {
                     'Access-Control-Allow-Origin': '*',
+                    'Content-Type': 'application/json'
                 },
                 credentials: "include",
+                body: JSON.stringify(data)
             }).then((res) => {
                 if (res.ok) {
                     return res.json();
@@ -323,12 +247,35 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                     console.log(res.status);
                 }
             }).then((res) => {
-                console.log("Got data with length: " + res.length);
+                // this.setState({memeList: res});
                 //console.log(res);
-                this.setState({memeList: res});
-            });
+                for (let i = 0; i < this.state.memeList.length; i++) {
+                    if (this.state.memeList[i]._id === res.nextMemes[0]._id) {
+                        //console.log("Meme already in list");
+                        return;
+                    }
+                }
+                this.setState({
+                    memeList: [...this.state.memeList, ...res.nextMemes],
+                    loading: false,
+                    error: false,
+                    hasMore: res.hasMore,
+                    page: this.state.page + 1,
+                });
+                if (!res.hasMore) {
+                    this.setState({
+                        loadingText: "All memes loaded."
+                    });
+                }
+                this.currentlyIntersecting = false;
+            })
+                .catch((err) => {
+                    this.setState({ loading: false, error: true });
+                    console.log(err);
+                    this.currentlyIntersecting = false;
+                });
         } else {
-            console.log("Catching api meme data");
+            console.log("Catching memes from api");
             fetch('http://localhost:3001/memesApi/page', {
                 method: 'POST',
                 credentials: "include",
@@ -347,47 +294,68 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                     console.log(res.status);
                 }
             }).then((res) => {
-                let newMemeList = this.state.memeList,
-                    newOffset = this.state.offset + res.length;
-                newMemeList.push(res);
-                console.log("Got data with length: " + res.length);
+                //console.log("Got data with length: " + res.length);
                 //console.log(res);
-                this.setState({memeList: newMemeList[0]});
-                this.setState({offset: newOffset});
+                this.setState({
+                    memeList: [...this.state.memeList, ...res.resultMemes],
+                    loading: false,
+                    error: false,
+                    hasMore: res.hasMore,
+                    offset: (this.state.offset + this.state.limit),
+                    page: this.state.page + 1,
+                });
+
+                this.currentlyIntersecting = false;
             });
         }
     }
 
+    alphabeticalShuffleMemes() {
+        let memeListCopy = this.state.memeList,
+            shuffleAttribute = "title";
+        if (!this.state.showHistory) {
+            shuffleAttribute = "name"
+        }
+        memeListCopy.sort((a, b) => (a[shuffleAttribute] > b[shuffleAttribute] ? 1 : -1))
+        this.setState({
+            memeList: memeListCopy
+        })
+    }
+
     reloadIntersectionCallback(entries) {
+        //console.log("intersecting...");
         if (entries[0].isIntersecting && this.state.hasMore) {
-            console.log("Intersecting");
-            console.log(this.intersectionRef.current);
+            //console.log("Intersecting");
+            //console.log(this.intersectionRef.current);
             this.observer.unobserve(this.intersectionRef.current);
-            this.loadNextMemes();
+            if (!this.currentlyIntersecting) {
+                this.currentlyIntersecting = true;
+                this.loadNextMemes();
+            }
         }
         if (!this.state.hasMore) {
-            console.log("No more");
+            console.log("There are no more memes to load :(");
         }
     }
 
     initialIntersectionCallback(uid) {
-        let string = "MemeTile-"+uid;
-        console.log("Last Element id = " + uid);
+        let string = "MemeTile-" + uid;
         this.intersectionRef.current = document.getElementById(string);
-        console.log(this.intersectionRef.current);
+        //console.log("Last Element id = " + uid);
+        //console.log(this.intersectionRef.current);
         if (this.state.loading) return;
         // if (this.interSectionRef.current) this.interSectionRef.current.disconnect();
         this.observer = new IntersectionObserver(this.reloadIntersectionCallback.bind(this));
-        try{
+        try {
             this.observer.observe(this.intersectionRef.current);
-        } catch(e) {
+        } catch (e) {
             console.log("not working");
         }
-        console.log(this.observer);
+        //console.log(this.observer);
     }
 
     onEditMeme(memeData) {
-        console.log("In on Edit Meme");
+        //console.log("In on Edit Meme");
         //console.log(memeData);
         this.props.handleEditMeme(memeData);
     }
@@ -425,6 +393,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                                     <MemeTemplateTile
                                         uid={meme.id}
                                         key={meme.id}
+                                        callback={this.initialIntersectionCallback.bind(this)}
                                         imageUrl={meme.url}
                                         title={meme.name}
                                         onEditClicked={this.onEditMeme.bind(this)}
@@ -460,6 +429,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                                         <MemeTemplateTile
                                             uid={meme.id}
                                             key={meme.id}
+                                            callback={null}
                                             imageUrl={meme.url}
                                             title={meme.name}
                                             onEditClicked={this.onEditMeme.bind(this)}
@@ -505,13 +475,12 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
 
     constructor(props) {
         super(props);
-        this.state = {likes: this.props.likes};
+        this.state = { likes: this.props.likes };
     }
 
     componentDidMount(): void {
         if (this.props.callback != -1) {
-            console.log("Last Meme: ");
-            console.log(this);
+            //console.log("Last Meme: ");
             this.props.callback(this.props.uid);
         }
     }
@@ -521,7 +490,7 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
     }
 
     increaseLikeCount() {
-        console.log('trying to increase like');
+        //console.log('trying to increase like');
         let mUid = this.props.uid;
         let listOfLiked = localStorage.getItem('listOfLiked');
         if (listOfLiked !== undefined && listOfLiked !== null) {
@@ -543,7 +512,7 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
                 })
             }).then((res) => {
                 console.log('like increased?');
-                console.log(res.status);
+                //console.log(res.status);
                 this.updateLikeDisplay();
                 let listOfLiked = localStorage.getItem('listOfLiked');
                 if (listOfLiked === undefined || listOfLiked === null) {
@@ -564,7 +533,7 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
         let width = image.width;
         let imageCanvas = document.createElement('canvas');
         imageCanvas.height = height;
-        imageCanvas.width=width;
+        imageCanvas.width = width;
         let imageCtx = imageCanvas.getContext('2d');
         imageCtx.drawImage(image, 0, 0);
         //console.log(this.props.text1);
@@ -583,13 +552,13 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
         if (this.props.text1) {
             info += "Text 1: " + this.props.text1;
         }
-        if(this.props.text2) {
+        if (this.props.text2) {
             info += ", Text 2: " + this.props.text2;
         }
         if (!this.props.text1 && !this.props.text2) {
             info += "No text";
         }
-        if(info.length > 60) {
+        if (info.length > 60) {
             info = info.substring(0, 55) + "...";
         }
 
@@ -607,13 +576,13 @@ class MemeTile extends Component<MemeTileProps, MemeTileState> {
                 <div className="lowerElements">
                     <div className="likeContainer buttonColumn">
                         <IconButton onClick={this.increaseLikeCount.bind(this)}>
-                            <ThumbUpIcon color={'success'}/>
+                            <ThumbUpIcon color={'success'} />
                         </IconButton>
                         <a className="likeCount">{this.state.likes}</a>
                     </div>
                     <div className="EditContainer buttonColumn">
                         <IconButton onClick={() => { this.props.onEditClicked(memeObj) }}>
-                            <CreateIcon color={'primary'}/>
+                            <CreateIcon color={'primary'} />
                         </IconButton>
                     </div>
                 </div>
@@ -627,6 +596,7 @@ interface MemeTemplateTileProps {
     imageUrl: string,
     title: string,
     uid: string,
+    callback: any,
     onEditClicked: any,
 }
 interface MemeTemplateTileState {
@@ -674,6 +644,12 @@ class MemeTemplateTile extends Component<MemeTemplateTileProps, MemeTemplateTile
         this.onImageLoaded = this.onImageLoaded.bind(this);
     }
 
+    componentDidMount(): void {
+        if (this.props.callback) {
+            this.props.callback(this.props.uid);
+        }
+    }
+
     async loadImage(imageUrl) {
         const res = await fetch(imageUrl);
         const imageBlob = await res.blob();
@@ -711,7 +687,7 @@ class MemeTemplateTile extends Component<MemeTemplateTileProps, MemeTemplateTile
 
     render() {
         return (
-            <div id="MemeTile">
+            <div id={"MemeTile-" + this.props.uid} className="MemeTile">
                 <img className="ImageMeme" src={this.props.imageUrl} alt={this.props.title}></img>
                 <p className="TitleMeme">Title: {this.props.title}</p>
                 <div className="EditContainer buttonColumn">

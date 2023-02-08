@@ -46,9 +46,10 @@ router.post("/page", function(req, res, next) {
     const limit = req.body.limit;
     const offset = req.body.offset;
     const endpoint = `https://api.imgflip.com/get_memes`;
+    let hasMore = true;
     console.log("Backend: get new memePage");
     //console.log(req.body);
-    //console.log(offset);
+    console.log(offset);
   
     fetch(endpoint, {
       method: "GET",
@@ -65,8 +66,11 @@ router.post("/page", function(req, res, next) {
                 resultMemes.push(memeArray[i]);
             }
         }
-        //console.log(resultMemes);
-        res.json(resultMemes);
+        if(resultMemes.length < limit) {
+            hasMore = false;
+        } 
+        console.log(resultMemes);
+        res.json({resultMemes, hasMore});
       });
   });
 
