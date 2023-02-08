@@ -1,36 +1,41 @@
 var express = require('express');
-const mongoose = require('mongoose');
 var router = express.Router();
+const {authenticate} = require('../db/authentication');
 
 const {Meme, Template} = require('../db/models');
 
-router.get('/:type/:publicId', async function(req, res, next) {
+router.get('/:type/:publicId', authenticate(false), async function(req, res, next) {
   const type = req.params.type;
   const publicId  = req.params.publicId;
-  // TODO: CHeck permissions
 
   if(type === 'images') {
 
     if(publicId.startsWith('m')) {
       try {
-        const meme = await Meme.findOne({ publicId });
-        if (!meme) {
+        const doc = await Meme.findOne({ publicId });
+        if (!doc) {
             return res.status(404).send('Image not found');
         }
-        res.set('Content-Type', meme.contentType);
-        res.send(meme.image);
+        if ((doc.visibility === 'private') && req.username !== doc.creator ) {
+          return res.status(401).send();
+        }
+        res.set('Content-Type', doc.contentType);
+        res.send(doc.image);
       } catch (err) {
           res.status(500).send(err);
       }
     }
     else if(publicId.startsWith('t')) {
       try {
-        const template = await Template.findOne({ publicId });
-        if (!template) {
+        const doc = await Template.findOne({ publicId });
+        if (!doc) {
             return res.status(404).send('Image not found');
         }
-        res.set('Content-Type', template.contentType);
-        res.send(template.image);
+        if ((doc.visibility === 'private') && req.username !== doc.creator ) {
+          return res.status(401).send();
+        }
+        res.set('Content-Type', doc.contentType);
+        res.send(doc.image);
       } catch (err) {
           res.status(500).send(err);
       }
