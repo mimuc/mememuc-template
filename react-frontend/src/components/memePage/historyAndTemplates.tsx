@@ -11,8 +11,9 @@ import SpeechToText from './speechToText';
 
 interface historyAndTemplatesViewState {
     valueRendered: boolean,
-    shuffleRandom: boolean,
-    shuffleAlphabetically: boolean
+    sortRandom: boolean,
+    sortAlphabetically: boolean,
+    sortSearch: String
 }
 
 interface historyAndTemplatesViewProps {
@@ -26,8 +27,9 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
         super(props);
         this.state = {
             valueRendered: true,
-            shuffleRandom: false,
-            shuffleAlphabetically: false
+            sortRandom: false,
+            sortAlphabetically: false,
+            sortSearch: ""
         };
         this.btnClickedCallback = this.btnClickedCallback.bind(this);
         this.sortCallback = this.sortCallback.bind(this);
@@ -46,21 +48,26 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
         event.stopPropagation();
     }
 
-    sortCallback(value) {
+    sortCallback(mode, value) {
         //console.log("Sort using: " + value);
-        if (value === "random") {
+        if (mode === "random") {
             document.getElementById("alphabetShuffleBtn").disabled = true;
             document.getElementById("randomShuffleBtn").disabled = true;
             this.setState({
-                shuffleRandom: true
+                sortRandom: true
             }, this.shuffleFinished);
-        } else if (value === "alphabet") {
+        } else if (mode === "alphabet") {
             document.getElementById("alphabetShuffleBtn").disabled = true;
             document.getElementById("randomShuffleBtn").disabled = true;
             this.setState({
-                shuffleAlphabetically: true
+                sortAlphabetically: true
             }, this.shuffleFinished);
-
+        } else if (mode === "Search") {
+            if(value === "") { return; }
+            console.log(value);
+            this.setState({
+                sortSearch: value
+            }, this.shuffleFinished)
         }
     }
 
@@ -68,8 +75,9 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
     shuffleFinished() {
         setTimeout(() => {
             this.setState({
-                shuffleRandom: false,
-                shuffleAlphabetically: false
+                sortRandom: false,
+                sortAlphabetically: false,
+                sortSearch: ""
             })
             document.getElementById("alphabetShuffleBtn").disabled = false;
             document.getElementById("randomShuffleBtn").disabled = false;
@@ -80,7 +88,7 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
         return (
             <div className="side" id="sideLeft">
                 <HistoryAndTemplatesMenu modeSwitchBtnCallback={this.btnClickedCallback} shuffleCallback={this.sortCallback} />
-                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger} handleEditMeme={this.handleEditMeme.bind(this)} isHistory={this.state.valueRendered} shuffleRandomly={this.state.shuffleRandom} shuffleAlphabetically={this.state.shuffleAlphabetically} />
+                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger} handleEditMeme={this.handleEditMeme.bind(this)} isHistory={this.state.valueRendered} sortRandomly={this.state.sortRandom} sortAlphabetically={this.state.sortAlphabetically} sortSearch={this.state.sortSearch}/>
             </div>
         )
     }
@@ -92,7 +100,8 @@ interface historyAndTemplatesMenuProps {
 }
 
 interface historyAndTemplateMenuState {
-    activeListView: String
+    activeListView: String,
+    searchInput: String
 }
 
 class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, historyAndTemplateMenuState> {
@@ -100,13 +109,20 @@ class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, hi
     constructor(props) {
         super(props);
         this.state = {
-            activeListView: "History"
+            activeListView: "History",
+            searchInput: ""
         }
     }
 
     btnClicked(isHistoryValue, event) {
         isHistoryValue ? (this.setState({ activeListView: "History" })) : (this.setState({ activeListView: "Templates" }));
         this.props.modeSwitchBtnCallback(isHistoryValue, event)
+    }
+
+    handleInputChange(event) {
+        this.setState({
+            searchInput: event.target.value
+        })
     }
 
     render() {
@@ -117,13 +133,17 @@ class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, hi
                     <button type="button" id="templateBtn" onClick={(e) => this.btnClicked(false, e)} className={(this.state.activeListView === "Templates") ? "active" : "notActive"}>TEMPLATES</button>
                 </div>
                 <div className="ShuffleMenu">
-                    <p id="shuffleText">Shuffle:</p>
-                    <Fab className="shuffleBtn" variant="extended" size="small" id="randomShuffleBtn" onClick={() => this.props.shuffleCallback("random")}>
+                    <p id="shuffleText">Sort:</p>
+                    <Fab className="shuffleBtn" variant="extended" size="small" id="randomShuffleBtn" onClick={() => this.props.shuffleCallback("random", null)}>
                         <ShuffleIcon></ShuffleIcon>Randomly
                     </Fab>
-                    <Fab className="shuffleBtn" variant="extended" size="small" id="alphabetShuffleBtn" onClick={() => this.props.shuffleCallback("alphabet")}>
+                    <Fab className="shuffleBtn" variant="extended" size="small" id="alphabetShuffleBtn" onClick={() => this.props.shuffleCallback("alphabet", null)}>
                         <TextRotateVerticalIcon></TextRotateVerticalIcon>Alphabetically
                     </Fab>
+                </div>
+                <div className="searchMenu">
+                    <input id="searchFieldInput" placeholder="Filter for memes" className="searchInput" onChange={this.handleInputChange.bind(this)}></input>
+                    <Fab className="searchBtn" variant="extended" size="small" id="searchFieldBtn" onClick={() => this.props.shuffleCallback("Search", this.state.searchInput)}>Search</Fab>
                 </div>
             </>
         );
@@ -131,9 +151,10 @@ class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, hi
 }
 
 interface historyAndTemplateListProps {
-    isHistory: boolean
-    shuffleRandomly: boolean
-    shuffleAlphabetically: boolean
+    isHistory: boolean,
+    sortRandomly: boolean,
+    sortAlphabetically: boolean,
+    sortSearch: String,
     updateTrigger: number,
     handleEditMeme: any,
 }
@@ -172,8 +193,9 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             loadingText: "loading..."
         };
         this.resetMemeList = this.resetMemeList.bind(this);
-        this.randomShuffleMemes = this.randomShuffleMemes.bind(this);
-        // this.alphabeticalShuffleMemes = this.alphabeticalShuffleMemes.bind(this);
+        this.randomSortMemes = this.randomSortMemes.bind(this);
+        this.alphabeticalSortMemes = this.alphabeticalSortMemes.bind(this);
+        this.filterMemes = this.filterMemes.bind(this);
         this.intersectionRef = React.createRef();
         this.observer = new IntersectionObserver(this.reloadIntersectionCallback.bind(this));
         this.currentlyIntersecting = false;
@@ -190,24 +212,43 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             //console.log(this.props);
             this.resetMemeList(this.props.isHistory);
         }
-        if ((prevProps.shuffleAlphabetically !== this.props.shuffleAlphabetically) && this.props.shuffleAlphabetically) {
-            this.alphabeticalShuffleMemes();
+        if ((prevProps.sortAlphabetically !== this.props.sortAlphabetically) && this.props.sortAlphabetically) {
+            this.alphabeticalSortMemes();
         }
-        if ((prevProps.shuffleRandomly !== this.props.shuffleRandomly) && this.props.shuffleRandomly) {
-            this.randomShuffleMemes();
+        if ((prevProps.sortRandomly !== this.props.sortRandomly) && this.props.sortRandomly) {
+            this.randomSortMemes();
         }
         if (prevProps.updateTrigger !== this.props.updateTrigger) {
             this.resetMemeList(this.props.isHistory);
         }
+        if ((prevProps.sortSearch !== this.props.sortSearch) && (this.props.sortSearch !== "")) {
+            console.log("Sorting memes after: " + this.props.sortSearch);
+            this.filterMemes();
+        }
     }
 
-    randomShuffleMemes() {
+    randomSortMemes() {
         let memeListCopy = this.state.memeList;
         for (let i = memeListCopy.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [memeListCopy[i], memeListCopy[j]] = [memeListCopy[j], memeListCopy[i]];
         }
         //console.log("Shuffled everything randomly...");
+        this.setState({
+            memeList: memeListCopy
+        });
+    }
+
+    filterMemes() {
+        let searchString = this.props.sortSearch;
+        let memeListCopy = this.state.memeList;
+        memeListCopy.forEach(element => {
+            console.log(element);
+            if(!element["title"].includes(searchString) && !element["text1"].includes(searchString) && !element["text2"].includes(searchString)) {
+                let index = memeListCopy.indexOf(element);
+                delete memeListCopy[index];
+            }
+        });
         this.setState({
             memeList: memeListCopy
         });
@@ -312,7 +353,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         }
     }
 
-    alphabeticalShuffleMemes() {
+    alphabeticalSortMemes() {
         let memeListCopy = this.state.memeList,
             shuffleAttribute = "title";
         if (!this.state.showHistory) {
