@@ -278,6 +278,15 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 });
         } else {
             console.log("Catching memes from api");
+            const limit = this.state.limit;
+            const offset = this.state.offset;
+            const endpoint = `https://api.imgflip.com/get_memes`;
+            let hasMore = true;
+            console.log("Backend: get new memePage");
+            //console.log(req.body);
+            console.log(offset);
+        
+        
             fetch('http://localhost:3001/memesApi/page', {
                 method: 'POST',
                 credentials: "include",
@@ -691,9 +700,9 @@ class MemeTemplateTile extends Component<MemeTemplateTileProps, MemeTemplateTile
             <div id={"MemeTile-" + this.props.uid} className="MemeTile">
                 <img className="ImageMeme" src={this.props.imageUrl} alt={this.props.title}></img>
                 <p className="TitleMeme">Title: {this.props.title}</p>
-                <div className="EditContainer buttonColumn">
+                <div className="EditContainer buttonColumn2">
                     <IconButton onClick={this.onEditClick}>
-                        <CreateIcon color={'primary'} />
+                        <CreateIcon id={"templateCreateIcon"} color={'primary'} />
                     </IconButton>
                 </div>
             </div>

@@ -50,28 +50,33 @@ router.post("/page", function(req, res, next) {
     console.log("Backend: get new memePage");
     //console.log(req.body);
     console.log(offset);
-  
-    fetch(endpoint, {
-      method: "GET",
-    })
-      .then(data => {
-        return data.json();
-      })
-      .then(json => {
-        let memeArray = json.data.memes;
-        let resultMemes = [];
-        for(let i=offset; i<(offset+limit); i++) {
-            if(i<memeArray.length) {
-                //console.log("Pushing to results...");
-                resultMemes.push(memeArray[i]);
+
+    fetch("https://api.imgflip.com/get_memes", {
+            method: "GET",
+        }).then((data) => {
+            if(data.ok){
+            }else{
+                throw new Error(`HTTP error, status = ${data.status}`);
             }
-        }
-        if(resultMemes.length < limit) {
-            hasMore = false;
-        } 
-        console.log(resultMemes);
-        res.json({resultMemes, hasMore});
-      });
+            return data.json();
+        }).then((json) => {
+            console.log("DATA: ", json);
+            let memeArray = json.data.memes;
+            let resultMemes = [];
+            for(let i=offset; i<(offset+limit); i++) {
+                if(i<memeArray.length) {
+                    //console.log("Pushing to results...");
+                    resultMemes.push(memeArray[i]);
+                }
+            }
+            if(resultMemes.length < limit) {
+                hasMore = false;
+            } 
+            console.log(resultMemes);
+            res.json({resultMemes, hasMore});
+        }).catch((error) => {
+            console.log("error = ", error);
+        });
   });
 
 module.exports = router;

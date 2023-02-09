@@ -41,6 +41,7 @@ class PopUp extends Component {
     }
 }
 
+
 class Editor extends Component {
 
 
@@ -52,9 +53,12 @@ class Editor extends Component {
             image: null, imageWidth: 0, imageHeight: 0,
             memeToEdit : null,
             xPosT1: 0, yPosT1: 0, xPosT2: 0, yPosT2: 0,
+            text1:"", text2:"",
             boldT1: "", boldT2: "", italicT1: "", italicT2: "", colorT1: "", colorT2: "", imageOption: "",
             showCameraPopUp: false,
-            isHistory: this.props.updateSetIsHistory
+            oldStateHistory: true,
+            isHistory: this.props.updateSetIsHistory,
+            prevProps: null
         };
         this.handleGetImage = this.handleGetImage.bind(this);
         this.saveMeme = this.saveMeme.bind(this);
@@ -64,14 +68,32 @@ class Editor extends Component {
         this.handleImageUploaded = props.handleImageUploaded;
         this.handleWebcamButtonClicked = this.handleWebcamButtonClicked.bind(this);
         this.handleMemeEditClicked = this.handleMemeEditClicked.bind(this);
+        this.componentDidUpdate = this.componentDidUpdate.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
+        this.state.prevProps = prevProps.receivedMemeData;
         console.log("Component did update");
         console.log(this.state.isHistory);
-        if(prevProps.receivedMemeData !== this.props.receivedMemeData) {
+        console.log("HistoryView: " + this.props.updateSetIsHistory);
+        console.log("old:" + this.state.oldStateHistory);
+        console.log(prevProps.receivedMemeData);
+        console.log(this.props.receivedMemeData);
+        console.log("Text1: "+ this.state.text1);
+        console.log("xPos: " + this.state.xPosT1);
+        if(prevProps.receivedMemeData.uid !== this.props.receivedMemeData.uid) {
+            console.log("Call CLicked");
+            console.log("receivedMemeData: ");
+            console.log(this.props.receivedMemeData);
             this.handleMemeEditClicked(this.props.receivedMemeData);
         }
+        else if(this.state.oldStateHistory !== this.props.updateSetIsHistory){
+            console.log("Seiten Wechsel");
+            this.handleMemeEditClicked(null);
+        }
+        /*else if(prevProps.receivedMemeData === this.props.receivedMemeData) {
+            console.log("Fucking shit");
+        }*/
     }
 
 
@@ -144,20 +166,26 @@ class Editor extends Component {
         link.click();
     }
 
-    handleTextInfo(textNr, xPos, yPos, bold, italic, color) {
+    handleTextInfo(textNr, xPos, yPos, bold, italic, color, text) {
+        console.log("Text data: ");
+        console.log(textNr + " " + text + " " + xPos + " " + yPos + " " + bold + " " + italic + " " + color);
+        
         if (textNr === "Text 1") {
+            this.state.text1 = text;
             this.state.xPosT1 = xPos;
             this.state.yPosT1 = yPos;
             this.state.boldT1 = bold;
             this.state.italicT1 = italic;
             this.state.colorT1 = color;
         } else if (textNr === "Text 2") {
+            this.state.text2 = text;
             this.state.xPosT2 = xPos;
             this.state.yPosT2 = yPos;
             this.state.boldT2 = bold;
             this.state.italicT2 = italic;
             this.state.colorT2 = color;
         }
+        
     }
 
     handleImageInfo(image, width, height) {
@@ -177,18 +205,55 @@ class Editor extends Component {
         this.setState({ showCameraPopUp: true });
     }
 
-    handleTemplateClicked(){
-
-    }
-
     handleMemeEditClicked(memeData){
-        console.log("edit clicked");
-        console.log(memeData);
-
-        this.state.imageFile = memeData.base64Image;
-        this.state.memeToEdit = memeData;
-        this.state.imageOption = "editMeme";
-        this.setState({ hasImage: true });
+            console.log("edit clicked");
+            //console.log(memeData);
+            if(memeData === null){
+                console.log("setting states default");
+                this.state.imageFile = "";
+                this.state.image = "";
+                memeData = {
+                    image: null,
+                    imgWidth: 0,
+                    imgHeight: 0,
+                    text1: "",
+                    text1XPos: 0,
+                    text1YPos: 0,
+                    text1Bold: "",
+                    text1Italic: "",
+                    text1Color:"",
+                    text2: "",
+                    text2XPos: 0,
+                    text2YPos: 0,
+                    text2Bold: "",
+                    text2Italic: "",
+                    text2Color: "",
+                    title: "",
+                }
+            }else{
+                this.state.imageFile = memeData.base64Image;
+                if(this.props.updateSetIsHistory === false){
+                    memeData.text1 = this.state.text1;
+                    memeData.text1XPos = this.state.xPosT1;
+                    memeData.text1YPos = this.state.yPosT1;
+                    memeData.text1Bold = this.state.boldT1;
+                    memeData.text1Italic = this.state.italicT1;
+                    memeData.text1Color = this.state.colorT1;
+                    memeData.text2 = this.state.text2;
+                    memeData.text2XPos = this.state.xPosT2;
+                    memeData.text2YPos = this.state.yPosT2;
+                    memeData.text2Bold = this.state.boldT2;
+                    memeData.text2Italic = this.state.italicT2;
+                    memeData.text2Color = this.state.colorT2;
+                }
+                
+            }
+            //console.log(memeData);
+            this.state.memeToEdit = memeData;
+            this.state.imageOption = "editMeme";
+            this.state.oldStateHistory = this.props.updateSetIsHistory;
+            this.setState({ hasImage: true });
+        
     }
 
     render() {
@@ -262,7 +327,30 @@ class EditorCanvas extends Component {
 
 
     handleImage = () => {
-        if (this.props.image != null) {
+        console.log("Reload...");
+        if(this.props.image === ""){
+            console.log("Remove images");
+            var canvas = document.getElementById("imageCanavas");
+            var imageCtx = canvas.getContext("2d");
+            var width = canvas.width;
+            var height = canvas.height;
+            imageCtx.clearRect(0, 0, width, height);
+            imageCtx.canvas.width = 0;
+            imageCtx.canvas.height = 0;
+            var mergingCanavas = document.getElementById("mergingCanvas");
+            var mergeCtx = mergingCanavas.getContext("2d");
+            mergeCtx.clearRect(0, 0, width, height);
+            var canvases = document.getElementsByClassName("canvasText");
+            var canvasTextCtx = canvases[0].getContext("2d");
+            canvasTextCtx.clearRect(0, 0, width, height);
+            var canvasTextCtx2 = canvases[1].getContext("2d");
+            canvasTextCtx2.clearRect(0, 0, width, height);
+            this.props.handleImageInfo("", 0, 0);
+            
+            //ctxText.clearRect(0, 0, canvasText.width, canvasText.height);
+        }
+        if ((this.props.image != null) && !(this.props.image === "")) {
+            console.log("NOT WANTED");
             const MAX_HEIGHT = 777;
             const MAX_WIDTH = 1090;
             var scaleFactor = 1;
@@ -357,8 +445,8 @@ class EditorCanvas extends Component {
 
     }
 
-    handleTextData(textNr, xPos, yPos, bold, italic, color) {
-        this.props.handleTextInfo(textNr, xPos, yPos, bold, italic, color);
+    handleTextData(textNr, xPos, yPos, bold, italic, color, text) {
+        this.props.handleTextInfo(textNr, xPos, yPos, bold, italic, color, text);
     }
 
     speechHandler(speech) {
@@ -490,6 +578,24 @@ class CanvasText extends Component {
                         state.bold = props.bold;
                         state.italic = props.italic;
                         state.color = props.color;
+                        var boldIcon = document.getElementById(props.boldIcon);
+                        if(props.bold === "bold"){
+                            boldIcon.style.backgroundColor = "#444";
+                        }else {
+                            boldIcon.style.backgroundColor = "#222";
+                        }
+                        var italicIcon = document.getElementById(props.italicIcon);
+                        if(props.italic === "italic"){
+                            italicIcon.style.backgroundColor = "#444";
+                        }else {
+                            italicIcon.style.backgroundColor = "#222";
+                        }
+                        var colorIcon = document.getElementById(props.colorIcon);
+                        if (props.color === "#FFF") {
+                            colorIcon.style.backgroundColor = "#FFF";
+                        } else {
+                            colorIcon.style.backgroundColor = "#000";
+                        }
                         document.getElementById(props.idNameTextInput).value = props.text;
                         document.getElementById(props.idNameX).value = props.textXPos;
                         document.getElementById(props.idNameY).value = props.textYPos;
@@ -522,11 +628,6 @@ class CanvasText extends Component {
 
     handleUpdateTextData() {
         if (this.props.image != null) {
-            console.log("Input text handler");
-            console.log(document.getElementById(this.props.idNameTextInput).value);
-            console.log(document.getElementById(this.props.idNameX).value);
-            console.log(document.getElementById(this.props.idNameY).value);
-
             const canvasText = document.getElementById(this.props.idNameTextCanvas);
 
             const ctxText = canvasText.getContext("2d");
@@ -541,10 +642,7 @@ class CanvasText extends Component {
             var x = Math.trunc(xPos1.value);
             var y = Math.trunc(yPos1.value);
             ctxText.fillText(text1.value, x, y);
-            console.log(ctxText);
-
-
-            this.props.handleTextData(this.props.nameTextPlaceHolder, x, y, this.state.bold, this.state.italic, this.state.color);
+            this.props.handleTextData(this.props.nameTextPlaceHolder, x, y, this.state.bold, this.state.italic, this.state.color, text1.value);
         }
 
     }

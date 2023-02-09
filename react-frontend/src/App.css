@@ -59,6 +59,10 @@
   height: 3vh;
 }
 
+#templateCreateIcon{
+  margin: 0;
+}
+
 #setPositionIcon2{
   margin-top: 1vh;
   margin-right: 0.5vw;
@@ -570,9 +574,11 @@ input[type=text] {
 }
 
 .buttonColumn {
-  width: 50%;
+  width: 49%;
 }
-
+.buttonColumn2 {
+  width: 98%;
+}
 .EditContainer {
   display: flex;
   justify-self: end;
