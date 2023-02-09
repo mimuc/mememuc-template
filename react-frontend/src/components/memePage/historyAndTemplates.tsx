@@ -7,6 +7,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import TextRotateVerticalIcon from '@mui/icons-material/TextRotateVertical';
 import SpeechToText from './speechToText';
+import ImageCompressor from 'js-image-compressor';
 
 
 interface historyAndTemplatesViewState {
@@ -642,6 +643,7 @@ class MemeTemplateTile extends Component<MemeTemplateTileProps, MemeTemplateTile
         this.loadImage = this.loadImage.bind(this);
         this.onEditClick = this.onEditClick.bind(this);
         this.onImageLoaded = this.onImageLoaded.bind(this);
+        this.compressImage = this.compressImage.bind(this);
     }
 
     componentDidMount(): void {
@@ -669,9 +671,8 @@ class MemeTemplateTile extends Component<MemeTemplateTileProps, MemeTemplateTile
     onEditClick() {
         this.loadImage(this.props.imageUrl).then(
             (convertedImage) => {
-                const stringifiedImage = JSON.stringify(convertedImage)
                 this.setState({
-                    base64Image: stringifiedImage
+                    base64Image: convertedImage
                 }, this.onImageLoaded)
             },
             (error) => {

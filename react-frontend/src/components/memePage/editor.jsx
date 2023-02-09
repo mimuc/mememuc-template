@@ -182,6 +182,7 @@ class Editor extends Component {
 
     handleMemeEditClicked(memeData){
         console.log("edit clicked");
+        console.log(memeData);
 
         this.state.imageFile = memeData.base64Image;
         this.state.memeToEdit = memeData;
