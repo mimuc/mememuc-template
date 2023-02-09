@@ -7,7 +7,6 @@ import CreateIcon from '@mui/icons-material/Create';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import TextRotateVerticalIcon from '@mui/icons-material/TextRotateVertical';
 import SpeechToText from './speechToText';
-import ImageCompressor from 'js-image-compressor';
 
 
 interface historyAndTemplatesViewState {
@@ -18,7 +17,8 @@ interface historyAndTemplatesViewState {
 
 interface historyAndTemplatesViewProps {
     updateTrigger: number,
-    handleEditMeme: any
+    handleEditMeme: any,
+    updateIsHistory: any
 }
 
 class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, historyAndTemplatesViewState> {
@@ -41,6 +41,7 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
     }
 
     btnClickedCallback(value, event) {
+        this.props.updateIsHistory(value);
         this.setState({ valueRendered: value });
         event.stopPropagation();
     }
@@ -643,7 +644,6 @@ class MemeTemplateTile extends Component<MemeTemplateTileProps, MemeTemplateTile
         this.loadImage = this.loadImage.bind(this);
         this.onEditClick = this.onEditClick.bind(this);
         this.onImageLoaded = this.onImageLoaded.bind(this);
-        this.compressImage = this.compressImage.bind(this);
     }
 
     componentDidMount(): void {

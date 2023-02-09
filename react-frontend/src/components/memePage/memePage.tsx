@@ -15,6 +15,7 @@ function MemePageIfLoggedIn () {
     const navigate = useNavigate();
     const [triggerUpdate, setTriggerUpdate] = useState(0);
     const [updateMeme, setUpdateMeme] = useState({});
+    const [isHistory, setIsHistory] = useState(true);
     const profileFabClicked = () => {
         console.log("Redirecting to Profilepage.");
         navigate('/profile');
@@ -31,11 +32,16 @@ function MemePageIfLoggedIn () {
         setUpdateMeme(memeData);
     }
 
+    const updateHistory = (isHistoryParameter) => {
+        console.log(isHistoryParameter);
+        setIsHistory(isHistoryParameter);
+    }
+
     return (
         <div>
             <div className="Screenlayout" >
-                <HistoryAndTemplatesView updateTrigger={triggerUpdate} handleEditMeme={handleEditMeme}/>
-                <Editor handleImageUploaded={handleImageUploaded} receivedMemeData={updateMeme}/>
+                <HistoryAndTemplatesView updateTrigger={triggerUpdate} handleEditMeme={handleEditMeme} updateIsHistory={updateHistory}/>
+                <Editor handleImageUploaded={handleImageUploaded} receivedMemeData={updateMeme} updateSetIsHistory={isHistory}/>
             </div>
             <Fab id="profileBtn" color="secondary" size="large" onClick={profileFabClicked}>
                 <Person2RoundedIcon fontSize="large"/>

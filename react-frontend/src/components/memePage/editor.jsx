@@ -53,7 +53,8 @@ class Editor extends Component {
             memeToEdit : null,
             xPosT1: 0, yPosT1: 0, xPosT2: 0, yPosT2: 0,
             boldT1: "", boldT2: "", italicT1: "", italicT2: "", colorT1: "", colorT2: "", imageOption: "",
-            showCameraPopUp: false
+            showCameraPopUp: false,
+            isHistory: this.props.updateSetIsHistory
         };
         this.handleGetImage = this.handleGetImage.bind(this);
         this.saveMeme = this.saveMeme.bind(this);
@@ -67,7 +68,7 @@ class Editor extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         console.log("Component did update");
-        // console.log(this.props.receivedMemeData);
+        console.log(this.state.isHistory);
         if(prevProps.receivedMemeData !== this.props.receivedMemeData) {
             this.handleMemeEditClicked(this.props.receivedMemeData);
         }
