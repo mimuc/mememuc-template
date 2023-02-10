@@ -11,7 +11,7 @@ export default function Meme (props) {
         <Card.Img variant="top" src={props.img} />
         <Card.Body>
           <Card.Title>{props.title}</Card.Title>
-          <Button onClick={e => navigate(`/create?url=${props.img}`)} variant="primary">Create</Button>
+          <Button onClick={(e) => navigate(`/editor?url=${props.img}`)} variant="primary"> Create </Button>
         </Card.Body>
     </Card>
   );

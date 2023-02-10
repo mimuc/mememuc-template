@@ -3,10 +3,8 @@ import Meme from "../components/meme";
 import { getAllMemes } from '../api/memes';
 
 
-const Create = () => {
-
+export default function Create () {
     const[data, setData] = useState([]);
-
 
     //Gather all memes from the used API
     useEffect(() => {
@@ -22,5 +20,3 @@ const Create = () => {
         </>
     );
 };
-
-export default Create;
