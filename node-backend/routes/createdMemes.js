@@ -37,27 +37,40 @@ router.post('/insert', function (req, res, next) {
 // Get created meme
 router.post('/find', function (req, res, next) {
     const db = req.db;
+    const searchString = req.body.searchString;
+    const hasMore = false;
+    console.log("Searching for memes including: " + searchString);
     const createdMemes = db.get('createdMemes');
-    createdMemes.find({image_name: req.body.image_name})
-        .then((docs) => {
-            console.log("preparing json..");
-            console.log(docs);
-            res.json(docs);
+    createdMemes.find({})
+        .then((memes) => {
+            findAllElements(memes, searchString)
+                .then((resultMemes) => {
+                    console.log("filtered " + resultMemes.length + " memes");
+                    const nextResponse = {
+                        resultMemes,
+                        hasMore
+                    }
+                    res.json(nextResponse);
+                })
+                .catch((e) => {
+                    console.error(e);
+                    res.status(500).send();
+                })
         })
         .catch((e) => {
-            console.log(e);
-            res.status(500).send();
-        });
+            console.error(e);
+        })
+
 });
 
 router.post('/like', function (req, res) {
     console.log('in /like');
     const db = req.db;
     const createdMemes = db.get('createdMemes');
-    createdMemes.find({_id: req.body.uid}).then((docs) => {
+    createdMemes.find({ _id: req.body.uid }).then((docs) => {
         // console.log(typeof docs);
         let currLikes = docs[0].likes;
-        createdMemes.update({_id: req.body.uid}, {$set: {likes: currLikes + 1}});
+        createdMemes.update({ _id: req.body.uid }, { $set: { likes: currLikes + 1 } });
         console.log('updated likes');
         res.send('Updated likes');
     });
@@ -101,5 +114,22 @@ router.post('/next', function (req, res) {
         });
 });
 
+//This function searches through all memes and returns all memes that include any words of the searchString
+async function findAllElements(memeArray, searchString) {
+    return new Promise((resolve, reject) => {
+        try {
+            let memes = [];
+            memeArray.forEach(element => {
+                if (element.title.includes(searchString) || element.text1.includes(searchString) || element.text2.includes(searchString)) {
+                    //console.log(element);
+                    memes.push(element);
+                }
+            });
+            resolve(memes);
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
 
 module.exports = router;

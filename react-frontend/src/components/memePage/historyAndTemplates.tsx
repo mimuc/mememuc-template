@@ -63,8 +63,7 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
                 sortAlphabetically: true
             }, this.shuffleFinished);
         } else if (mode === "Search") {
-            if(value === "") { return; }
-            console.log(value);
+            if (value === "") { return; }
             this.setState({
                 sortSearch: value
             }, this.shuffleFinished)
@@ -88,7 +87,7 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
         return (
             <div className="side" id="sideLeft">
                 <HistoryAndTemplatesMenu modeSwitchBtnCallback={this.btnClickedCallback} shuffleCallback={this.sortCallback} />
-                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger} handleEditMeme={this.handleEditMeme.bind(this)} isHistory={this.state.valueRendered} sortRandomly={this.state.sortRandom} sortAlphabetically={this.state.sortAlphabetically} sortSearch={this.state.sortSearch}/>
+                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger} handleEditMeme={this.handleEditMeme.bind(this)} isHistory={this.state.valueRendered} sortRandomly={this.state.sortRandom} sortAlphabetically={this.state.sortAlphabetically} sortSearch={this.state.sortSearch} />
             </div>
         )
     }
@@ -198,7 +197,12 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         this.filterMemes = this.filterMemes.bind(this);
         this.intersectionRef = React.createRef();
         this.observer = new IntersectionObserver(this.reloadIntersectionCallback.bind(this));
+        this.searchMemes = this.searchMemes.bind(this);
         this.currentlyIntersecting = false;
+    }
+
+    componentDidMount() {
+        this.loadNextMemes();
     }
 
     resetMemeList(isHistory) {
@@ -241,28 +245,49 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
 
     filterMemes() {
         let searchString = this.props.sortSearch;
-        let memeListCopy = this.state.memeList,
-         newMemeList = [];
-        memeListCopy.forEach(element => {
-            if(this.state.showHistory) {
-                if(element.title.includes(searchString) || element.text1.includes(searchString) || element.text2.includes(searchString)) {
-                    console.log(element);
-                    newMemeList.push(element);
-                }
-            } else {
-                if(element.name.includes(searchString)) {
-                    console.log(element);
-                    newMemeList.push(element);
-                }
-            }
-        });
-        this.setState({
-            memeList: newMemeList
-        });
+        this.searchMemes(searchString)
+            .then((res) => {
+                //console.log(res);
+                this.setState({
+                    memeList: res.resultMemes,
+                    hasMore: res.hasMore
+                });
+            })
+            .catch((e) => {
+                console.error(e);
+            });
     }
 
-    componentDidMount() {
-        this.loadNextMemes();
+    async searchMemes(searchString) {
+        const endpoint = (this.state.showHistory ? ('http://localhost:3001/createdMemes/find') : ('http://localhost:3001/memesApi/find'));
+        return new Promise((resolve, reject) => {
+            fetch(endpoint, {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Access-Control-Allow-Origin': '*',
+                },
+                body: JSON.stringify({
+                    searchString: searchString
+                })
+            }).then((res) => {
+                if (res.ok) {
+                    //console.log(res);
+                    return res.json();
+                } else {
+                    console.error(res.status);
+                    reject(res);
+                }
+            }).then((res) => {
+                //console.log(res);
+                resolve(res);
+            })
+            .catch((e) => {
+                console.error(e);
+                reject(e);
+            });
+        })
     }
 
     loadNextMemes() {
@@ -326,15 +351,8 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 });
         } else {
             console.log("Catching memes from api");
-            const limit = this.state.limit;
-            const offset = this.state.offset;
-            const endpoint = `https://api.imgflip.com/get_memes`;
-            let hasMore = true;
-            console.log("Backend: get new memePage");
-            //console.log(req.body);
-            console.log(offset);
-        
-        
+            //console.log(req.body);        
+
             fetch('http://localhost:3001/memesApi/page', {
                 method: 'POST',
                 credentials: "include",
