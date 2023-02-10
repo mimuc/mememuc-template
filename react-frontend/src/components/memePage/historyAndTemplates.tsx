@@ -241,16 +241,23 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
 
     filterMemes() {
         let searchString = this.props.sortSearch;
-        let memeListCopy = this.state.memeList;
+        let memeListCopy = this.state.memeList,
+         newMemeList = [];
         memeListCopy.forEach(element => {
-            console.log(element);
-            if(!element["title"].includes(searchString) && !element["text1"].includes(searchString) && !element["text2"].includes(searchString)) {
-                let index = memeListCopy.indexOf(element);
-                delete memeListCopy[index];
+            if(this.state.showHistory) {
+                if(element.title.includes(searchString) || element.text1.includes(searchString) || element.text2.includes(searchString)) {
+                    console.log(element);
+                    newMemeList.push(element);
+                }
+            } else {
+                if(element.name.includes(searchString)) {
+                    console.log(element);
+                    newMemeList.push(element);
+                }
             }
         });
         this.setState({
-            memeList: memeListCopy
+            memeList: newMemeList
         });
     }
 
