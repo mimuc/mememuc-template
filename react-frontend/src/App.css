@@ -126,7 +126,7 @@
 }
 
 .notActive:hover {
-  background-color: #c7c7c7;
+  background-color: #FFF;
 }
 
 
@@ -220,25 +220,55 @@ div.MemeList{
 .ShuffleMenu {
   display: flex;
   flex-flow: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchMenu {
+  display: flex;
+  flex-flow: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.searchBtn {
+  width: 4vw !important;
+  height: 1.8vh !important;
+  margin: .2vh .35vw !important;
+  padding: 1.4vh 1.6vw !important;
+}
+
+.searchInput {
+  margin: .5vh .5vw !important;
+  margin-right: 0vw !important;
+  padding: .4vh .5vw !important;
+  border: none !important;
+  border-radius: 2vw;
+  background-color: #e9e9e9;
 }
 
 .shuffleBtn {
-  margin: 0vh .35vw !important;
-  margin-bottom: 1.1vh !important;
-  padding: .7vh .7vw !important;
-  background-color: #333 !important;
-  color: white !important;
+  width: 9vw !important;
+  height: 2vh !important;
+  margin: .2vh .35vw !important;
+  padding: 1.6vh 1.6vw !important;
+  margin-bottom: .5vh !important;
+  color: black !important;
 }
 
 .shuffleBtn:disabled {
-  background-color: #444;
+  background-color: #666;
   color:#555 !important;
 }
 
 #shuffleText {
-  margin-top: .6vh !important;
-  margin-left: 1.2vw !important;
+  margin-bottom: .8vh !important;
+  margin-right: .3vw !important;
   color: white;
+}
+
+#randomShuffleBtn {
+  width: 6.5vw !important;
 }
 
 .leftBtn {

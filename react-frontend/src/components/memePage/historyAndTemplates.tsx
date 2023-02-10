@@ -141,7 +141,7 @@ class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, hi
                     </Fab>
                 </div>
                 <div className="searchMenu">
-                    <input id="searchFieldInput" placeholder="Filter for memes" className="searchInput" onChange={this.handleInputChange.bind(this)}></input>
+                    <input className="searchInput" id="searchFieldInput" placeholder="Filter for memes" className="searchInput" onChange={this.handleInputChange.bind(this)}></input>
                     <Fab className="searchBtn" variant="extended" size="small" id="searchFieldBtn" onClick={() => this.props.shuffleCallback("Search", this.state.searchInput)}>Search</Fab>
                 </div>
             </>
