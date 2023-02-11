@@ -135,8 +135,8 @@ div.MemeList{
   margin-top: 1vh;
   margin-left: 0.5vw;
   width: 21vw;
-  height: 88vh;
-  border-radius: 5px;
+  height: 81vh;
+  border-radius: 10px;
   box-shadow: 3px 3px 6px #1f1f1f inset;
   display: block;
   overflow-y:scroll;
@@ -183,14 +183,17 @@ div.MemeList{
 
 
 ::-webkit-scrollbar{
+  border-radius: 5px;
   background-color: #555;
 }
 
 ::-webkit-scrollbar-button{
+  border-radius: 5px;
   background-color: #111;
 }
 
 ::-webkit-scrollbar-thumb{
+  border-radius: 5px;
   background-color: #333;
 }
 
@@ -231,6 +234,13 @@ div.MemeList{
   align-items: center;
 }
 
+.searchClearBtn {
+  width: .5vw !important;
+  height: 1vh !important;
+  margin: .2vh 0vw !important;
+  padding: 1.2vh .7vw !important;
+}
+
 .searchBtn {
   width: 4vw !important;
   height: 1.8vh !important;
@@ -254,11 +264,6 @@ div.MemeList{
   padding: 1.6vh 1.6vw !important;
   margin-bottom: .5vh !important;
   color: black !important;
-}
-
-.shuffleBtn:disabled {
-  background-color: #666;
-  color:#555 !important;
 }
 
 #shuffleText {

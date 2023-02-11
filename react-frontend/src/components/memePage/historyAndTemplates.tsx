@@ -1,19 +1,19 @@
 import * as React from 'react';
 import { Component } from 'react';
-import Button from '@mui/material/Button';
 import { Fab, IconButton } from "@mui/material";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CreateIcon from '@mui/icons-material/Create';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
 import TextRotateVerticalIcon from '@mui/icons-material/TextRotateVertical';
-import SpeechToText from './speechToText';
+import ClearIcon from '@mui/icons-material/Clear';
 
 
 interface historyAndTemplatesViewState {
     valueRendered: boolean,
     sortRandom: boolean,
     sortAlphabetically: boolean,
-    sortSearch: String
+    sortSearch: String,
+    clearSearch: boolean
 }
 
 interface historyAndTemplatesViewProps {
@@ -29,11 +29,11 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
             valueRendered: true,
             sortRandom: false,
             sortAlphabetically: false,
-            sortSearch: ""
+            sortSearch: "",
+            clearSearch: false,
         };
         this.btnClickedCallback = this.btnClickedCallback.bind(this);
         this.sortCallback = this.sortCallback.bind(this);
-        this.shuffleFinished = this.shuffleFinished.bind(this);
     }
 
     handleEditMeme(memeData) {
@@ -49,45 +49,39 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
     }
 
     sortCallback(mode, value) {
-        //console.log("Sort using: " + value);
+        //console.log("Sorting after: " + value);
         if (mode === "random") {
-            document.getElementById("alphabetShuffleBtn").disabled = true;
-            document.getElementById("randomShuffleBtn").disabled = true;
             this.setState({
                 sortRandom: true
-            }, this.shuffleFinished);
+            });
         } else if (mode === "alphabet") {
-            document.getElementById("alphabetShuffleBtn").disabled = true;
-            document.getElementById("randomShuffleBtn").disabled = true;
             this.setState({
                 sortAlphabetically: true
-            }, this.shuffleFinished);
+            });
         } else if (mode === "Search") {
             if (value === "") { return; }
             this.setState({
                 sortSearch: value
-            }, this.shuffleFinished)
-        }
-    }
-
-    //This method resets the shuffle state, so that you can click on the shuffle Buttons again. For performance purposes, this is only allowed after 3 seconds
-    shuffleFinished() {
-        setTimeout(() => {
+            });
+        } else if (mode === "clearSearch") {
             this.setState({
-                sortRandom: false,
-                sortAlphabetically: false,
-                sortSearch: ""
-            })
-            document.getElementById("alphabetShuffleBtn").disabled = false;
-            document.getElementById("randomShuffleBtn").disabled = false;
-        }, 3000);
+                clearSearch: true
+            }, () => {
+                // Resets the clearSearch attribute after 0.3 seconds
+                setTimeout(() => {
+                    this.setState({
+                        clearSearch: false
+                    })
+                }, 300);
+            });
+        }
     }
 
     render() {
         return (
             <div className="side" id="sideLeft">
-                <HistoryAndTemplatesMenu modeSwitchBtnCallback={this.btnClickedCallback} shuffleCallback={this.sortCallback} />
-                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger} handleEditMeme={this.handleEditMeme.bind(this)} isHistory={this.state.valueRendered} sortRandomly={this.state.sortRandom} sortAlphabetically={this.state.sortAlphabetically} sortSearch={this.state.sortSearch} />
+                <HistoryAndTemplatesMenu modeSwitchBtnCallback={this.btnClickedCallback} sortCallback={this.sortCallback} />
+                <HistoryAndTemplatesList updateTrigger={this.props.updateTrigger} handleEditMeme={this.handleEditMeme.bind(this)} isHistory={this.state.valueRendered} sortRandomly={this.state.sortRandom} sortAlphabetically={this.state.sortAlphabetically} sortSearch={this.state.sortSearch} clearSearch={this.state.clearSearch} />
             </div>
         )
     }
@@ -95,12 +89,14 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
 
 interface historyAndTemplatesMenuProps {
     modeSwitchBtnCallback: any,
-    shuffleCallback: any
+    sortCallback: any
 }
 
 interface historyAndTemplateMenuState {
     activeListView: String,
-    searchInput: String
+    searchInput: String,
+    searchEmpty: boolean
+    sortClicked: boolean
 }
 
 class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, historyAndTemplateMenuState> {
@@ -109,8 +105,12 @@ class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, hi
         super(props);
         this.state = {
             activeListView: "History",
-            searchInput: ""
+            searchInput: "",
+            searchEmpty: true,
+            sortClicked: false
         }
+        this.sortCallback = this.sortCallback.bind(this);
+        this.resetDisabledBtns = this.resetDisabledBtns.bind(this);
     }
 
     btnClicked(isHistoryValue, event) {
@@ -120,8 +120,29 @@ class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, hi
 
     handleInputChange(event) {
         this.setState({
-            searchInput: event.target.value
+            searchInput: event.target.value,
         })
+    }
+
+    sortCallback(type, input) {
+        this.props.sortCallback(type, input);
+        let booleanSearchEmpty = ((input === null || input === "") ? true : false);
+        if (type === "clearSearch") {
+            document.getElementById("searchFieldInput").value = "";
+        }
+        this.setState({
+            searchEmpty: true,
+            sortClicked: true
+        }, () => { this.resetDisabledBtns(booleanSearchEmpty) })
+    }
+
+    resetDisabledBtns(booleanSearchEmpty) {
+        setTimeout(() => {
+            this.setState({
+                searchEmpty: booleanSearchEmpty,
+                sortClicked: false
+            })
+        }, 3000);
     }
 
     render() {
@@ -133,16 +154,17 @@ class HistoryAndTemplatesMenu extends Component<historyAndTemplatesMenuProps, hi
                 </div>
                 <div className="ShuffleMenu">
                     <p id="shuffleText">Sort:</p>
-                    <Fab className="shuffleBtn" variant="extended" size="small" id="randomShuffleBtn" onClick={() => this.props.shuffleCallback("random", null)}>
+                    <Fab className="shuffleBtn" variant="extended" size="small" id="randomShuffleBtn" onClick={() => this.sortCallback("random", null)} disabled={this.state.sortClicked}>
                         <ShuffleIcon></ShuffleIcon>Randomly
                     </Fab>
-                    <Fab className="shuffleBtn" variant="extended" size="small" id="alphabetShuffleBtn" onClick={() => this.props.shuffleCallback("alphabet", null)}>
+                    <Fab className="shuffleBtn" variant="extended" size="small" id="alphabetShuffleBtn" onClick={() => this.sortCallback("alphabet", null)} disabled={this.state.sortClicked}>
                         <TextRotateVerticalIcon></TextRotateVerticalIcon>Alphabetically
                     </Fab>
                 </div>
                 <div className="searchMenu">
-                    <input className="searchInput" id="searchFieldInput" placeholder="Filter for memes" className="searchInput" onChange={this.handleInputChange.bind(this)}></input>
-                    <Fab className="searchBtn" variant="extended" size="small" id="searchFieldBtn" onClick={() => this.props.shuffleCallback("Search", this.state.searchInput)}>Search</Fab>
+                    <Fab className="searchClearBtn" variant="extended" size="small" id="searchClearBtn" onClick={() => this.sortCallback("clearSearch", null)} disabled={this.state.searchEmpty}><ClearIcon size="small" /></Fab>
+                    <input className="searchInput" id="searchFieldInput" placeholder="Filter for memes" onChange={this.handleInputChange.bind(this)}></input>
+                    <Fab className="searchBtn" variant="extended" size="small" id="searchFieldBtn" onClick={() => this.sortCallback("Search", this.state.searchInput)}>Search</Fab>
                 </div>
             </>
         );
@@ -154,8 +176,9 @@ interface historyAndTemplateListProps {
     sortRandomly: boolean,
     sortAlphabetically: boolean,
     sortSearch: String,
+    clearSearch: boolean,
     updateTrigger: number,
-    handleEditMeme: any,
+    handleEditMeme: any
 }
 
 interface historyAndTemplateListState {
@@ -206,7 +229,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
     }
 
     resetMemeList(isHistory) {
-        console.log("Resetting Meme List, now showing: " + isHistory);
+        console.log("Resetting Meme List, showing HistoryView?: " + isHistory);
         this.setState({ showHistory: isHistory, memeList: [], page: 0, hasMore: true, offset: 0 }, () => this.loadNextMemes());
     }
 
@@ -226,8 +249,10 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             this.resetMemeList(this.props.isHistory);
         }
         if ((prevProps.sortSearch !== this.props.sortSearch) && (this.props.sortSearch !== "")) {
-            console.log("Sorting memes after: " + this.props.sortSearch);
             this.filterMemes();
+        }
+        if ((prevProps.clearSearch !== this.props.clearSearch) && this.props.clearSearch) {
+            this.resetMemeList(this.props.isHistory);
         }
     }
 
@@ -245,6 +270,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
 
     filterMemes() {
         let searchString = this.props.sortSearch;
+        console.log("Filtering memes including: " + searchString);
         this.searchMemes(searchString)
             .then((res) => {
                 //console.log(res);
@@ -283,10 +309,10 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 //console.log(res);
                 resolve(res);
             })
-            .catch((e) => {
-                console.error(e);
-                reject(e);
-            });
+                .catch((e) => {
+                    console.error(e);
+                    reject(e);
+                });
         })
     }
 
@@ -319,7 +345,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 if (res.ok) {
                     return res.json();
                 } else {
-                    console.log(res.status);
+                    console.error(res.status);
                 }
             }).then((res) => {
                 // this.setState({memeList: res});
@@ -346,7 +372,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             })
                 .catch((err) => {
                     this.setState({ loading: false, error: true });
-                    console.log(err);
+                    console.error(err);
                     this.currentlyIntersecting = false;
                 });
         } else {
@@ -368,7 +394,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                 if (res.ok) {
                     return res.json();
                 } else {
-                    console.log(res.status);
+                    console.error(res.status);
                 }
             }).then((res) => {
                 //console.log("Got data with length: " + res.length);
@@ -426,7 +452,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         try {
             this.observer.observe(this.intersectionRef.current);
         } catch (e) {
-            console.log("not working");
+            console.error("not working");
         }
         //console.log(this.observer);
     }
