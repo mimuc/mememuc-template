@@ -1,5 +1,7 @@
 const localserv = "http:/localhost:27017"
 
+//when you like the post, you need to remove the dislike if the user disliked the post 
+
 async function like_post(post_id,user_id,genre) {
     try {
     

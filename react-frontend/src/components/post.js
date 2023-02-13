@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import Button from "../components/button";
 import Input from "../components/input";
+
 const Like = require ("../callback/callback_like");
 const Comment = require ("../callback/callback_comment");
+
 
 const style = {
     //border: "4px solid #9CC694",
