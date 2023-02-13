@@ -4,9 +4,9 @@ const localserv = "http:/localhost:27017"
   async function getPosts() {
   try {
     
-    const response = await fetch (localserv+`/get_40`);
+    const response = await fetch (localserv+`/posts/get_40`);
     const data = await response.json();
-    setResponse(data.title);
+    return data;
 
   }
   catch(error){

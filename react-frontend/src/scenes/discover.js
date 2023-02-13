@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Post from "../components/post";
-
+const PostCall = require ("../callback/callback_post")
 
 const style = {
     border:"3px solid green",
@@ -15,14 +15,14 @@ const style = {
 
 const Discover =() =>{
     //Add in the data source from the posts here
-    const [dataSource, setDataSource] = useState(Array.from({length:10}))
+    const [posts, setPost] = useState([])
     const [hasMore, setHasMore] = useState(true)
     const fetchMoreData = () =>{
         // checking the length of the data, if it is more than all of the data then set has more to false
-        if(dataSource.length <100){
+        if(posts.length <40){
         //MAKING API CALL
         setTimeout(()=> {
-            setDataSource(dataSource.concat(Array.from({length:10})))
+            
         },1000);
         }else{
             setHasMore(false);

@@ -1,19 +1,19 @@
 const localserv = "http:/localhost:27017"
 
-async function like_post(post_id) {
+async function like_post(post_id,user_id,genre) {
     try {
     
       const res = await fetch(localserv+"/like/create", {
-      method: 'POST',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        user_id:"",
-        post_id:"",
-        date:"",
-        genre:""
-      })
+      query: {
+        user_id:user_id,
+        post_id:post_id,
+        genre: genre
+        
+      }
     });
   
     }
@@ -21,3 +21,5 @@ async function like_post(post_id) {
       console.error(error);
     }
   }
+
+  module.exports = {like_post};

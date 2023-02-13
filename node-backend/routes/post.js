@@ -6,7 +6,8 @@ var router = express.Router();
 router.get('/:post_id', (req, res) => {
     const db = req.db;
     const posts = db.collection('posts');
-    posts.findOne({ _id: ObjectId(req.params.post_id) })
+    console.log("hello");
+    posts.findOne({ _id: new ObjectId(req.params.post_id) })
     .then(post => {
         if (!post) {
             res.status(404).send('Post not found');
@@ -22,21 +23,24 @@ router.get('/:post_id', (req, res) => {
 });
 
 
-    //using to refresh the 40 most recent posts
-    router.get('/get_40', (req, res) => {
-        const db = req.db;
-        const posts = db.collection('posts');
-        posts.find({}).skip(0).limit(40).toArray()
-        .then(result => {
-            
-            res.status(202).json(result);
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(500).send('Error retrieving posts');
-        });
+//using to refresh the 40 most recent posts
+router.get('/get40', (req, res) => {
+    console.log("i am here ");
+    const db = req.db;
+    
+    const posts = db.collection('posts');
+    posts.find({view : "normal"}).skip(0).limit(40).toArray()
+    .then(result => {
         
+        res.status(202).json(result);
+    })
+    .catch(err => {
+        console.log(err);
+        console.log("heeloo")
+        res.status(500).send(err);
     });
+    
+});    
 
 // create a post
     router.post('/create', function(req, res, next) {
@@ -52,7 +56,7 @@ router.get('/:post_id', (req, res) => {
             n_likes: 0,
             date:data.date,
             comments:data.comments,
-            likes:0
+            likes:[{}]
         })
         
         .catch (err => {
@@ -71,7 +75,7 @@ router.get('/gethistory/:user_id', (req, res) => {
     const db = req.db;
     const images = db.collection('posts');
 
-    images.findOne({ _id: ObjectId(req.params.user_id) }).then (post => {
+    images.findOne({ _id: new ObjectId(req.params.user_id) }).then (post => {
         
         if (!post) {
             res.status(404).send('Image not found');
@@ -104,13 +108,14 @@ async function performRedirects(comments) {
 
 // get comments from a post id using a counter 
 
-router.get('/getcomments/:post_id', (req, res) => {
+router.get('/getcomments', (req, res) => {
     const db = req.db;
     const images = db.collection('posts');
     const commentsid = [];
     const comments =[];
+    console.log("jeeld");
     const counter = req.query.counter;
-    images.find({ _id: ObjectId(req.params.post_id) }, { comments: { $slice: [counter, -1] } }).then (post => {
+    images.find({ _id: new ObjectId(req.query.post_id) }, { comments: { $slice: [counter, -1] } }).then (post => {
         
         if (!post) {
             res.status(404).send('Image not found');

@@ -3,10 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-
     "startdev": "SET DBPORT=27017 && node ./bin/www",
     "start": "SET DBPORT=65535 && node ./bin/www"
-
   },
   "dependencies": {
     "all": "^0.0.0",
@@ -16,9 +14,8 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-
     "js": "^0.1.0",
-
+    "mongodb": "^5.0.1",
     "monk": "7.3.3",
     "morgan": "~1.9.1",
     "njwt": "^1.0.0"

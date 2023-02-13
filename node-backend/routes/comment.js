@@ -1,18 +1,23 @@
 var express = require('express');
 var router = express.Router();
+const mongodb = require("mongodb");
+const ObjectID = mongodb.ObjectID;
+
+
 
 
 router.post('/create', function(req, res, next) {
     const db = req.db;
     const collection = db.get('comments');
     const data = req.body;
-
+    const user = req.query.user_id;
+    const post_id = req.query.post_id;
     //add a comment document
     collection.insert({ 
-        post_id:  data.post_id,
-        user_id: data.user_id,
+        post_id: new ObjectID(post_id),
+        user_id: new ObjectID(user),
         text: data.text,
-        n_likes: data.n_likes,
+        n_likes: 0,
         date: data.date
     }).catch(err => {
         

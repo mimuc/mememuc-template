@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import Button from "../components/button";
 import Input from "../components/input";
+const Like = require ("../callback/callback_like");
+const Comment = require ("../callback/callback_comment");
 
 const style = {
     //border: "4px solid #9CC694",
@@ -25,7 +27,7 @@ const stylecom = {
     color: '#565656',
   };
 
-const PostComponent = () => {
+const PostComponent = ( type, variant, className, post_id = "hfsdjefwf123", onClick, size, children,user_id ) => {
     //like button function
     //need to set like usestate from 456 to the number of likes specific to the post ID
     const [like, setLike] = useState(456),
@@ -34,7 +36,13 @@ const PostComponent = () => {
         onLikeButtonClick = () => {
             setLike(like + (isLike ? -1 : 1));
             setIsLike(!isLike);
-            if (isDislike) { setDislike(dislike - 1); setIsDislike(!isDislike) };
+            if(!isLike){
+            Like.like_post(post_id,user_id,"like")
+            }
+            if (isDislike) { 
+                setDislike(dislike - 1); 
+                setIsDislike(!isDislike) 
+            };
         }
 
     //dislike button function
@@ -45,6 +53,9 @@ const PostComponent = () => {
         onDislikeButtonClick = () => {
             setDislike(dislike + (isDislike ? -1 : 1));
             setIsDislike(!isDislike);
+            if(!isDislike){
+                Like.like_post(id,user_id,"like")
+                }
             if (isLike) { setLike(like - 1); setIsLike(!isLike) };
         }
 
@@ -59,9 +70,10 @@ const PostComponent = () => {
 
     const handleSubmit=(e)=>{
         e.preventDefault();
-        console.log(newinpt)
-        setListCom((ls)=> [...ls,newinpt])
-        setNewinpt("")
+        console.log(newinpt);
+        Comment.comment_post(post_id,user_id,newinpt);
+        setListCom((ls)=> [...ls,newinpt]);
+        setNewinpt("");
     }
 
     //Here is the format of the post component, replace username and description with the corresponding one from the post ID
@@ -160,7 +172,7 @@ const PostComponent = () => {
     );
 }
 
-const Post = ({ type, variant, className, id, onClick, size, children }) => {
+const Post = ({ type, variant, className, id, onClick, size, children, user_id }) => {
     return <PostComponent
         type={type ? type : "post"}
         variant={variant}
