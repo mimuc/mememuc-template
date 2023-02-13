@@ -4,6 +4,10 @@
   overflow: hidden;
 }
 
+html, body, #root {
+  height: 100%;
+}
+
 .App {
   text-align: center;
 }
@@ -620,4 +624,51 @@ input[type=text] {
   float: right;
   justify-content: end;
   justify-items: end;
+}
+
+#profile-page-container {
+  width: 100%;
+  height: 100%;
+  background-color: #222222;
+  color: #eaeaea;
+  overflow-x: visible;
+}
+
+#my-memes-container {
+  display: block;
+  width: 100%;
+  height: 6cm;
+  overflow-x: visible;
+  margin-top: 30px;
+}
+
+.vertical-scroll-gallery {
+  width: 90%;
+  height: 5cm;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  overflow: visible;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+
+.meme-box {
+  height: 4cm;
+  width: 4cm;
+  margin: 1vh;
+  outline: #eaeaea solid;
+  -webkit-border-radius: 20px;
+  -moz-border-radius: 20px;
+  border-radius: 20px;
+  padding: 1vh;
+  /*scroll-snap-type: y mandatory;
+  overscroll-behavior-y: contain;*/
+}
+
+.meme-box-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
 }
