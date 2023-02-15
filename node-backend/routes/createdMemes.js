@@ -114,6 +114,21 @@ router.post('/next', function (req, res) {
         });
 });
 
+router.get('/mymemes', (req, res) => {
+    const username = req.session.username;
+
+    const db = req.db;
+    const createdMemes = db.get('createdMemes');
+    const myMemes = createdMemes.find({creator: username})
+        .then((docs) => {
+            docs = docs.reverse();
+            res.json(docs);
+        })
+        .catch((e) => {
+            res.status(500).send("Something went wrong: " + JSON.stringify(e));
+        });
+});
+
 //This function searches through all memes and returns all memes that include any words of the searchString
 async function findAllElements(memeArray, searchString) {
     return new Promise((resolve, reject) => {

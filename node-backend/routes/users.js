@@ -107,4 +107,8 @@ router.post('/find', function(req, res, next) {
       });
 });
 
+router.get('/my_username', (req, res) => {
+   res.send(req.session.username);
+});
+
 module.exports = router;

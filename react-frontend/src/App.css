@@ -647,6 +647,8 @@ input[type=text] {
   height: 5cm;
   display: flex;
   flex-direction: column;
+  justify-content: left;
+  justify-items: left;
   flex-wrap: wrap;
   overflow: visible;
   overflow-y: hidden;

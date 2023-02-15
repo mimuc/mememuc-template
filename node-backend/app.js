@@ -61,6 +61,13 @@ app.use(cors({
 }
 ));
 
+app.use(function(req, res, next) {
+    const nonSecurePaths = ['/', '/users', '/users/auth', '/users//insert', '/users/loggedin'];
+    if (nonSecurePaths.includes(req.path)) return next();
+    if (req.session.loggedin) return next();
+    res.status(401).send();
+});
+
 app.use(function(req,res,next){
   req.db = db;
   next();

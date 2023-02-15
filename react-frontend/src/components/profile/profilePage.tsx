@@ -18,11 +18,12 @@ const ProfilePage: React.FC = () => {
             <p><strong>super penis!</strong></p>
             <div id="my-memes-container">
                 <h2>My Created Memes</h2>
-                <MemeSlider src="some created memes url"/>
+                <MemeSlider src="/mymemes"/>
             </div>
             <div id="my-drafts-container">
                 <h2>My Unfinished Drafts:</h2>
-                <MemeSlider src="some draft memes url"/>
+                { //<MemeSlider src="some draft memes url"/>
+                }
             </div>
             <Fab id="profileBtn" color="secondary" size="large" onClick={backFabClicked}>
                 <ArrowBackIcon fontSize="large"/>
