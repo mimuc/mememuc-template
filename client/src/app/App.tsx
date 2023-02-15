@@ -1,19 +1,17 @@
+import { Outlet } from 'react-router-dom'
+import { AuthProvider } from '../hooks/useAuth'
 import './App.scss'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import NavBar from '../components/NavBar/NavBar'
 
 function App() {
     return (
         <div className="App">
-            <header className="App-header">
-                <h1>React App</h1>
-            </header>
-            <main>
-                <div style={{ backgroundColor: 'red'}} draggable>
-                    <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Dignissimos, aperiam!
-                    </p>
-                </div>
-            </main>
+            <AuthProvider>
+                <NavBar />
+                <Outlet />
+                {/* {isMobile && <MobileBottomNav />} */}
+            </AuthProvider>
         </div>
     )
 }

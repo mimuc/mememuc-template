@@ -1,26 +1,34 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { Spinner } from '../components/Spinner/Spinner'
 import useAuth from '../hooks/useAuth'
 
-interface ProtectedRouteProps {
+interface ProtectedLoginRouteProps {
     accessLevel?: 'Admin' | 'Lender' | 'Borrower' | 'Both' | 'Guest'
     redirectPath?: string
     children?: JSX.Element
 }
 
-export const ProtectedRoute = ({
-    accessLevel = 'Both',
+export const ProtectedLoginRoute = ({
+    // accessLevel = 'Both',
     redirectPath = '/login',
     children,
-}: ProtectedRouteProps): JSX.Element => {
-    const { user } = useAuth()
+}: ProtectedLoginRouteProps): JSX.Element => {
+    const { loadingInitial, checkToken } = useAuth()
 
-    const hasAccess = user.roles.includes(accessLevel)
+    //const hasAccess = user.roles.includes(accessLevel)
+    //const isAllowed = user.token && hasAccess
 
-    const isAllowed = user.token && hasAccess
+    const isAllowed = checkToken().then((res) => {
+        return res.ok
+    })
 
-    if (!isAllowed) {
-        return <Navigate to={redirectPath} replace />
+    if (!loadingInitial) {
+        if (!isAllowed) {
+            return <Navigate to={redirectPath} replace />
+        }
+
+        return children ? children : <Outlet />
+    } else {
+        return <Spinner />
     }
-
-    return children ? children : <Outlet />
 }

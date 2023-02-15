@@ -1,18 +1,21 @@
-import multer from 'multer';
-import path from 'path';
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
 
 function checkFileType(file, callback) {
     // Allowed extensions
-    const filetypes = /jpeg|jpg|png|gif/;
+    const filetypes = /jpeg|jpg|png|gif/
     // Checks the extension againts the allowed extensions
-    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = filetypes.test(
+        path.extname(file.originalname).toLowerCase()
+    )
     // Checks the media types of the file against the allowed file types.
-    const mimetype = filetypes.test(file.mimetype);
+    const mimetype = filetypes.test(file.mimetype)
 
     if (mimetype && extname) {
-        return callback(null, true);
+        return cb(null, true)
     } else {
-        callback('Please only files format jpeg|jpg|png|gif');
+        return cb('Error: Images Only!')
     }
 }
 
@@ -21,30 +24,39 @@ export const upload = multer({
         fileSize: 1000000,
     },
     fileFilter(req, file, cb) {
-        checkFileType(file, cb);
+        checkFileType(file, cb)
     },
-});
 
-export const uploadSingleFile = multer({
-    limits: {
-        fileSize: 1000000,
+    storage: multer.diskStorage({
+        destination(req, file, cb) {
+            cb(null, '/')
+        },
+        filename(req, file, cb) {
+            cb(
+                null,
+                `${file.fieldname}-${Date.now()}${path.extname(
+                    file.originalname
+                )}`
+            )
+        },
+    }),
+    onError: function (err, next) {
+        console.log('error', err)
+        next(err)
     },
-    fileFilter(req, file, cb) {
-        checkFileType(file, cb);
-    },
-}).single('file');
+})
 
-export const uploadFileMiddleWare = (req, res, next) => {
-    uploadSingleFile(req, res, function (err) {
+export const uploadMiddleWare = (req, res, next) => {
+    upload(req, res, function (err) {
         if (err) {
-            next(err);
+            next(err)
         } else {
-            if (req.file == undefined) {
-                const fileErr = new Error('No file selected');
-                next(fileErr);
+            if (req.file === undefined) {
+                const fileErr = new Error('No file selected')
+                next(fileErr)
             } else {
-                next();
+                next()
             }
         }
-    });
-};
+    })
+}
