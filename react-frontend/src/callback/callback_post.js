@@ -1,12 +1,25 @@
-const localserv = "http:/localhost:27017"
+import axios from "axios";
+const localserver = "http://localhost:3001"
 
 // get the 40 most recent posts 
-  async function getPosts() {
+  async function getPosts(counter = 0) {
   try {
-    
-    const response = await fetch (localserv+`/posts/get_40`);
-    const data = await response.json();
-    return data;
+    /*
+    console.log("hello");
+    console.log("helloo2");
+    const response = await fetch(localserver+`/posts/get40`);
+    const data = response.body;
+    console.log("the type is"+typeof(data))
+    console.log("the data in the getPosts is:"+data);
+    return response;*/
+    await fetch(`${localserver}/post/get40`)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Network response was not OK');
+            }
+            return response.json();
+          })
+          .catch((error) => console.log(error));
 
   }
   catch(error){
@@ -14,3 +27,4 @@ const localserv = "http:/localhost:27017"
   }
 
  }
+ export default getPosts;

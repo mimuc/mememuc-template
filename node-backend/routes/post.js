@@ -1,6 +1,50 @@
-const ObjectId = require('mongodb').ObjectId;
+const ObjectID = require('mongodb').ObjectId;
 var express = require('express');
 var router = express.Router();
+
+ function getImage (db,image_id)  {
+    const meme = db.collection('meme');
+    console.log("image_id: "+image_id);
+    return meme.find({_id: new ObjectID(image_id)})
+    .then(
+        
+        result => {
+           //console.log("result: "+JSON.stringify(result));
+            return JSON.stringify(result);
+        }
+    )
+    .catch((error)=> {
+        console.log(error);
+        return error
+    });
+
+}
+
+//using to refresh the 40 most recent posts
+router.get('/get40', (req, res) => {
+    console.log("i am here ");
+    const db = req.db;
+    const counter = req.query.counter;
+    const posts = db.collection('posts');
+    posts.find({ view: "normal" }, { skip: parseInt(counter), limit: 20 })
+    .then(async result => {
+      // go find the right meme data in the meme collection
+      const updatedResult = await Promise.all(result.map(async item => {
+        const mymeme = await getImage(db, item.meme_id);
+        const myimage = JSON.parse(mymeme)[0].image
+        //console.log("in the get/40"+myimage);
+        return { ...item, image: myimage };
+      }));
+
+      res.status(202).json(updatedResult);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send(err);
+    });
+    
+});    
+
 
 // get a post by id 
 router.get('/:post_id', (req, res) => {
@@ -23,24 +67,7 @@ router.get('/:post_id', (req, res) => {
 });
 
 
-//using to refresh the 40 most recent posts
-router.get('/get40', (req, res) => {
-    console.log("i am here ");
-    const db = req.db;
-    
-    const posts = db.collection('posts');
-    posts.find({view : "normal"}).skip(0).limit(40).toArray()
-    .then(result => {
-        
-        res.status(202).json(result);
-    })
-    .catch(err => {
-        console.log(err);
-        console.log("heeloo")
-        res.status(500).send(err);
-    });
-    
-});    
+
 
 // create a post
     router.post('/create', function(req, res, next) {
@@ -93,7 +120,7 @@ router.get('/gethistory/:user_id', (req, res) => {
 });
 
 
-
+/*
 async function performRedirects(comments) {
     const redirects = comments.map((id) => {
       return new Promise((resolve, reject) => {
@@ -104,7 +131,7 @@ async function performRedirects(comments) {
     });
   
     await Promise.all(redirects);
-  }
+  }*/
 
 // get comments from a post id using a counter 
 

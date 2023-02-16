@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const fs = require('fs');
-
+const cors = require('cors');
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
 // ### Thus copy paste this block to your project
@@ -40,6 +40,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -63,15 +64,15 @@ app.use('/like',likeRouter);
 
 
 // catch 404 and forward to error handler
-app.use(function(err,req, res, next) {
-  console.log(err.message);
-  console.log("hello");
+app.use(function(req, res, next) {
+
   next(createError(404));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
+  console.log(err.status);
   res.locals.message = err.message;
   console.log("in the error handler");
   console.log(err.message);
