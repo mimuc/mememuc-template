@@ -3,17 +3,36 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const fs = require('fs');
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
 // ### Thus copy paste this block to your project
 const MONGODB_PORT = process.env.DBPORT || '27017';
-const db = require('monk')(`127.0.0.1:${MONGODB_PORT}/omm-2223`); // connect to database omm-2021
+
+const db = require('monk')(`127.0.0.1:${MONGODB_PORT}/omm-2223`);// connect to database omm-2021
+db.then(() => {
+  console.log('Successfully connected to the database omm-2223');
+  db.listCollections().then(collections => {
+    console.log('Collections in the database omm-2223:');
+    collections.forEach(collection => {
+      console.log(collection.name);
+    });
+  });
+}).catch(error => {
+  console.error('Error connecting to the database: ', error);
+});
+
 console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
+
 // ######
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var commentRouter = require('./routes/comment');
+var likeRouter = require('./routes/like');
+var postRouter = require('./routes/post');
+
 
 var app = express();
 
@@ -26,35 +45,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+
+
 app.use(function(req,res,next){  req.db = db;
   next();
 });
-
-
-// the login middleware. Requires BasicAuth authentication
-app.use((req,res,next) => {
-  const users = db.get('users');
-  users.findOne({basicauthtoken: req.headers.authorization}).then(user => {
-    if (user) {
-      req.username = user.username;  // test test => Basic dGVzdDp0ZXN0
-      next()
-    }
-    else {
-      res.set('WWW-Authenticate', 'Basic realm="401"')
-      res.status(401).send()
-    }
-  }).catch(e => {
-    console.error(e)
-    res.set('WWW-Authenticate', 'Basic realm="401"')
-    res.status(401).send()
-  })
-})
 
 
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/comment',commentRouter);
+app.use('/like',likeRouter);
+app.use('/post',postRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

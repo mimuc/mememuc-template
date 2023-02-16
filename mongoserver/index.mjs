@@ -1,9 +1,7 @@
 //index.js
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import demodata from './data/omm-ws2223.json' assert {type: "json"};
 
-  
 
 
 
@@ -14,4 +12,10 @@ const uri = mongod.getUri();
 console.log(uri)
 
 
-await mongoose.connect(uri, {});
+await mongoose.connect(uri, {})
+  .then(() => {
+    console.log('Connected to the database successfully');
+  })
+  .catch(error => {
+    console.error(`Error connecting to the database: ${error}`);
+  });

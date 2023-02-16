@@ -5,7 +5,8 @@ import Card from 'react-bootstrap/Card';
 
 // Here the meme card is created
 export default function Meme (props) {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  
   return (
     <Card style={{ width: '18rem', margin: "25px" }}>
         <Card.Img variant="top" src={props.img} />
