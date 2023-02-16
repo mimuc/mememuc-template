@@ -15,7 +15,9 @@
     "react-router-dom": "^6.7.0",
     "react-scripts": "5.0.1",
     "styled-components": "^5.3.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "react-component-export-image": "^1.0.6",
+    "react-draggable": "^4.4.5"
   },
   "scripts": {
     "start": "react-scripts start",
