@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "react-component-export-image": "^1.0.6",
+    "react-draggable": "^4.4.5",
+    "react-native": "^0.71.2",
+    "react-native-web": "^0.18.12"
+  }
+}

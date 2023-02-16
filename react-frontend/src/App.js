@@ -3,6 +3,7 @@ import Home from "./scenes/home";
 import Discover from "./scenes/discover";
 import Profile from "./scenes/profile";
 import Navbar from "./scenes/navbar";
+import Editor from "./scenes/editor";
 import {Route, Routes} from "react-router-dom";
 
 const localserv = "http:/localhost:27017"
@@ -58,6 +59,7 @@ function App() {
       <Route path="/discover" element={<Discover />}/>
       <Route path="/create" element={<Create />}/>
       <Route path="/profile" element={<Profile />}/>
+      <Route path="/editor" element={<Editor/>}/>
     </Routes>
     </div>
     </div>
