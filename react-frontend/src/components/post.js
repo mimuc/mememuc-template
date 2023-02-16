@@ -29,7 +29,7 @@ const stylecom = {
     color: '#565656',
   };
 
-const PostComponent = ( type, variant, className, post_id = "hfsdjefwf123", onClick, size, children,user_id ) => {
+const PostComponent = ( props) => {
     //like button function
     //need to set like usestate from 456 to the number of likes specific to the post ID
     const [like, setLike] = useState(456),
@@ -39,7 +39,7 @@ const PostComponent = ( type, variant, className, post_id = "hfsdjefwf123", onCl
             setLike(like + (isLike ? -1 : 1));
             setIsLike(!isLike);
             if(!isLike){
-            Like.like_post(post_id,user_id,"like")
+            Like.like_post(props.post_id,props.user_id,"like")
             }
             if (isDislike) { 
                 setDislike(dislike - 1); 
@@ -56,7 +56,7 @@ const PostComponent = ( type, variant, className, post_id = "hfsdjefwf123", onCl
             setDislike(dislike + (isDislike ? -1 : 1));
             setIsDislike(!isDislike);
             if(!isDislike){
-                Like.like_post(id,user_id,"like")
+                Like.like_post(props.id,props.user_id,"dislike")
                 }
             if (isLike) { setLike(like - 1); setIsLike(!isLike) };
         }
@@ -73,7 +73,7 @@ const PostComponent = ( type, variant, className, post_id = "hfsdjefwf123", onCl
     const handleSubmit=(e)=>{
         e.preventDefault();
         console.log(newinpt);
-        Comment.comment_post(post_id,user_id,newinpt);
+        Comment.comment_post(props.post_id,props.user_id,newinpt);
         setListCom((ls)=> [...ls,newinpt]);
         setNewinpt("");
     }
@@ -87,7 +87,7 @@ const PostComponent = ( type, variant, className, post_id = "hfsdjefwf123", onCl
                 alignItems: "left",
                 justifyContent: "left",
             }}>
-                Username</div>
+                {props.user_id}</div>
             <div className = "postdescr">This is the description of the meme!</div>
             <br></br>
             <div
@@ -96,8 +96,8 @@ const PostComponent = ( type, variant, className, post_id = "hfsdjefwf123", onCl
                 alignItems: "center",
                 justifyContent: "center",
             }}>
-            <div class="square">
-                <p>Meme pic here</p>
+            <div className="square">
+            <img src={`data:image/jpeg;base64,${props.image}`} alt=""/>
             </div>
             </div>
             <br></br>
@@ -174,7 +174,8 @@ const PostComponent = ( type, variant, className, post_id = "hfsdjefwf123", onCl
     );
 }
 
-const Post = ({ type, variant, className, id, onClick, size, children, user_id }) => {
+const Post = ({ image,type, variant, className, id, onClick, size, children, user_id }) => {
+    console.log("i am a post");
     return <PostComponent
         type={type ? type : "post"}
         variant={variant}
@@ -182,6 +183,8 @@ const Post = ({ type, variant, className, id, onClick, size, children, user_id }
         id={id}
         onClick={onClick}
         size={size}
+        user_id={user_id}
+        image = {image}
     >
         {children}
     </PostComponent >
