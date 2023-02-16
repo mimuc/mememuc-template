@@ -7,7 +7,7 @@ export default function Text (){
 
     return (
         <Draggable> 
-            {edit ? (<input onDoubleClick={e => setEdit(false)} value={val} onChange={ e => setVal(e.target.value)} />
+            {edit ? (<input onDoubleClick={e => setEdit(false)} value={val} onChange={(e) => setVal(e.target.value)} />
             ) : (
             <h1 onDoubleClick={e => setEdit(true)}> { val } </h1>)}
         </Draggable> 

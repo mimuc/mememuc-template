@@ -14,7 +14,7 @@ export default function Create () {
     return ( 
         <>
             <h1> Create </h1>
-            <div className="row">
+            <div className = "row">
                 {data.map(el => (<Meme img={el.url} title={el.name} />))}  
             </div>         
         </>
