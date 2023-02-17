@@ -3,6 +3,7 @@ import { Component } from 'react';
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import ArchiveIcon from '@mui/icons-material/Archive';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EditIcon from '@mui/icons-material/Edit';
@@ -81,6 +82,13 @@ class Editor extends Component {
         console.log(this.props.receivedMemeData);
         console.log("Text1: "+ this.state.text1);
         console.log("xPos: " + this.state.xPosT1);
+        if (prevProps.receivedMemeData.uid === undefined) {
+            prevProps.receivedMemeData.uid = -1;
+            console.log("Call CLicked");
+            console.log("receivedMemeData: ");
+            console.log(this.props.receivedMemeData);
+            this.handleMemeEditClicked(this.props.receivedMemeData);
+        }
         if(prevProps.receivedMemeData.uid !== this.props.receivedMemeData.uid) {
             console.log("Call CLicked");
             console.log("receivedMemeData: ");
@@ -103,7 +111,7 @@ class Editor extends Component {
         this.setState({ hasImage: true });
     }
 
-    saveMeme = () => {
+    saveMeme = (endpoint) => {
         var image = this.state.image;
         var imgWidth = this.state.imageWidth;
         var imgHeight = this.state.imageHeight;
@@ -127,7 +135,7 @@ class Editor extends Component {
             title: document.getElementById("titleInput").value,
         }
         console.log(memeData);
-        fetch("http://localhost:3001/createdMemes/insert", {
+        fetch("http://localhost:3001/createdMemes/" + endpoint, {
             headers: {
                 'Access-Control-Allow-Origin': '*',
                 "Content-Type": "application/json"
@@ -307,8 +315,11 @@ class EditorTopMenu extends Component {
                 <Fab className="upperBtn" id="btn2" variant="extended" size="medium" color="primary" onClick={this.props.downloadMeme}>
                     <SaveAltIcon />
                 </Fab>
-                <Fab className="upperBtn" id="btnSave" variant="extended" size="large" color="primary" onClick={this.props.saveMeme}>
+                <Fab className="upperBtn" id="btnSave" variant="extended" size="large" color="primary" onClick={() => { this.props.saveMeme('insert')}} >
                     <SaveIcon />
+                </Fab>
+                <Fab className="upperBtn" id="btnDraft" variant="extended" size="large" color="primary" onClick={() => { this.props.saveMeme('insert-draft')}}>
+                    <ArchiveIcon />
                 </Fab>
             </div>
         );

@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-import { Navigate } from "react-router-dom";
+import {Navigate, useLocation} from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
 //@ts-ignore
 import HistoryAndTemplatesView from './historyAndTemplates.tsx';
@@ -9,17 +9,34 @@ import Editor from './editor.jsx';
 import Fab from '@mui/material/Fab';
 import Person2RoundedIcon from '@mui/icons-material/Person2Rounded';
 import { useNavigate } from 'react-router-dom';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
-function MemePageIfLoggedIn () {
+function MemePageIfLoggedIn (props: {memeFromProfile: object}) {
     const navigate = useNavigate();
     const [triggerUpdate, setTriggerUpdate] = useState(0);
     const [updateMeme, setUpdateMeme] = useState({});
     const [isHistory, setIsHistory] = useState(true);
+    const [lastMemePassedDown, setLastMemePassedDown] = useState(undefined);
+
     const profileFabClicked = () => {
         console.log("Redirecting to Profilepage.");
         navigate('/profile');
     }
+
+    if (props.memeFromProfile !== undefined) {
+        if (lastMemePassedDown === undefined) {
+            setLastMemePassedDown(props.memeFromProfile);
+        }
+        else if (props.memeFromProfile.title !== lastMemePassedDown.title) {
+            setLastMemePassedDown(props.memeFromProfile);
+        }
+    }
+
+    useEffect(() => {
+        console.log("Setting update meme to meme from profile page");
+        console.log(props.memeFromProfile);
+        setUpdateMeme(lastMemePassedDown);
+    }, [lastMemePassedDown])
 
     const handleImageUploaded = () => {
         console.log("Image uploaded");
@@ -64,6 +81,13 @@ function MemePage(){
     const navigate = useNavigate();
     const [loggedIn, setLoggedIn] = useState(false);
 
+    let meme = undefined;
+
+    const { state } = useLocation();
+    if (state !== undefined && state !== null) {
+        meme = state.meme;
+    }
+
     fetch('http://localhost:3001/users/loggedin', {
         method: 'GET',
         headers: {
@@ -82,7 +106,7 @@ function MemePage(){
     });
 
     if(loggedIn) {
-        return <MemePageIfLoggedIn/>
+        return <MemePageIfLoggedIn memeFromProfile={meme}/>
     } else {
         return  <MemePageBeforeLoggedIn/>
     }

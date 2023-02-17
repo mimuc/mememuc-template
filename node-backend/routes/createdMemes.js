@@ -12,6 +12,36 @@ router.post('/insert', function (req, res, next) {
     if (db.get('createdMemes') === undefined) db.create("createdMemes");
 
     db.get('createdMemes').insert({
+        creator: req.session.username,
+        image: req.body.image,
+        imgWidth: req.body.imgWidth,
+        imgHeight: req.body.imgHeight,
+        text1: req.body.text1,
+        text1XPos: req.body.text1XPos,
+        text1YPos: req.body.text1YPos,
+        text1Bold: req.body.text1Bold,
+        text1Italic: req.body.text1Italic,
+        text1Color: req.body.text1Color,
+        text2: req.body.text2,
+        text2Bold: req.body.text2Bold,
+        text2XPos: req.body.text2XPos,
+        text2YPos: req.body.text2YPos,
+        text2Bold: req.body.text2Bold,
+        text2Italic: req.body.text2Italic,
+        text2Color: req.body.text2Color,
+        title: req.body.title,
+        likes: 0,
+    });
+    res.status(200).send();
+});
+
+router.post('/insert-draft', function(req, res, next) {
+    console.log("im backend");
+    const db = req.db;
+    if (db.get('memeDrafts') === undefined) db.create("memeDrafts");
+
+    db.get('memeDrafts').insert({
+        creator: req.session.username,
         image: req.body.image,
         imgWidth: req.body.imgWidth,
         imgHeight: req.body.imgHeight,
@@ -120,6 +150,21 @@ router.get('/mymemes', (req, res) => {
     const db = req.db;
     const createdMemes = db.get('createdMemes');
     const myMemes = createdMemes.find({creator: username})
+        .then((docs) => {
+            docs = docs.reverse();
+            res.json(docs);
+        })
+        .catch((e) => {
+            res.status(500).send("Something went wrong: " + JSON.stringify(e));
+        });
+});
+
+router.get('/mydrafts', (req, res) => {
+    const username = req.session.username;
+
+    const db = req.db;
+    const createdMemes = db.get('memeDrafts');
+    const myDrafts = createdMemes.find({creator: username})
         .then((docs) => {
             docs = docs.reverse();
             res.json(docs);

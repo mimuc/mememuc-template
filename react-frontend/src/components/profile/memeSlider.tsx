@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useNavigate } from "react-router-dom";
 
 interface MemeBoxProps {
     meme: any
@@ -20,6 +21,7 @@ interface MemeSliderProps {
 const MemeSlider: React.FC = (props: MemeSliderProps) => {
     const [memes, setMemes] = React.useState([]);
     const [firstTime, setFirstTime] = React.useState(true);
+    const navigate = useNavigate();
 
     if(firstTime) {
         setFirstTime(false);
@@ -37,10 +39,11 @@ const MemeSlider: React.FC = (props: MemeSliderProps) => {
             console.log(res);
             setMemes(res);
         });
-    }, [firstTime]);
+    }, [firstTime, props.src]);
 
     const onMemeClicked = (meme) => {
         console.log(`Meme ${meme.title} clicked`);
+        navigate('/memePage', { state: { meme }});
     }
 
     return (
