@@ -645,14 +645,24 @@ input[type=text] {
 .vertical-scroll-gallery {
   width: 90%;
   height: 5cm;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   justify-content: left;
   justify-items: left;
+  align-items: flex-start;
   flex-wrap: wrap;
   overflow: visible;
   overflow-y: hidden;
   overflow-x: scroll;
+  gap: 0px;
+}
+
+#username-display {
+  font-weight: bold;
+  font-size: 5vh;
+  width: 100%;
+  text-align: center;
+  margin-top: 5vh;
 }
 
 .meme-box {

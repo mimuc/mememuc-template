@@ -30,7 +30,7 @@ const ProfilePage: React.FC = () => {
 
     return (
         <div id="profile-page-container">
-            <p><strong>Username:</strong> { username }</p>
+            <p id="username-display"><strong>Username:</strong> { username }</p>
             <div id="my-memes-container">
                 <h2>My Created Memes</h2>
                 <MemeSlider src="/mymemes"/>
