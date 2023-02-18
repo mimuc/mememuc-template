@@ -82,19 +82,26 @@ class Editor extends Component {
         console.log(this.props.receivedMemeData);
         console.log("Text1: "+ this.state.text1);
         console.log("xPos: " + this.state.xPosT1);
-        if (prevProps.receivedMemeData.uid === undefined) {
+
+        if(prevProps.receivedMemeData=== undefined){
+            this.handleMemeEditClicked(this.props.receivedMemeData);
+        }
+        else if (prevProps.receivedMemeData.uid === undefined) {
             prevProps.receivedMemeData.uid = -1;
             console.log("Call CLicked");
             console.log("receivedMemeData: ");
             console.log(this.props.receivedMemeData);
             this.handleMemeEditClicked(this.props.receivedMemeData);
         }
-        if(prevProps.receivedMemeData.uid !== this.props.receivedMemeData.uid) {
-            console.log("Call CLicked");
-            console.log("receivedMemeData: ");
-            console.log(this.props.receivedMemeData);
-            this.handleMemeEditClicked(this.props.receivedMemeData);
+        else if(this.props.receivedMemeData !== undefined){
+            if(prevProps.receivedMemeData.uid !== this.props.receivedMemeData.uid) {
+                console.log("Call CLicked");
+                console.log("receivedMemeData: ");
+                console.log(this.props.receivedMemeData);
+                this.handleMemeEditClicked(this.props.receivedMemeData);
+            }
         }
+        
         else if(this.state.oldStateHistory !== this.props.updateSetIsHistory){
             console.log("Seiten Wechsel");
             this.handleMemeEditClicked(null);
@@ -102,6 +109,7 @@ class Editor extends Component {
         /*else if(prevProps.receivedMemeData === this.props.receivedMemeData) {
             console.log("Fucking shit");
         }*/
+        
     }
 
 
@@ -175,8 +183,8 @@ class Editor extends Component {
     }
 
     handleTextInfo(textNr, xPos, yPos, bold, italic, color, text) {
-        console.log("Text data: ");
-        console.log(textNr + " " + text + " " + xPos + " " + yPos + " " + bold + " " + italic + " " + color);
+        //console.log("Text data: ");
+        //console.log(textNr + " " + text + " " + xPos + " " + yPos + " " + bold + " " + italic + " " + color);
         
         if (textNr === "Text 1") {
             this.state.text1 = text;
@@ -214,9 +222,10 @@ class Editor extends Component {
     }
 
     handleMemeEditClicked(memeData){
-            console.log("edit clicked");
-            //console.log(memeData);
-            if(memeData === null){
+        console.log("edit clicked");
+        console.log("Received MemeData");
+        if(memeData !== undefined){
+            if(memeData === null ){
                 console.log("setting states default");
                 this.state.imageFile = "";
                 this.state.image = "";
@@ -239,7 +248,12 @@ class Editor extends Component {
                     title: "",
                 }
             }else{
-                this.state.imageFile = memeData.base64Image;
+                console.log("in create meme else");
+                if(memeData.base64Image === undefined){
+                    this.state.imageFile = memeData.image;
+                }else{
+                    this.state.imageFile = memeData.base64Image;
+                }
                 if(this.props.updateSetIsHistory === false){
                     memeData.text1 = this.state.text1;
                     memeData.text1XPos = this.state.xPosT1;
@@ -256,12 +270,13 @@ class Editor extends Component {
                 }
                 
             }
-            //console.log(memeData);
+            console.log(memeData);
             this.state.memeToEdit = memeData;
             this.state.imageOption = "editMeme";
             this.state.oldStateHistory = this.props.updateSetIsHistory;
             this.setState({ hasImage: true });
         
+        }
     }
 
     render() {
