@@ -646,18 +646,22 @@ input[type=text] {
   margin-top: 1vh;
   margin-bottom: 1vh;
   margin-left: 2vw;
-  width: 90vw;
+  width: 96vw;
   height: 24vh;
-  display: inline-flex;
+  display: flex;
   flex-direction: row;
-  justify-content: left;
-  justify-items: left;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  overflow: visible;
-  overflow-y: hidden;
+  /*justify-content: left;
+  justify-items: left;*/
+  /*align-items: flex-start;*/
+  /*flex-wrap: wrap;*/
+  /*overflow: visible;*/
+  /*overflow-y: hidden;*/
+  /*overflow-x: scroll;*/
+  overflow: hidden;
   overflow-x: scroll;
-  gap: 0px;
+  /*gap: 0px;*/
+  background-color: #444;
+  border-radius: 5px;
 }
 
 #username-display {
@@ -671,7 +675,9 @@ input[type=text] {
 .meme-box {
   height: 4cm;
   width: 4cm;
+  min-width: 4cm;
   margin: 1vh;
+  margin-right: 1.5vw;
   outline: #eaeaea solid;
   -webkit-border-radius: 20px;
   -moz-border-radius: 20px;
