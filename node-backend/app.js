@@ -61,12 +61,14 @@ app.use(cors({
 }
 ));
 
+/* This can be commented out, when there is a secure path to the database
 app.use(function(req, res, next) {
     const nonSecurePaths = ['/', '/users', '/users/auth', '/users//insert', '/users/loggedin'];
     if (nonSecurePaths.includes(req.path)) return next();
     if (req.session.loggedin) return next();
     res.status(401).send();
 });
+*/
 
 app.use(function(req,res,next){
   req.db = db;

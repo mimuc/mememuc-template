@@ -34,6 +34,7 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
         };
         this.btnClickedCallback = this.btnClickedCallback.bind(this);
         this.sortCallback = this.sortCallback.bind(this);
+        this.resetSortInputs = this.resetSortInputs.bind(this);
     }
 
     handleEditMeme(memeData) {
@@ -53,28 +54,33 @@ class HistoryAndTemplatesView extends Component<historyAndTemplatesViewProps, hi
         if (mode === "random") {
             this.setState({
                 sortRandom: true
-            });
+            },this.resetSortInputs);
         } else if (mode === "alphabet") {
             this.setState({
                 sortAlphabetically: true
-            });
+            },this.resetSortInputs);
         } else if (mode === "Search") {
             if (value === "") { return; }
             this.setState({
                 sortSearch: value
-            });
+            },() => this.resetSortInputs());
         } else if (mode === "clearSearch") {
             this.setState({
                 clearSearch: true
-            }, () => {
-                // Resets the clearSearch attribute after 0.3 seconds
-                setTimeout(() => {
-                    this.setState({
-                        clearSearch: false
-                    })
-                }, 300);
-            });
+            },() =>  this.resetSortInputs());
         }
+    }
+
+    // The inputs are reseted after 2.5 seconds, so the user can search again using the specific mode
+    resetSortInputs() {
+        setTimeout(() => {
+            this.setState({
+                sortRandom: false,
+                sortAlphabetically: false,
+                sortSearch: "",
+                clearSearch: false
+            })
+        }, 2500);
     }
 
     render() {
@@ -190,7 +196,8 @@ interface historyAndTemplateListState {
     loading: boolean,
     error: boolean,
     hasMore: boolean,
-    loadingText: string
+    loadingText: string,
+    currentSearchString: String
 }
 
 class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, historyAndTemplateListState> {
@@ -212,7 +219,8 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             loading: false,
             error: false,
             hasMore: true,
-            loadingText: "loading..."
+            loadingText: "loading...",
+            currentSearchString: ""
         };
         this.resetMemeList = this.resetMemeList.bind(this);
         this.randomSortMemes = this.randomSortMemes.bind(this);
@@ -228,9 +236,19 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
         this.loadNextMemes();
     }
 
-    resetMemeList(isHistory) {
-        console.log("Resetting Meme List, showing HistoryView?: " + isHistory);
-        this.setState({ showHistory: isHistory, memeList: [], page: 0, hasMore: true, offset: 0 }, () => this.loadNextMemes());
+    async resetMemeList(isHistory) {
+        return new Promise((resolve, reject) => {
+            try {
+                //console.log("Resetting Meme List, showing HistoryView?: " + isHistory);
+                this.state.memeList.length = 0;
+                this.setState({ showHistory: isHistory, memeList: [], page: 0, hasMore: true, offset: 0 }, () => {
+                    this.loadNextMemes();
+                    resolve(true);
+                });
+            } catch (error) {
+                reject(false);
+            }
+        });
     }
 
     componentDidUpdate(prevProps: Readonly<historyAndTemplateListProps>, prevState: Readonly<historyAndTemplateListState>, snapshot?: any): void {
@@ -249,7 +267,15 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             this.resetMemeList(this.props.isHistory);
         }
         if ((prevProps.sortSearch !== this.props.sortSearch) && (this.props.sortSearch !== "")) {
-            this.filterMemes();
+            this.setState({
+                currentSearchString: this.props.sortSearch
+            },() => {
+                this.resetMemeList(this.props.isHistory).then((res) => {
+                    if(res) {
+                        this.filterMemes();
+                    }
+                });
+            })
         }
         if ((prevProps.clearSearch !== this.props.clearSearch) && this.props.clearSearch) {
             this.resetMemeList(this.props.isHistory);
@@ -269,9 +295,8 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
     }
 
     filterMemes() {
-        let searchString = this.props.sortSearch;
-        console.log("Filtering memes including: " + searchString);
-        this.searchMemes(searchString)
+        //console.log("Filtering memes including: " + this.state.currentSearchString);
+        this.searchMemes(this.state.currentSearchString)
             .then((res) => {
                 //console.log(res);
                 this.setState({
@@ -319,7 +344,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
     loadNextMemes() {
         //console.log("current state: ");
         //console.log(this.state);
-        console.log("Loading even more memes...");
+        //console.log("Loading even more memes...");
         if (this.state.hasMore && !this.state.loading) {
             this.setState({ loading: true, error: false }, this.getNextMemes.bind(this));
         }
@@ -376,7 +401,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
                     this.currentlyIntersecting = false;
                 });
         } else {
-            console.log("Catching memes from api");
+            //console.log("Catching memes from api");
             //console.log(req.body);        
 
             fetch('http://localhost:3001/memesApi/page', {
@@ -437,7 +462,7 @@ class HistoryAndTemplatesList extends Component<historyAndTemplateListProps, his
             }
         }
         if (!this.state.hasMore) {
-            console.log("There are no more memes to load :(");
+            //console.log("There are no more memes to load :(");
         }
     }
 

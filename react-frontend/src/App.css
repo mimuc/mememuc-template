@@ -192,12 +192,12 @@ div.MemeList{
 }
 
 ::-webkit-scrollbar-button{
-  border-radius: 5px;
+  border-radius: 1px;
   background-color: #111;
 }
 
 ::-webkit-scrollbar-thumb{
-  border-radius: 5px;
+  border-radius: 1px;
   background-color: #333;
 }
 
