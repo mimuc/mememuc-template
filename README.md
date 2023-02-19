@@ -1,74 +1,58 @@
-# MemeMuc Launcher
+# MemeMuc Project Group 51
 
-This repository is a _template_ to unify the meme generator bonus project submissions for the _Online Multimedia Lecture_ in the winter semester 2022/23 at LMU Munich.
+Welcome to our repository for the bonus project for the _Online Multimedia Lecture_ in the winter semester 2022/23 at LMU Munich.
 
-Any submission must be runnable without additional adaptions by executing
+Watch our **[demonstration video](mememuc-launcher/project%20demonstration.mp4)** to see a demo of our project!
+
+## Third-party content used:
+
+- [Material UI](https://mui.com/material-ui/)
+- [ImgFlip Meme API](https://imgflip.com/api)
+
+## Running our project
+
+To start our project run this code:
 ```bash
 cd mememuc-launcher && npm run installall && npm start
 ```
 
-The template contains two folders that are relevant to you. Your implementation is supposed to go in these two folders.
-* `./node-backend`: The backend of your project using NodeJS
-* `./react-frontend`: The front of your project using React
+If things don't work as expected, try running the following commands consecutively
+```bash
+cd mememuc-launcher && npm run installall
+cd ..
+cd node-backend && npm start
+```
+_In an additional terminal:_
+```bash
+cd react-frontend && npm start
+```
 
-Currently, both folder are filled with some dummy projects.
+Also make sure that your mongodb database is running
 
-When you replace the `./node-backend` dummy project with your own implementation, there are two pieces of code which you need to re-include from the dummy project:
-- In _app.js_: The block at the very top, commented with `Important`
-  ```JavaScript
-  const MONGODB_PORT = process.env.DBPORT || '27017';
-  const db = require('monk')(`127.0.0.1:${MONGODB_PORT}/omm-2223`); // connect to database omm-2223
-  console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
-  ```
-- In _package.json_: The _scripts_ block
-  ```JSON
-  "scripts": {
-    "startdev": "node ./bin/www",
-    "start": "SET DBPORT=65535 && node ./bin/www"
-  },
-  ```
+### Requirements for our project:
 
-The other two folders __must not be changed__!
-* `./mememuc-launcher` contains configuration files for installing dependencies and launching the application you implement.
-* `./mongoserver` cotains a local in-memory database server independent of any existing local installation.
-  This database is not persistent and will reset with each restart. It is meant for testing your submission with a consistent data state, independent of the computer on which it runs.
-  You _can_ add files to the `./mongoserver/data` subdirectory.
-
+- [Nodejs](https://nodejs.org/en/download/)
+- [MongoDb](https://www.mongodb.com/try/download/community)
 
 ## How To Use
 
-### During Development
+1. Login/Signup
+2. Make a new meme by uploading an image/using your camera or selecting one from the templates-List
+3. Use your creativity to craft the next viral meme by adding your own title and text to your image. Position the text by either typing in the coordinates or by choosing the pencil to click anywhere on the canvas
+4. Save the meme either in your collection, when you want to edit it later or directly save it to the database. For easier sharing you can also download the meme directly 
 
-During development we recommend to ruin the two project (`./node-backend` and `./react-frontend`) individually. However if you prefer, you can use the NodeJS scripts from `./mememuc-launcher` during development too, with the following commands:
 
-```
-cd mememuc-launcher
-```
-navigates your commandline into the mememuc launcher project
+Have fun with our project !
 
-```
-npm run installall
-```
-installs the dependencies of all (sub)projects
+## Team
+This project was developed for a course at the LMU Munich by
+|members |
+|:--------------------------------------------------------------------|
+|Annika Köhler <br> [Github: 4nn1k4](https://github.com/4nn1k4) <br> [annika.koehler@campus.lmu.de](mailto:annika.koehler@campus.lmu.de) |
+|Jannik Wiese <br> [Github: ragor114](https://github.com/ragor114) <br> [jannik.wiese@campus.lmu.de](mailto:jannik.wiese@campus.lmu.de) |
+|Markus Schmidbauer <br> [Github: 00Markus0](https://github.com/00Markus0) <br> [m.schmidbauer@campus.lmu.de](mailto:m.schmidbauer@campus.lmu.de) |
 
-```
-npm run startdev
-```
-starts the backend project. It will connect to a local MongoDB instance (assuming any is running on your local machine) at the default port `27017`.
+<br/>
+<br/>
 
-### How To Prepare Your Submission
-
-- Export the MongoDB database state that you want us to user for evaluating your submission from your local MongoDB as json files. You can use, e.g., the `mongoexport` command:
-`mongoexport --uri="mongodb://localhost:27017/omm-ws2223" --collection=users --out=omm-ws2223.json`
-- Put any exportet json files into the `./mongoserver/data` folder. The in-memory database server (`./mongoserver`) will import these files as default data whenever you (re)launch the project (_not implemented yet_).
-- You can test whether you application will run in the test setup using the commands below.
-
-### How We Will Test Your Submission
-
-To evaluate your submission, we will launch the following commands:
-
-```bash
-cd mememuc-launcher # Navigates your commandline into the mememuc launcher project.
-npm run installall # Installs the dependencies of all (sub)projects.
-npm start # Starts the backend project using the non-persistent in-memory MongoDB instance.
-```
+Looking for the [template Readme](mememuc-launcher/template_readme.md) or a [feature list](mememuc-launcher/Group_51_Featurelist.xlsx)?

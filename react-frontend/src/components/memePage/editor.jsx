@@ -159,6 +159,7 @@ class Editor extends Component {
         //console.log(memeData);
     }
 
+    // vgl. https://stackoverflow.com/questions/57056741/how-to-download-image-in-reactjs
     downloadMeme = () => {
         var title = document.getElementById("titleInput");
         var mergeCanvas = document.getElementById("mergingCanvas");
