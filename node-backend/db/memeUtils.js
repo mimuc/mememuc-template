@@ -2,7 +2,7 @@
 
 const archiver = require('archiver');
 const axios = require('axios');
-const {Meme} = require('./models');
+const {Meme, User} = require('./models');
 
 const MEME_EXCLUDE_PROPERTIES = { image: 0, _id: 0, __v: 0 };
 async function handleMemeFind(req) {
@@ -170,8 +170,41 @@ async function handleMemesResponse(res, documents, format) {
             res.status(400).send('Invalid response format requested');
     }
 }
+const USER_EXCLUDE_PROPERTIES = { password: 0, _id: 0, __v: 0 };
+async function handleGetMemeRequest(req={}, res={}, contentType='json') {
+    const username = req.params?.username ? req.params.username : req.username;
+    if(!username) return res.status(400).send("Username not specified");
+
+    if(!req.params?.username && req.username) {
+        let user;
+        try {
+            user = await User.findOne({ username }, USER_EXCLUDE_PROPERTIES);
+        }
+        catch(error) {
+            console.error(error);
+            return res.status(500).send();
+        }
+        if(!user) {
+            return res.status(404).send("User not found");
+        }
+    }
+    
+    req.query = {
+        sort: 'newest',
+        limit: req.query.limit ? req.query.limit : 10,
+        creator: username,
+        skip: req.query.skip ? req.query.skip : 0
+    };
+
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    handleMemesResponse(res, documents, contentType);
+}
 
 module.exports = {
     handleMemeFind,
-    handleMemesResponse
+    handleMemesResponse,
+    handleGetMemeRequest
 }

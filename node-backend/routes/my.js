@@ -2,13 +2,13 @@ var express = require('express');
 var router = express.Router();
 
 const {authenticate} = require('../db/authentication');
-const {User, Template, handleGetMemeRequest} = require('../db/models');
+const {User, Template} = require('../db/models');
+const {handleGetMemeRequest} = require('../db/memeUtils');
 
 const EXCLUDE_PROPERTIES = { password: 0, _id: 0, __v: 0 };
 
 router.get('/', authenticate(), async function(req, res, next) {
   const username  = req.username;
-  if(!username) res.status(401).send();
 
   let user;
   try {
@@ -25,7 +25,6 @@ router.get('/', authenticate(), async function(req, res, next) {
 
 router.get('/templates', authenticate(), async function(req, res, next) {
   const username  = req.username;
-  if(!username) res.status(401).send();
 
   let user;
   try {
@@ -44,29 +43,19 @@ router.get('/templates', authenticate(), async function(req, res, next) {
 });
 
 router.get('/memes', authenticate(), async function(req, res, next) {
-  const username  = req.username;
-  if(!username) res.status(401).send();
+  handleGetMemeRequest(req, res, 'json');
+});
 
-  let user;
-  try {
-    user = await User.findOne({ username }, EXCLUDE_PROPERTIES)
-  }
-  catch {
-    return res.status(500).send();
-  }
-  if(!user) {
-    return res.status(404).send("User not found");
-  }
+router.get('/memes/image', authenticate(), async function(req, res, next) {
+  handleGetMemeRequest(req, res, 'image');
+});
 
-  req.query = {
-    sort: 'newest',
-    limit: req.query.limit ? req.query.limit : 10,
-    creator: username,
-    skip: req.query.skip ? req.query.skip : 0,
-    return: 'json'
-  };
+router.get('/memes/download', authenticate(), async function(req, res, next) {
+  handleGetMemeRequest(req, res, 'zip');
+});
 
-  handleGetMemeRequest(req,res,next);
+router.get('/memes/single-view', authenticate(), async function(req, res, next) {
+  handleGetMemeRequest(req, res, 'single-view');
 });
 
 module.exports = router;

@@ -10,7 +10,7 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, Like, Comment, handleGetMemeRequest} = require('../db/models');
+const {Meme, User, Template, Like, Comment} = require('../db/models');
 const {authenticate} = require('../db/authentication');
 const {handleMemeFind, handleMemesResponse} = require('../db/memeUtils');
 
