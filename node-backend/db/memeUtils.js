@@ -106,7 +106,6 @@ async function handleMemeFind(req) {
                 break;
             }
             default:
-                //res.status(400).send();
                 return 400;
         }
     }
@@ -155,19 +154,17 @@ async function handleMemesResponse(res, documents, format) {
             return;
         case 'image':
             // Url to the image itself
-            if(Array.isArray(documents)) res.status(201).json({ urls: documents.map(m => `http://${process.env.BE_DOMAIN}/resources/images/${m.publicId}`) });
+            if(Array.isArray(documents)) res.json({ urls: documents.map(m => `http://${process.env.BE_DOMAIN}/resources/images/${m.publicId}`) });
             else { // Returns an actual image if called for a singular meme
-                /* res.set('Content-Type', documents.contentType);
-                res.status(201).send(`http://${process.env.BE_DOMAIN}/resources/images/${documents.publicId}`); */
                 const response = await axios.get(`http://${process.env.BE_DOMAIN}/resources/images/${documents.publicId}`, {responseType: 'arraybuffer'});
                 const imageBuffer = new Buffer.from(response.data, 'binary');
                 res.set('Content-Type', response.headers['content-type']);
-                res.status(201).send(imageBuffer);
+                res.send(imageBuffer);
             }
             return;
         case 'single-view':
-            if(Array.isArray(documents)) res.status(201).json({ urls: documents.map(m => `http://${process.env.FE_DOMAIN}/memes/${m.publicId}`) });
-            else res.status(201).send(`http://${process.env.FE_DOMAIN}/memes/${documents.publicId}`);
+            if(Array.isArray(documents)) res.json({ urls: documents.map(m => `http://${process.env.FE_DOMAIN}/memes/${m.publicId}`) });
+            else res.send(`http://${process.env.FE_DOMAIN}/memes/${documents.publicId}`);
             return;
         default:
             res.status(400).send('Invalid response format requested');
