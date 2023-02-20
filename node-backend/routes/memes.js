@@ -12,6 +12,7 @@ const archiver = require('archiver');
 const Canvas = require('canvas');
 const {Meme, User, Template, Like, Comment, handleGetMemeRequest} = require('../db/models');
 const {authenticate} = require('../db/authentication');
+const {handleMemeFind, handleMemesResponse} = require('../db/memeUtils');
 
 const Image = Canvas.Image;
 
@@ -146,38 +147,44 @@ function generateMemeCanvas({config={}, data={}}={}){
     });
 }
 
-async function test() { // TODO: Debug function
-    const texts = [ [ "Top Text"]];
-    const config = {
-        imageURL: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
-        store: undefined,
-        name: "B"
-    };
-
-    const createdMemes = [];
-
-    if(Array.isArray(texts) ) {
-        for(const text of texts) {
-            console.log("Text", text)
-            if(!Array.isArray(text) ) continue;
-            const img = await generateMemeCanvas({config, texts: text});
-            console.log("Finished creation", img)
-            createdMemes.push(img);
-        }
-    }
-
-    if(createdMemes.length === 1) {
-        console.log("Finished Creating")
-        console.log(createdMemes);
-        
-    }
-    
-}
-
 function generateName(username) {
     return username.slice(-1) === 's' ? username + "\' meme" : username + "\'s meme";
 }
 
+
+router.get('/', authenticate(false), async function(req, res, next) {
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    handleMemesResponse(res, documents, 'json');
+    // Example request:
+    // /memes?limit=50&skip=50&sort=newest
+});
+
+router.get('/download', authenticate(false), async function(req, res, next) {
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    handleMemesResponse(res, documents, 'zip');
+});
+
+router.get('/image', authenticate(false), async function(req, res, next) {
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    handleMemesResponse(res, documents, 'image');
+});
+
+router.get('/single-view', authenticate(false), async function(req, res, next) {
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    handleMemesResponse(res, documents, 'single-view');
+});
 
 
 router.post('/', authenticate(), async function(req, res) {
@@ -349,7 +356,7 @@ router.post('/', authenticate(), async function(req, res) {
         .catch(function(error) {
             if (error.name === 'ValidationError') {
                 // handle validation error
-                res.status(400).send(error);
+                res.status(400).send(error); // FIXME: TODO:
             } else {
                 res.status(500).send(error);
             }
@@ -358,21 +365,7 @@ router.post('/', authenticate(), async function(req, res) {
 });
 
 // Gets the meme associated with publicId as json, only if the user is authorized to see it
-router.get('/:publicId', authenticate(false), async function(req, res, next) {
 
-    const publicId  = req.params.publicId;
-    Meme.findOne({ publicId }, EXCLUDE_PROPERTIES)
-    .then( async doc => {
-        if (!doc) {
-            return res.status(404).send({ error: "Meme not found" });
-        }
-        if ((doc.visibility === 'private') && req.username !== doc.creator ) {
-            return res.status(401).send();
-        }
-        return res.json({...doc.toObject(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()});
-    })
-    .catch((e) => res.status(500).send());
-  });
 
 router.post('/:publicId/comments', authenticate(), async function(req, res, next) {
     const username = req.username;
@@ -480,11 +473,85 @@ router.get('/:publicId/like', authenticate(), async function(req, res, next) {
     else req.send(200, {"liked": false});
 });
 
+/* router.get('/:publicId', authenticate(false), async function(req, res, next) {
 
-router.get('/', authenticate(false), async function(req, res, next) {
-    handleGetMemeRequest(req,res,next);
-    // Example request:
-    // /memes?limit=50&skip=50&sort=newest
+    const publicId  = req.params.publicId;
+    Meme.findOne({ publicId }, EXCLUDE_PROPERTIES)
+    .then( async doc => {
+        if (!doc) {
+            return res.status(404).send({ error: "Meme not found" });
+        }
+        if ((doc.visibility === 'private') && req.username !== doc.creator ) {
+            return res.status(401).send();
+        }
+        return res.json({...doc.toObject(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()});
+    })
+    .catch((e) => res.status(500).send());
+  }); */
+
+
+router.get('/:publicId', authenticate(false), async function(req, res, next) {
+    req.query = {
+        id: req.params.publicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
+    handleMemesResponse(res, documents[0], 'json');
 });
+
+router.get('/:publicId/image', authenticate(false), async function(req, res, next) {
+    req.query = {
+        id: req.params.publicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
+    handleMemesResponse(res, documents[0], 'image');
+});
+
+router.get('/:publicId/download', authenticate(false), async function(req, res, next) {
+    req.query = {
+        id: req.params.publicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
+    handleMemesResponse(res, documents[0], 'zip');
+});
+
+router.get('/:publicId/single-view', authenticate(false), async function(req, res, next) {
+    req.query = {
+        id: req.params.publicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
+    handleMemesResponse(res, documents[0], 'single-view');
+});
+
+
+
+
 
 module.exports = router;

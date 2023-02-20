@@ -132,11 +132,12 @@ const handleGetMemeRequest = async (req, res, next) => {
         id: undefined,
         limit: 10,
         creator: undefined,
-        skip: 0,
-        return: 'json' // single-view, image-url, download, json
+        skip: 0
     };
     const config = Object.assign({}, config_default, req.query);
-    console.log("CONFIG", config)
+    const format = req.accepts(['json', 'zip', 'image/*', 'text/*']) || 'json';
+    console.log("Format", format)
+
     config.limit = +config.limit;
     config.skip = +config.skip;
 
@@ -242,11 +243,11 @@ const handleGetMemeRequest = async (req, res, next) => {
     documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()}) ) ); // Append the likes (this was surprisingly hard to to)
 
     // Return the found memes
-    switch(config.return) {
+    switch(format) {
         case 'json':
             res.json(documents);
             return;
-        case 'download':
+        case 'zip':
             // Send ZIP
             const metaData = JSON.stringify({ image: undefined, ...documents }, null, 2);
             const archive = archiver('zip', { zlib: { level: 9 } });
@@ -271,16 +272,18 @@ const handleGetMemeRequest = async (req, res, next) => {
             archive.finalize();
             
             return;
-        case 'image-url':
+        case 'image/*':
             // Url to the image itself
             res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.publicId}`) });
             return;
-        case 'single-view':
+        case 'text/*':
             // TODO: Implement
             // TODO: Retrieve port and address
             console.log("PORT", process.env.PORT);
             res.status(201).json({ urls: documents.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.publicId}`) });
             return;
+        default:
+            res.status(400).send('Invalid response format requested');
     }
 }
 
