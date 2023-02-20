@@ -39,7 +39,7 @@ Also make sure that your mongodb database is running
 1. Login/Signup
 2. Make a new meme by uploading an image/using your camera or selecting one from the templates-List
 3. Use your creativity to craft the next viral meme by adding your own title and text to your image. Position the text by either typing in the coordinates or by choosing the pencil to click anywhere on the canvas
-4. Save the meme either in your collection, when you want to edit it later or directly save it to the database. For easier sharing you can also download the meme directly 
+4. Save the meme either in your collection, when you want to edit it later or directly save it to the database. For easier sharing you can also download the meme directly
 
 
 Have fun with our project !
