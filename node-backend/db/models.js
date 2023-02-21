@@ -15,8 +15,18 @@ const User = mongoose.model('User', new mongoose.Schema({
             async getLikesCount() {
                 return await Like.countDocuments({ username: this.username });
             },
+            async getLikesReceivedCount() {
+                const memes = await Meme.find({ creator: this.username });
+                const memeIds = memes.map(meme => meme.publicId);
+                return await Like.countDocuments({ memePublicId: { $in: memeIds } });
+            },
             async getCommentsCount() {
                 return await Comment.countDocuments({ username: this.username });
+            },
+            async getCommentsReceivedCount() {
+                const memes = await Meme.find({ creator: this.username });
+                const memeIds = memes.map(meme => meme.publicId);
+                return await Comment.countDocuments({ memePublicId: { $in: memeIds } });
             },
             async getMemesCount() {
                 return await Meme.countDocuments({ creator: this.username });
