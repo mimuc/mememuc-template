@@ -2,31 +2,32 @@ import React, { useEffect, useState } from "react";
 import Meme from "../components/meme";
 import { getAllMemes } from '../api/memes';
 
-const gridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-  gridTemplateRows: 'repeat(auto-fill, 200px)',
-  gridGap: '5px',
-  justifyContent: 'center',
-  alignContent: 'center',
-};
+// Create component to upload user's image and display existing memes
+export default function Create() {
+  const [data, setData] = useState([]);
 
-export default function Create () {
-    const[data, setData] = useState([]);
+  // Get all memes from the used API
+  useEffect(() => {
+    getAllMemes().then(memes => {
+      const resizedMemes = memes.data.memes.map(meme => {
+        if (meme.height > 2000) {
+          const ratio = 2000 / meme.height;
+          return { ...meme, width: meme.width * ratio, height: meme.height * ratio };
+        }
+        return meme;
+      });
+      setData(resizedMemes);
+    });
+  }, []);
 
-    // Gather all memes from the used API
-    useEffect(() => {
-        getAllMemes().then(memes => setData(memes.data.memes));
-    }, [])
-
-    return ( 
-        <>
-            <h1> Create </h1>
-            <div style={gridStyle}>
-                {data.map(el => (<Meme img={el.url} title={el.name} />))}  
-            </div>         
-        </>
-    );
+  return (
+    <>
+      <h1> Create </h1>
+      <div className="grid-container">
+        {data.map(el => (<Meme img={el.url} title={el.name} width={el.width} height={el.height} />))}
+      </div>
+    </>
+  );
 };
 
 
