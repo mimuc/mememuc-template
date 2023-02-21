@@ -27,11 +27,119 @@ paths:
                 items:
                   $ref: '#/components/schemas/Meme'
         '400':
-          description: Bad Request
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Not Found
+          $ref: '#/components/responses/NotFound'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: Create any amount of memes
+      description: Create memes using a (list of) specified or default template(s) and configuration parameters.
+      tags:
+        - Memes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                config:
+                  type: object
+                  properties:
+                    store:
+                      type: string
+                      enum: [unlisted, private, public]
+                      description: The desired visibility of the created memes. Will not persist the memes to the server if it is left as undefined (and will download the results instead).
+                    return:
+                      type: string
+                      enum: [download, image-url, single-view]
+                      default: single-view
+                      description: Whether the memes should be returned as a image/ZIP download, list of image-urls, or list of single-view urls.
+                  default: {store: undefined, return: single-view}
+                template:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      description: The name of the template that should be used. This template has to exist on the server, and will fill the texts, images, and canvas parameters with default values (which can be overridden).
+                    texts:
+                      type: array
+                      description: The list of texts that should be rendered. Using a simple string array will cause default values to be used.
+                      items:
+                        anyOf:
+                          - type: string
+                          - type: object
+                            properties:
+                              x:
+                                type: number
+                                description: The x position of the text (default is middle)
+                              y:
+                                type: number
+                                description: The y position of the text (default is top/bottom for the first two images)
+                              fontSize:
+                                type: number
+                                default: 50
+                              fontStyle:
+                                type: string
+                                default: impact
+                              strokeWidth:
+                                type: number
+                                default: 1
+                              resizeText:
+                                type: boolean
+                                default: false
+                                description: Determines whether the text should be resized if it is too large
+                              textColor:
+                                type: string
+                                default: white
+                    images:
+                      description: The list of image URLs for the memes. Using a simple string array will cause default values to be used.
+                      anyOf:
+                        - type: string
+                        - type: array
+                          items:
+                            type: object
+                            properties:
+                              url:
+                                type: string
+                              x:
+                                type: number
+                                description: The x position of the image
+                                default: 0
+                              y:
+                                type: number
+                                description: The y position of the image
+                                default: 0
+                    canvas:
+                      type: object
+                      properties:
+                        width:
+                          type: number
+                          default: 1000
+                        height:
+                          type: number
+                          default: 1000
+                        resizeCanvas:
+                          type: boolean
+                          default: false
+                      default: {width: 1000, height: 1000, resizeCanvas: false}
+              required: ['config', 'template']
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: URL of the created meme.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /memes/download:
     get:
       summary: Download a ZIP file of memes (including metadata)
@@ -51,6 +159,12 @@ paths:
               schema:
                 type: string
                 format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /templates:
     get:
       summary: Get a list of all templates
@@ -193,4 +307,11 @@ components:
         - creator
         - image
         - publicId
-      x-model: Meme 
+      x-model: Meme
+  responses:
+    BadRequest:
+      description: Bad Request
+    InternalServerError:
+      description: Internal Server Error
+    NotFound:
+      description: Not Found
