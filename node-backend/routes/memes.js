@@ -356,7 +356,7 @@ router.post('/:publicId/comments', authenticate(), async function(req, res, next
     const comment = new Comment({ username, memePublicId, content, publicId: commentId });
     comment.save()
     .then(function() {
-        return res.status(201).json({ message: 'Comment created'});
+        return res.status(201).json('Comment created');
     })
     .catch(function(error) {
         return res.status(500).send();
@@ -395,9 +395,8 @@ router.delete('/:publicId/comments/:commentId', authenticate(), async function(r
     }); 
     
     if(comment) return res.status(200).send();
-    else return res.status(204).send(); // FIXME: Correct status code?
+    else return res.status(409).send();
 });
-
 
 // Like the meme with the currently authenticated user
 router.put('/:publicId/like', authenticate(), async function(req, res, next) {
@@ -412,13 +411,13 @@ router.put('/:publicId/like', authenticate(), async function(req, res, next) {
     });
 
     if (existingLike) {
-        return res.status(204).send("Meme was already liked by the user"); // FIXME: Correct status code?
+        return res.status(409).send("Meme was already liked by the user");
     }
 
     const like = new Like({ username, memePublicId });
     like.save()
     .then(function() {
-        return res.status(201).json({ message: 'Meme was liked by the user'});
+        return res.status(201).send('Meme was liked by the user');
     })
     .catch(function(error) {
         return res.status(500).send();
@@ -436,7 +435,7 @@ router.delete('/:publicId/like', authenticate(), async function(req, res, next) 
     }); 
     
     if(like) return res.status(200).send();
-    else return res.status(204).send(); // FIXME: Correct status code?
+    else return res.status(409).send();
 });
 
 // Checks whether the authenticated user liked the meme
