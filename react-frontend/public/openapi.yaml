@@ -53,9 +53,9 @@ paths:
                       description: The desired visibility of the created memes. Will not persist the memes to the server if it is left as undefined (and will download the results instead).
                     return:
                       type: string
-                      enum: [download, image-url, single-view]
+                      enum: [download, image, single-view, json]
                       default: single-view
-                      description: Whether the memes should be returned as a image/ZIP download, list of image-urls, or list of single-view urls.
+                      description: Whether the memes should be returned as a image/ZIP download, JSON, list of image-urls, or list of single-view urls.
                   default: {store: undefined, return: single-view}
                 template:
                   type: object
@@ -165,6 +165,180 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /memes/image:
+    get:
+      summary: Get a list of memes as image URL list
+      tags:
+        - Memes
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/creator'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  schema:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /memes/single-view:
+    get:
+      summary: Get a list of memes as single-view URL list
+      tags:
+        - Memes
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/creator'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  schema:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /memes/{publicId}:
+    get:
+      summary: Retrieve a single meme by public ID as JSON
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meme'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /memes/{publicId}/image:
+    get:
+      summary: Retrieve a single meme by public ID as an image
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /memes/{publicId}/download:
+    get:
+      summary: Retrieve a single meme by public ID as a ZIP download
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /memes/{publicId}/single-view:
+    get:
+      summary: Retrieve a single meme by public ID as a single-view URL
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      responses:
+        '200':
+          description: OK
+          content:
+            type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /memes/{publicId}/like:
+    put:
+      summary: Add a like to a meme
+      description: Adds a like to a meme from the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      responses:
+        '200':
+          description: OK
+        '409':
+          description: Meme was already liked by the user
+    delete:
+      summary: Remove a like from a meme
+      description: Removes a like from a meme by the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '409':
+          description: Meme was not liked by the user
+    get:
+      summary: Check if the authenticated user liked a meme
+      description: Returns a boolean indicating whether the authenticated user liked the meme.
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  liked:
+                    type: boolean
   /templates:
     get:
       summary: Get a list of all templates
@@ -231,6 +405,13 @@ paths:
           description: Unauthorized
 components:
   parameters:
+    publicIdPathParam:
+      in: path
+      name: publicId
+      required: true
+      description: Public ID of the meme to retrieve.
+      schema:
+        type: string
     sort:
       name: sort
       in: query
@@ -299,9 +480,12 @@ components:
         createdAt:
           type: string
           format: date-time
-        url:
+        imageUrl:
           type: string
           description: The resource URL of the image contained in the meme
+        singleViewUrl:
+          type: string
+          description: The URL to the single-view of the meme
         likes:
           type: number
           description: The total number of likes the meme received
@@ -382,6 +566,9 @@ components:
           format: date-time
         texts:
           type: array
+        url:
+          type: string
+          description: The resource URL of the image
       required:
         - name
         - image
