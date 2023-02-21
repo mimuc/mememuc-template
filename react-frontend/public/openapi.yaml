@@ -4,23 +4,53 @@ info:
   description: API for generating and managing memes
   version: 1.0.0
 servers:
-  - url: /api/v1
+  - url: http://localhost:3001
 paths:
   /memes:
     get:
-      summary: Get a list of all memes
-      description: Returns a list of all available memes
+      summary: Get a list of memes as JSON data
       tags:
         - Memes
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/creator'
+        - $ref: '#/components/parameters/skip'
       responses:
         '200':
-          description: Success
+          description: OK
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Meme'
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+  /memes/download:
+    get:
+      summary: Download a ZIP file of memes (including metadata)
+      tags:
+        - Memes
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/creator'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
   /templates:
     get:
       summary: Get a list of all templates
@@ -86,40 +116,81 @@ paths:
         '401':
           description: Unauthorized
 components:
+  parameters:
+    sort:
+      name: sort
+      in: query
+      description: Sort order for the memes
+      schema:
+        type: string
+        enum: [random, newest, oldest]
+        default: random
+    id:
+      name: id
+      in: query
+      description: PublicID of the meme to retrieve
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of memes to retrieve
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+    creator:
+      name: creator
+      in: query
+      description: Username of the creator of the memes to retrieve
+      schema:
+        type: string
+    skip:
+      name: skip
+      in: query
+      description: Number of memes to skip before returning results
+      schema:
+        type: integer
+        default: 0
+        minimum: 0
   schemas:
     Meme:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
-          description: The unique identifier for the meme
         name:
           type: string
-          description: The name of the meme
-        # image: Needs image format
-        #   type: string
-        #   description: The meme 
-    Template:
-      type: object
-      properties:
-        id:
+          required: true
+        creator:
           type: string
-          format: uuid
-          description: The unique identifier for the template
-        name:
+          required: true
+          description: The user who created the meme
+        visibility:
           type: string
-          description: The name of the template
-        # image_url: Needs image format
-        #   type: string
-        #   description: The template image
-    User:
-      type: object
-      properties:
-        id:
+          enum: [private, unlisted, public]
+          default: 'public'
+        image:
           type: string
-          format: uuid
-          description: The unique identifier for the user
-        name:
+          format: binary
+          required: true
+          description: The image buffer (can not be retrieved directly)
+        publicId:
           type: string
-          description: The name of the user
+          required: true
+          unique: true
+          description: The unique ID of the meme
+        contentType:
+          type: string
+          default: 'image/png'
+        createdAt:
+          type: string
+          format: date-time
+        url:
+          type: string
+          description: The resource URL of the image contained in the meme
+      required:
+        - name
+        - creator
+        - image
+        - publicId
+      x-model: Meme 
