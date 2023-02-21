@@ -207,6 +207,10 @@ router.post('/', authenticate(), async function(req, res) {
     };
     const config = Object.assign({}, config_default, req.body.config);
 
+    if (!['unlisted', 'private', 'public'].includes(config.store)) {
+        config.store = undefined;
+    }
+
     let templates = req.body.templates ?? [{}];
 
     const createdMemes = [];
