@@ -1,8 +1,8 @@
 // Component for one post - include post id
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Button from "../components/button";
 import Input from "../components/input";
-
+const localserver = "http://localhost:3001";
 const Like = require ("../callback/callback_like");
 const Comment = require ("../callback/callback_comment");
 
@@ -32,6 +32,33 @@ const stylecom = {
 const PostComponent = ( props) => {
     //like button function
     //need to set like usestate from 456 to the number of likes specific to the post ID
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [username, setUsername] = useState("test");
+    const isMounted = useRef(false);
+    
+
+    
+    const fetchUsername = async () => {
+        await setIsLoading(true);
+        await fetch(`${localserver}/users` + "?user_id="+props.user_id)
+          .then((response) => {
+            /*if (!response.ok) {
+              throw new Error('Network response was not OK');
+            }*/
+            return response.json();
+          })
+          .then((data) => {
+            if(data.length !==0){
+              setUsername(data.name);
+              
+            setIsLoading(false);
+            
+              }
+            
+          })
+          .catch((error) => console.log(error));
+      };
     const [like, setLike] = useState(456),
         [isLike, setIsLike] = useState(false),
 
@@ -47,6 +74,71 @@ const PostComponent = ( props) => {
             };
         }
 
+    const getComment = (comment_id) => {
+        
+        
+        return fetch(`${localserver}/comments/id` + "?comment_id="+comment_id)
+        .then(
+        
+        (result) => {
+            
+           
+           
+            if (result){
+            return result.json();
+            }
+        }
+    ).then(data => {
+        console.log("this is the comment you get"+JSON.stringify(data));
+    })
+    .catch((error)=> {
+        console.log(error);
+        return error
+    });
+
+
+    }
+    const fetchComments = async (comments) => {
+        
+        const commentIds = comments;
+        comments.forEach(element => {
+            console.log(" comment id in post component" + element)
+        });
+        const allComments = await Promise.all(commentIds.map(async item => {
+            await setIsLoading(true);
+            
+            const mycomment = await getComment(item)
+            .then((response) => {
+                /*if (!response) {
+                  throw new Error('Network response was not OK');
+                }*/
+                if (response != ""){
+                
+                return response.json();
+                }else{
+                    return {};
+                }
+              })
+              .then((data) => {
+                
+                if(data.length !==0){
+                    setComCounter(comCounter + 3);
+                    console.log("data text is equal to"+data.text);
+                    setListCom([...listCom,data.text]);
+                  
+                setIsLoading(false);
+                
+                  }
+                
+              })
+              .catch((error) => console.log(error));
+          
+            return mycomment;
+          }))
+
+          return allComments;
+
+    }
     //dislike button function
     //need to set dislike usestate from 12 to the number of dislikes specific to the post ID
     const [dislike, setDislike] = useState(12),
@@ -63,8 +155,9 @@ const PostComponent = ( props) => {
 
     //comment button function - changes the state between true and false when comment button is clicked to trigger expansion of comments section
     // number/list of comments could be set here but functionality not yet implemented
-    const [listCom, setListCom] = useState(["Wow cool meme!", "Love it"]),
+    const [listCom, setListCom] = useState([]),
         [newinpt, setNewinpt] = useState(""),
+        [comCounter, setComCounter] = useState(0),
         [comExp, setComExp] = useState(false),
         onCommentButtonClick = () => {
             setComExp(!comExp);
@@ -72,11 +165,31 @@ const PostComponent = ( props) => {
 
     const handleSubmit=(e)=>{
         e.preventDefault();
-        console.log(newinpt);
+        
         Comment.comment_post(props.post_id,props.user_id,newinpt);
         setListCom((ls)=> [...ls,newinpt]);
         setNewinpt("");
     }
+
+    useEffect(()=>{
+        if (isMounted.current === false){
+        const effect = async () => {
+        await fetchUsername();
+        if (props.comments != []){
+        await fetchComments(props.comments);
+        }
+        console.log("comments props "+props.comments)
+        
+        //*await fetchComments(props.comments);**/
+        }
+        effect();
+        isMounted.current = true;
+    }else{
+        console.log("component already mounted");
+    }
+    },[]
+    
+    )
 
     //Here is the format of the post component, replace username and description with the corresponding one from the post ID
     return (
@@ -87,8 +200,8 @@ const PostComponent = ( props) => {
                 alignItems: "left",
                 justifyContent: "left",
             }}>
-                {props.user_id}</div>
-            <div className = "postdescr">This is the description of the meme!</div>
+                {username}</div>
+            <div className = "postdescr">{props.id}</div>
             <br></br>
             <div
             style={{
@@ -172,10 +285,11 @@ const PostComponent = ( props) => {
             
         </div>
     );
-}
+                        }                     
 
-const Post = ({ image,type, variant, className, id, onClick, size, children, user_id }) => {
-    console.log("i am a post");
+const Post = ({ image,type, variant, className, id, onClick, size, children, user_id, comments }) => {
+    
+    
     return <PostComponent
         type={type ? type : "post"}
         variant={variant}
@@ -185,6 +299,7 @@ const Post = ({ image,type, variant, className, id, onClick, size, children, use
         size={size}
         user_id={user_id}
         image = {image}
+        comments = {comments}
     >
         {children}
     </PostComponent >

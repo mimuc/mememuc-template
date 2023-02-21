@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const mongodb = require("mongodb");
-const ObjectID = mongodb.ObjectID;
-
+const mongoose = require("mongoose");
+const ObjectID = require('mongodb').ObjectId;
 
 
 
@@ -35,12 +35,13 @@ res.status(202).send('comment created');
 });
 
 //search all of one user comments in the database 
-router.get('/:user_id', (req, res) => {
+router.get('/userid', (req, res) => {
     const db = req.db;
     const posts = db.collection('comments');
-    posts.find({ user_id: req.params.user_id }).toArray()
+    posts.find({ user_id: new ObjectID(req.params.user_id) })
     .then(post => {
         if (!posts || !posts.length) {
+            
             res.status(404).send('Post not found');
             return;
         }
@@ -54,22 +55,30 @@ router.get('/:user_id', (req, res) => {
 });
 
 
-//search comments from a post_id
-router.get('/:comment_id', (req, res) => {
+//search comments from a comment_id
+router.get('/id', (req, res) => {
     const db = req.db;
-    const posts = db.collection('comments');
-    posts.find({ user_id: req.params.comment_id }).toArray()
-    .then(post => {
-        if (!posts || !posts.length) {
-            res.status(404).send('Post not found');
+    
+    const comments = db.collection('comments');
+    if (!mongoose.Types.ObjectId.isValid(req.query.comment_id)) {
+        
+        res.status(404).send('Invalid comment ID');
+        return;
+      }
+    comments.findOne({ _id: req.query.comment_id })
+    .then(comment => {
+        if (comment.length == 0) {
+            
+            res.status(404).send('comment not found');
             return;
         }
         // Send the post as a response
-        res.status(200).json(post);
+        console.log("this is the comment u fetched"+JSON.stringify(comment))
+        res.status(200).json(comment);
     })
     .catch(err => {
         console.log(err);
-        res.status(500).send('Error retrieving post');
+        res.status(500).send('Error retrieving comment');
     });
 });
 

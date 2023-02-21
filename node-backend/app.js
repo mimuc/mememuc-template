@@ -57,9 +57,9 @@ app.use(function(req,res,next){  req.db = db;
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/comment',commentRouter);
-app.use('/post',postRouter);
-app.use('/like',likeRouter);
+app.use('/comments',commentRouter);
+app.use('/posts',postRouter);
+app.use('/likes',likeRouter);
 
 
 

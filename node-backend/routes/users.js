@@ -5,8 +5,8 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   const db = req.db;
   const users = db.get('users');
-  users.find({username: req.username},{ projection: {basicauthtoken: 0} }) // return all user properties, except the basic auth token
-      .then((docs) => res.json(docs))
+  users.find({username: req.query.username},{ projection: {basicauthtoken: 0} }) // return all user properties, except the basic auth token
+      .then((docs) => res.json(docs[0]))
       .catch((e) => res.status(500).send())
 });
 

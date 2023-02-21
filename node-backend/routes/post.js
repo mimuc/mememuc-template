@@ -4,7 +4,7 @@ var router = express.Router();
 
  function getImage (db,image_id)  {
     const meme = db.collection('meme');
-    console.log("image_id: "+image_id);
+    
     return meme.find({_id: new ObjectID(image_id)})
     .then(
         
@@ -22,19 +22,29 @@ var router = express.Router();
 
 //using to refresh the 40 most recent posts
 router.get('/get40', (req, res) => {
-    console.log("i am here ");
+    
     const db = req.db;
     const counter = req.query.counter;
     const posts = db.collection('posts');
     posts.find({ view: "normal" }, { skip: parseInt(counter), limit: 20 })
     .then(async result => {
       // go find the right meme data in the meme collection
-      const updatedResult = await Promise.all(result.map(async item => {
+     
+      let updatedResult;
+      if(result.length > 0){
+      updatedResult = await Promise.all(result.map(async item => {
+        
         const mymeme = await getImage(db, item.meme_id);
         const myimage = JSON.parse(mymeme)[0].image
         //console.log("in the get/40"+myimage);
         return { ...item, image: myimage };
-      }));
+        
+      }))
+    }else{
+        
+        return {};
+    }
+      
 
       res.status(202).json(updatedResult);
     })
@@ -50,7 +60,7 @@ router.get('/get40', (req, res) => {
 router.get('/:post_id', (req, res) => {
     const db = req.db;
     const posts = db.collection('posts');
-    console.log("hello");
+    
     posts.findOne({ _id: new ObjectId(req.params.post_id) })
     .then(post => {
         if (!post) {
@@ -140,7 +150,7 @@ router.get('/getcomments', (req, res) => {
     const images = db.collection('posts');
     const commentsid = [];
     const comments =[];
-    console.log("jeeld");
+    
     const counter = req.query.counter;
     images.find({ _id: new ObjectId(req.query.post_id) }, { comments: { $slice: [counter, -1] } }).then (post => {
         
