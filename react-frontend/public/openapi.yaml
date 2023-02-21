@@ -303,6 +303,8 @@ paths:
     put:
       summary: Add a like to a meme
       description: Adds a like to a meme from the authenticated user.
+      tags:
+        - Memes
       parameters:
         - $ref: "#/components/parameters/publicIdPathParam"
       responses:
@@ -313,6 +315,8 @@ paths:
     delete:
       summary: Remove a like from a meme
       description: Removes a like from a meme by the authenticated user.
+      tags:
+        - Memes
       parameters:
         - $ref: "#/components/parameters/publicIdPathParam"
       security:
@@ -325,6 +329,8 @@ paths:
     get:
       summary: Check if the authenticated user liked a meme
       description: Returns a boolean indicating whether the authenticated user liked the meme.
+      tags:
+        - Memes
       parameters:
         - $ref: "#/components/parameters/publicIdPathParam"
       security:
@@ -339,6 +345,75 @@ paths:
                 properties:
                   liked:
                     type: boolean
+  /memes/{publicId}/comments:
+    post:
+      summary: Post a comment for the meme with the publicId
+      description: Adds a new comment to the meme with the specified publicId.
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+              required:
+                - content
+      responses:
+        '200':
+          description: Comment posted successfully.
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+        summary: Get all comments for the meme with the publicId
+        description: Returns all comments for the meme with the specified publicId.
+        tags:
+          - Memes
+        parameters:
+          - $ref: "#/components/parameters/publicIdPathParam"
+        responses:
+          '200':
+            description: Returns all comments for the specified meme.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Comment"
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+  /memes/{publicId}/comments/{commentId}:
+    get:
+      summary: Get a specific comment for the meme with the publicId
+      description: Returns the comment with the specified ID for the meme with the specified publicId.
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+        - name: commentId
+          in: path
+          required: true
+          description: The ID of the comment to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the specified comment.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
   /templates:
     get:
       summary: Get a list of all templates
