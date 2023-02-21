@@ -1,4 +1,4 @@
-
+"use strict";
 
 /*
     Uses some code from https://sirmuel.design/creating-a-nodejs-meme-generator-908fccd35b01
@@ -298,7 +298,7 @@ router.post('/', authenticate(), async function(req, res) {
             res.attachment('memes.zip');
             archive.pipe(res);
             for(let i = 0; i < createdMemes.length; i++) {
-                const extension = 'image/png'.split('/')[1];
+                const extension = 'image/png'.split('/')[1]; // TODO: Names...
                 archive.append(createdMemes[i].img, { name: createdMemes[i].name + "." + extension});
             }
             archive.finalize();
@@ -314,7 +314,6 @@ router.post('/', authenticate(), async function(req, res) {
             visibility: config.store, 
             creator: username, 
             name: m.name,
-            contentType: 'image/png', // TODO:
         }});
 
         let publicIdSet = new Set();
@@ -323,41 +322,11 @@ router.post('/', authenticate(), async function(req, res) {
         }
 
         Meme.create(storeMemes)
-        .then(function() {
-            // Return either a download, or an url to the image, or an url to the single-view
-            if(config.return === 'download') { // TODO: Duplicate code...
-                if(createdMemes.length === 1) {
-                    // Return a single image
-                    res.set('Content-Type', 'image/png');
-                    res.send(createdMemes[0]);
-                    return;
-                }
-                else {
-                    // Send ZIP
-                    const archive = archiver('zip', { zlib: { level: 9 } });
-                    res.attachment('memes.zip');
-                    archive.pipe(res);
-                    for(let i = 0; i < createdMemes.length; i++) {
-                        const extension = 'image/png'.split('/')[1];
-                        archive.append(createdMemes[i].img, { name: createdMemes[i].name + "." + extension});
-                    }
-                    archive.finalize();
-                    return;
-                }
-                
-            }
-            else if( config.return === 'image-url' ) {
-                // Url to the image itself
-                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/resources/images/${m.publicId}`) });
-                return;
-            }
-            else { // TODO: Sending by single-view url is standard
-                res.status(201).json({ message: 'Memes created', urls: storeMemes.map(m => `${req.protocol}://${req.get('host')}/memes/${m.publicId}`) });
-                return;
-            }
-            
+        .then(async function(documents) {
+            await handleMemesResponse(res, documents, config.return);
         })
         .catch(function(error) {
+            console.error(error);
             if (error.name === 'ValidationError') {
                 // handle validation error
                 res.status(400).send(error); // FIXME: TODO:

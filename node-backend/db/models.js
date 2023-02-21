@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
-const archiver = require('archiver');
-const axios = require('axios');
-
-const url = `http://localhost:3001/resources/images/`; // FIXME:
+const url = `http://${process.env.BE_DOMAIN}/resources/images/`;
+const urlFrontend = `http://${process.env.FE_DOMAIN}/memes/`;
 
 const User = mongoose.model('User', new mongoose.Schema({
         username: { type: String, required: true, unique: true },
@@ -40,7 +38,7 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
         name: { type: String, required: true },
         creator: { type: String, required: true },
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
-        image: { type: Buffer, required: true },
+        image: { type: Buffer, required: true, default: 'image/png' },
         publicId: { type: String, required: true, unique: true },
         contentType: { type: String, default: 'image/png' }, // TODO: Make enum
         createdAt: { type: Date, default: Date.now },
@@ -56,6 +54,12 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
             },
             async getCommentsCount() {
                 return await Comment.countDocuments({ memePublicId: this.publicId });
+            },
+            async getImageUrl() {
+                return `${url}${this.publicId}`;
+            },
+            async getSingleViewUrl() {
+                return `${urlFrontend}${this.publicId}`;
             }
         },
         statics: {
@@ -65,10 +69,6 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
         }
     })
 );
-
-Meme.schema.virtual('url').get(function() {
-    return `${url}${this.publicId}`;
-});
 
 const Template = mongoose.model('Template', new mongoose.Schema({
         name: { type: String, required: true, unique: true  },

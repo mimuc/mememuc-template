@@ -115,17 +115,19 @@ async function handleMemeFind(req) {
         //res.status(404).send();
         return 404;
     }
-    documents = documents.map(doc => Meme.hydrate(doc)); // Aggregate removes the url virtual property, so we have to do this
-    documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()}) ) ); 
+    documents = documents.map(doc => Meme.hydrate(doc));
+    
     return documents;
 }
 
 async function handleMemesResponse(res, documents, format) {
     // Return the found memes
+    documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), image: undefined, _id: undefined, __v: undefined, imageUrl: await doc.getImageUrl(), singleviewUrl: await doc.getSingleViewUrl(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()}) ) ); 
     switch(format) {
         case 'json':
             res.json(documents);
             return;
+        case 'download':
         case 'zip':
             // Send ZIP
             if(!Array.isArray(documents)) documents = [documents]; 
@@ -154,17 +156,17 @@ async function handleMemesResponse(res, documents, format) {
             return;
         case 'image':
             // Url to the image itself
-            if(Array.isArray(documents)) res.json({ urls: documents.map(m => `http://${process.env.BE_DOMAIN}/resources/images/${m.publicId}`) });
+            if(Array.isArray(documents)) res.json({ urls: documents.map(m => m.imageUrl/* `http://${process.env.BE_DOMAIN}/resources/images/${m.publicId}` */) });
             else { // Returns an actual image if called for a singular meme
-                const response = await axios.get(`http://${process.env.BE_DOMAIN}/resources/images/${documents.publicId}`, {responseType: 'arraybuffer'});
+                const response = await axios.get(documents.imageUrl/* `http://${process.env.BE_DOMAIN}/resources/images/${documents.publicId}` */, {responseType: 'arraybuffer'});
                 const imageBuffer = new Buffer.from(response.data, 'binary');
                 res.set('Content-Type', response.headers['content-type']);
                 res.send(imageBuffer);
             }
             return;
         case 'single-view':
-            if(Array.isArray(documents)) res.json({ urls: documents.map(m => `http://${process.env.FE_DOMAIN}/memes/${m.publicId}`) });
-            else res.send(`http://${process.env.FE_DOMAIN}/memes/${documents.publicId}`);
+            if(Array.isArray(documents)) res.json({ urls: documents.map(m => m.singleviewUrl/* `http://${process.env.FE_DOMAIN}/memes/${m.publicId}` */) });
+            else res.send(documents.singleviewUrl/* `http://${process.env.FE_DOMAIN}/memes/${documents.publicId}` */);
             return;
         default:
             res.status(400).send('Invalid response format requested');
@@ -191,9 +193,9 @@ async function handleGetMemeRequest(req={}, res={}, contentType='json') {
     
     req.query = {
         sort: 'newest',
-        limit: req.query.limit ? req.query.limit : 10,
+        limit: req.query.limit ? +req.query.limit : 10,
         creator: username,
-        skip: req.query.skip ? req.query.skip : 0
+        skip: req.query.skip ? +req.query.skip : 0
     };
 
     const documents = await handleMemeFind(req);
