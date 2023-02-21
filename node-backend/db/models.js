@@ -40,7 +40,7 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
         image: { type: Buffer, required: true, default: 'image/png' },
         publicId: { type: String, required: true, unique: true },
-        contentType: { type: String, default: 'image/png' }, // TODO: Make enum
+        contentType: { type: String, default: 'image/png', enum: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] },
         createdAt: { type: Date, default: Date.now },
         //likes: {type: Number, default: 0 }
     }, 
@@ -76,7 +76,7 @@ const Template = mongoose.model('Template', new mongoose.Schema({
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
         image: { type: Buffer, required: true },
         publicId: { type: String, required: true, unique: true },
-        contentType: { type: String, default: 'image/png' }, // TODO: Make enum
+        contentType: { type: String, default: 'image/png', enum: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] },
         createdAt: { type: Date, default: Date.now },
         texts: { type: Array }
     }, 
