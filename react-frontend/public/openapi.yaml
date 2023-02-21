@@ -302,12 +302,128 @@ components:
         url:
           type: string
           description: The resource URL of the image contained in the meme
+        likes:
+          type: number
+          description: The total number of likes the meme received
+        comments:
+          type: number
+          description: The total number of comments the meme received
       required:
         - name
         - creator
         - image
         - publicId
       x-model: Meme
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+          required: true
+          unique: true
+        displayName:
+          type: string
+          required: true
+        password:
+          type: string
+          required: true
+        createdAt:
+          type: string
+          format: date-time
+        likes:
+          type: number
+          description: The total number of likes the user created
+        comments:
+          type: number
+          description: The total number of comments the user created
+        memes:
+          type: number
+          description: The total number of comments the user created
+        likesReceived:
+          type: number
+          description: The total number of likes the user received
+        commentsReceived:
+          type: number
+          description: The total number of comments the user received
+      x-model: User
+      required:
+        - username
+        - displayName
+        - password
+    Template:
+      type: object
+      x-model: Template
+      properties:
+        name:
+          type: string
+          required: true
+          unique: true
+        creator:
+          type: string
+        visibility:
+          type: string
+          enum: [private, unlisted, public]
+          default: 'public'
+        image:
+          type: string
+          format: binary
+          required: true
+          description: The image buffer (can not be retrieved directly)
+        publicId:
+          type: string
+          required: true
+          unique: true
+          description: The unique ID of the meme
+        contentType:
+          type: string
+          default: 'image/png'
+        createdAt:
+          type: string
+          format: date-time
+        texts:
+          type: array
+      required:
+        - name
+        - image
+        - publicId
+    Comment:
+      type: object
+      x-model: Comment
+      properties:
+        content:
+          type: string
+          required: true
+        username:
+          type: string
+          required: true
+        memePublicId:
+          type: string
+          required: true
+        createdAt:
+            type: string
+            format: date-time
+        publicId:
+          type: string
+          required: true
+          unique: true
+      required:
+        - content
+        - username
+        - memePublicId
+        - publicId
+    Like:
+      type: object
+      x-model: Like
+      properties:
+        username:
+          type: string
+          required: true
+        memePublicId:
+          type: string
+          required: true
+      required:
+        - username
+        - memePublicId
   responses:
     BadRequest:
       description: Bad Request
