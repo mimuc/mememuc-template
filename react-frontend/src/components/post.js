@@ -90,6 +90,7 @@ const PostComponent = ( props) => {
         }
     ).then(data => {
         console.log("this is the comment you get"+JSON.stringify(data));
+        return data.text;
     })
     .catch((error)=> {
         console.log(error);
@@ -108,23 +109,12 @@ const PostComponent = ( props) => {
             await setIsLoading(true);
             
             const mycomment = await getComment(item)
-            .then((response) => {
-                /*if (!response) {
-                  throw new Error('Network response was not OK');
-                }*/
-                if (response != ""){
-                
-                return response.json();
-                }else{
-                    return {};
-                }
-              })
               .then((data) => {
-                
+                console.log("look at this data"+data);
                 if(data.length !==0){
                     setComCounter(comCounter + 3);
-                    console.log("data text is equal to"+data.text);
-                    setListCom([...listCom,data.text]);
+                    console.log("data text is equal to"+data);
+                    setListCom([...listCom,data]);
                   
                 setIsLoading(false);
                 
