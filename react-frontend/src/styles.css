@@ -112,6 +112,26 @@ body{
     overflow-y: scroll;
 }
 
+.grid-item {
+    max-height: 200px;
+  }  
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-auto-rows: 1000px;
+    grid-gap: 15px; 
+    overflow-x: hidden; /* hide the horizontal scrollbar*/
+    overflow-y: hidden;
+  }
+  
+  
+  .meme {
+    width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
 
 
 

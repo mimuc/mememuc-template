@@ -4,12 +4,13 @@ import { exportComponentAsJPEG } from 'react-component-export-image';
 import Text from "../components/text";
 import Button from 'react-bootstrap/Button';
 
-//Editor where we can create new memes (TODO: Improve the style of the memes to make it more adaptable and flexible based on the source-image)
-export default function Editor () {
+// Editor component to create new memes
+export default function Editor() {
     const [parameters] = useSearchParams();
     const [counter, setCounter] = useState(0);
     const inputText = () =>{ setCounter(counter + 1)};
     const memeRef = createRef();
+
 
     return ( 
         <>
@@ -18,6 +19,7 @@ export default function Editor () {
                 <img src={parameters.get("url")} width = "250px"/>
                 { Array(counter).fill(0).map(e => <Text />) }
             </div>
+                 
             <Button onClick={inputText}> Add Text </Button> 
             <Button variant="success" onClick={(e) => exportComponentAsJPEG(memeRef)}> Save </Button>     
         </>
