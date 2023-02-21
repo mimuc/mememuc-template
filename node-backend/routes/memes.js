@@ -203,12 +203,16 @@ router.post('/', authenticate(), async function(req, res) {
 
     const config_default = {
         store: undefined,
-        return: undefined // Returns a single-view url when store is defined, otherwise returns an image/zip
+        return: 'json' // Returns a single-view url when store is defined, otherwise returns an image/zip
     };
     const config = Object.assign({}, config_default, req.body.config);
 
     if (!['unlisted', 'private', 'public'].includes(config.store)) {
         config.store = undefined;
+    }
+
+    if (!['image', 'single-view', 'download', 'zip', 'json'].includes(config.return)) {
+        config.return = 'json';
     }
 
     let templates = req.body.templates ?? [{}];
@@ -236,7 +240,6 @@ router.post('/', authenticate(), async function(req, res) {
         };
         const data_template = {};
         if(template.name) {
-            console.log("Load template", template.name)
             // Load template from database
             let templateInDatabase = await Template.findOne({ name: template.name }, { image: 0, _id: 0, __v: 0 });
             if(!templateInDatabase) {
@@ -329,7 +332,7 @@ router.post('/', authenticate(), async function(req, res) {
             console.error(error);
             if (error.name === 'ValidationError') {
                 // handle validation error
-                res.status(400).send(error); // FIXME: TODO:
+                res.status(400).send(error);
             } else {
                 res.status(500).send(error);
             }
