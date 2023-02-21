@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+const cors = require('cors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -38,6 +39,10 @@ var authRouter = require('./routes/auth');
 var myRouter = require('./routes/my');
 
 var app = express();
+
+app.use(cors({
+  origin: 'http://localhost:3000' // Allow requests from the frontend
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
