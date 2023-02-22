@@ -124,13 +124,15 @@ const Comment = mongoose.model('Comment', new mongoose.Schema({
 
 const Like = mongoose.model('Like', new mongoose.Schema({
     username: { type: String, required: true },
-    memePublicId: { type: String, required: true }
+    memePublicId: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
     })
 );
 
 const View = mongoose.model('View', new mongoose.Schema({
     username: { type: String, required: true },
-    memePublicId: { type: String, required: true }
+    memePublicId: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
     })
 );
 
