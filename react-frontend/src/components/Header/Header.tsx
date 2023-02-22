@@ -6,8 +6,6 @@ import {ReactNode} from "react";
 import {useNetworkState} from "react-use";
 import {LoginOutlined} from "@ant-design/icons";
 
-const BLOCK_WIDTH = 360
-
 type HeaderProps = {
     children?: ReactNode
 }
@@ -53,7 +51,7 @@ export const Header = ({children}: HeaderProps) => {
             <NetworkStatus/>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 {/*TODO: add logo */}
-                <div style={{display: 'inline-flex', alignItems: 'center', width: BLOCK_WIDTH}}>
+                <div style={{display: 'inline-flex', alignItems: 'center'}}>
                     <Title level={3} style={{display: 'inline-block', color: '#232323', margin: 0, marginRight: 50}}>
                         {config.APP_TITLE}
                     </Title>
@@ -73,7 +71,7 @@ export const Header = ({children}: HeaderProps) => {
                     {children}
                 </div>
                 {/*TODO: login/logout button -> on login page, register page */}
-                <div style={{display: 'inline-flex', justifyContent: 'flex-end', width: BLOCK_WIDTH}}>
+                <div style={{display: 'inline-flex', justifyContent: 'flex-end'}}>
                     <Link to={'/login'}>
                         <Button icon={<LoginOutlined/>}>Login</Button>
                     </Link>
