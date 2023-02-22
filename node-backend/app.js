@@ -13,20 +13,20 @@ const {authenticate} = require('./db/authentication');
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
 // ### Thus copy paste this block to your project
-const MONGODB_PORT = (process.env.DBPORT || '27017').trim();
+//const MONGODB_PORT = (process.env.DBPORT || '27017').trim();
+const MONGODB_PORT = process.env.DBPORT || '27017';
 //const db = require('monk')(`127.0.0.1:${MONGODB_PORT}/omm-2223`); // connect to database omm-2021
 
-mongoose.connect(`mongodb://127.0.0.1:${MONGODB_PORT}/omm-2223`, {
-  useUnifiedTopology: true,
-  useNewUrlParser: true
+mongoose.connect(`mongodb://127.0.0.1:${MONGODB_PORT}/omm-ws2223`, () => {
+  console.log(`Connected to MongoDB at port ${MONGODB_PORT}`);
 });
-const db = mongoose.connection;
+//const db = mongoose.connection;
 
-db.on("error", console.error.bind(console, "connection error:"));
+/* db.on("error", console.error.bind(console, "connection error:"));
 
 db.once("open", function() {
   console.log(`Connected to MongoDB at port ${MONGODB_PORT}`);
-});
+}); */
 
 // ######
 
