@@ -188,8 +188,6 @@ router.get('/single-view', authenticate(false), async function(req, res, next) {
 
 
 router.post('/', authenticate(), async function(req, res) {
-    // TODO: Accept base64 as images .img
-    // TODO: Set content type
     // TODO: Fix generated names. It should be memeCount + 1 (no zero padding anymore)
 
     const username = req.username;
@@ -257,20 +255,28 @@ router.post('/', authenticate(), async function(req, res) {
         
         const loadedImages = [];
         for (const img of data.images) {
+            if(img.url == undefined) continue;
+            
             const canvas_img = new Image();
-            try {
-                const response = await axios.get(img.url, {responseType: 'arraybuffer'});
-                const imageUrl =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
-                canvas_img.src = imageUrl;
-                loadedImages.push({
-                    image: canvas_img,
-                    x: img.x,
-                    y: img.y
-                });
-            } catch (error) {
-                res.status(400).send("The image could not be loaded: " + img.url);
-                return;
+            if(img.url.startsWith('data:image/')) { // image.url is base64
+                canvas_img.src = img.url;
             }
+            else { // image.url is an actual url
+                try {
+                    const response = await axios.get(img.url, {responseType: 'arraybuffer'});
+                    const imageUrl =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
+                    canvas_img.src = imageUrl;  
+                } catch (error) {
+                    console.error(error);
+                    return res.status(400).send("The image could not be loaded: " + img.url);
+                }
+            }
+            loadedImages.push({
+                image: canvas_img,
+                x: img.x,
+                y: img.y
+            });
+            
         }
         // Wait until all images were loaded
         const promises = loadedImages
@@ -473,7 +479,7 @@ router.put('/:publicId/like', authenticate(), async function(req, res, next) {
     });
 });
 
-// Unlikes the meme with the currently authenticated user
+// Un-likes the meme with the currently authenticated user
 router.delete('/:publicId/like', authenticate(), async function(req, res, next) {
     const username = req.username;
     const memePublicId = req.params.publicId;

@@ -71,7 +71,7 @@ paths:
                           - type: string
                           - $ref: '#/components/parameters/text'
                     images:
-                      description: The list of image URLs for the memes. Using a simple string array will cause default values to be used.
+                      description: The list of image URLs for the memes. Using a simple string array will cause default values for the position to be used. The url can also be a base64 image string, which will be interpreted if it starts with 'data:image/'.
                       anyOf:
                         - type: string
                         - type: array
