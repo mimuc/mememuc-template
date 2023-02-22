@@ -34,12 +34,27 @@ router.get('/:name', authenticate(false), async function(req, res, next) {
   .catch((e) => res.status(500).send());
 });
 
-router.post('/', authenticate(), async function(req, res) {
-  // TODO: Save text with positions
+router.delete('/:name', authenticate(), async function(req, res, next) {
+  const username = req.username;
+  const name  = req.params.name;
 
-  if(!req.body.image && !req.body.url) {
-    res.status(400).json({ message: 'Please define a url or a base64 image to upload!' });
+  const template = await Template.findOneAndDelete({ creator: username, name })
+  .catch(function(error) {
+      res.status(500).send();
+  }); 
+
+  if(template) return res.status(200).send();
+  else return res.status(404).send("Template not found");
+});
+
+router.post('/', authenticate(), async function(req, res) {
+  if(req.body.image == undefined && req.body.url == undefined) {
+    res.status(400).send('Please define a url or a base64 image to upload');
     return;
+  }
+
+  if(req.body.name == undefined) {
+    res.status(400).send('Please define a unique name for the template')
   }
   
   const templateData = {
@@ -50,9 +65,13 @@ router.post('/', authenticate(), async function(req, res) {
     creator: req.username
   }
 
+  if (!['unlisted', 'private', 'public'].includes(templateData.visibility)) {
+    res.status(400).send('Invalid visibility option: ' + templateData.visibility);
+  }
+
   const existingTemplate = await Template.findOne({ name: templateData.name });
   if(existingTemplate) {
-    res.status(400).json({ message: 'Template already exists.' });
+    res.status(409).send(`Template with name ${templateData.name} already exists`);
     return;
   }
 
@@ -77,8 +96,8 @@ router.post('/', authenticate(), async function(req, res) {
   const template = new Template(templateData);
     
   template.save()
-  .then(function() {
-    res.status(201).json({ message: 'Template created', url: `${req.protocol}://${req.get('host')}/resources/images/${template.publicId}`});
+  .then(async function(doc) {
+    res.status(201).json({...doc.toObject(), image: undefined, _id: undefined, __v: undefined, url: await doc.getImageUrl()});
   })
   .catch(function(error) {
       if (error.name === 'ValidationError') {
