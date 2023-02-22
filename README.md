@@ -4,12 +4,14 @@ Welcome to our repository for the bonus project for the _Online Multimedia Lectu
 
 Watch our **[demonstration video](mememuc-launcher/project%20demonstration.mp4)** to see a demo of our project!
 
+
 ## Third-party content used:
 
 - [Material UI](https://mui.com/material-ui/)
 - [ImgFlip Meme API](https://imgflip.com/api)
 
 ## Running our project
+
 
 To start our project run this code:
 ```bash
@@ -33,6 +35,7 @@ For us the in-memory mongoserver didn't work, so make sure a mongod instance is 
 
 - [Nodejs](https://nodejs.org/en/download/)
 - [MongoDb](https://www.mongodb.com/try/download/community)
+
 
 ## How To Use
 
