@@ -55,4 +55,4 @@ This project was developed for a course at the LMU Munich by
 <br/>
 <br/>
 
-Looking for the [template Readme](mememuc-launcher/template_readme.md) or a [feature list](mememuc-launcher/Group_51_Featurelist.xlsx)?
+Looking for the [template Readme](mememuc-launcher/template_readme.md) or a [feature list](mememuc-launcher/Group_51_Featurelist.xlsx) for our project?
