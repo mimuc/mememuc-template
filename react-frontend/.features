@@ -2,8 +2,8 @@
 
 ## Pages
 - [x] Nav element for all links
-- [ ] Editor (One or multiple pages, uploading new images for templates)
-- [ ] Account (Drafts / history of created memes, login/logout)
+- [x] Editor (One or multiple pages, uploading new images for templates)
+- [x] Account (Drafts / history of created memes, login/logout)
 - [x] API (documenting the API)
 - [x] Overview / Endless scroll
 - [x] Single View
@@ -84,11 +84,11 @@
 - [ ] Store memes in local storage
 
 ## API
-- [ ] Single image with formattable text
-- [ ] Create a set of images with same template
-- [ ] Get any meme (random)
-- [ ] Get a specific meme by id (+metadata)
-- [ ] Get a set of images using sort/filters or random (+metadata)
-- [ ] Given a template and a set (more than two possible) of texts the meme is returned.
+- [x] Single image with formattable text
+- [x] Create a set of images with same template
+- [x] Get any meme (random)
+- [x] Get a specific meme by id (+metadata)
+- [x] Get a set of images using sort/filters or random (+metadata)
+- [x] Given a template and a set (more than two possible) of texts the meme is returned.
       For each text at least two of the following should be customizable: size, position, color, font,
       transparency, background, but for one template a list of sets of text is given and as many memes are returned (list of URLs
