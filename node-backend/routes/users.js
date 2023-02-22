@@ -2,7 +2,7 @@ var express = require('express');
 const mongoose = require('mongoose');
 var router = express.Router();
 
-const {User} = require('../db/models');
+const {User, Template} = require('../db/models');
 const {authenticate} = require('../db/authentication');
 
 const {handleGetMemeRequest} = require('../db/memeUtils');
@@ -44,6 +44,19 @@ router.get('/:username/memes/download', authenticate(false), async function(req,
 
 router.get('/:username/memes/single-view', authenticate(false), async function(req, res, next) {
   handleGetMemeRequest(req, res, 'single-view');
+});
+
+router.get('/:username/templates', authenticate(false), async function(req, res, next) {
+  const username  = req.params.username;
+  Template.find({
+    creator: username,
+    $or: [
+      { visibility: 'public' },
+      { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
+    ]
+  }, { image: 0, _id: 0, __v: 0 })
+  .then((docs) => res.json(docs))
+  .catch((e) => res.status(500).send())
 });
 
 module.exports = router;
