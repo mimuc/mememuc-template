@@ -347,10 +347,22 @@ router.post('/:publicId/comments', authenticate(), async function(req, res, next
     const username = req.username;
     const memePublicId = req.params.publicId;
     const content = req.body.content;
-    if(!content) return res.status(400).send("No content provided");
-    // TODO: Check visibility permissions of meme
 
+    if(!content) return res.status(400).send("No content provided");
     if(username == undefined) return res.status(401).send();
+
+    // Check visibility permissions of meme
+    req.query = {
+        id: req.params.publicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+    
     const commentId = await Comment.generatePublicId();
 
     const comment = new Comment({ username, memePublicId, content, publicId: commentId });
@@ -364,8 +376,20 @@ router.post('/:publicId/comments', authenticate(), async function(req, res, next
 });
 
 router.get('/:publicId/comments', authenticate(false), async function(req, res, next) {
-    // TODO: Check visibility permissions of meme
     const memePublicId = req.params.publicId;
+
+    // Check visibility permissions of meme
+    req.query = {
+        id: memePublicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
     const comments = await Comment.find({ memePublicId }, { _id: 0, __v: 0 })
     .catch(function(error) {
         res.status(500).send();
@@ -374,8 +398,20 @@ router.get('/:publicId/comments', authenticate(false), async function(req, res, 
 });
 
 router.get('/:publicId/comments/:commentId', authenticate(false), async function(req, res, next) {
-    // TODO: Check visibility permissions of meme
     const memePublicId = req.params.publicId;
+
+    // Check visibility permissions of meme
+    req.query = {
+        id: memePublicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
     const commentId = req.params.commentId;
     const comment = await Comment.findOne({ memePublicId, publicId: commentId }, { _id: 0, __v: 0 })
     .catch(function(error) {
@@ -405,6 +441,18 @@ router.put('/:publicId/like', authenticate(), async function(req, res, next) {
     const memePublicId = req.params.publicId;
 
     if(username == undefined) return res.status(401).send();
+
+    // Check visibility permissions of meme
+    req.query = {
+        id: memePublicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
 
     const existingLike = await Like.findOne({ username, memePublicId })
     .catch(function(error) {
@@ -448,23 +496,6 @@ router.get('/:publicId/like', authenticate(), async function(req, res, next) {
     if(like) req.send(200, {"liked": true});
     else req.send(200, {"liked": false});
 });
-
-/* router.get('/:publicId', authenticate(false), async function(req, res, next) {
-
-    const publicId  = req.params.publicId;
-    Meme.findOne({ publicId }, EXCLUDE_PROPERTIES)
-    .then( async doc => {
-        if (!doc) {
-            return res.status(404).send({ error: "Meme not found" });
-        }
-        if ((doc.visibility === 'private') && req.username !== doc.creator ) {
-            return res.status(401).send();
-        }
-        return res.json({...doc.toObject(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()});
-    })
-    .catch((e) => res.status(500).send());
-  }); */
-
 
 router.get('/:publicId', authenticate(false), async function(req, res, next) {
     req.query = {
