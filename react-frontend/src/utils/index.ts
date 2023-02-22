@@ -57,3 +57,33 @@ export const getTimeSince = (date: Date) => {
 export function isImgUrl(url: string) {
     return /\.(jpg|jpeg|png|webp|avif|gif)$/.test(url)
 }
+
+/**
+ * Returns image meta data
+ * https://stackoverflow.com/questions/11442712/get-width-height-of-remote-image-from-url
+ * @param url
+ */
+export function getMeta(url: string) {
+    return new Promise<{width: number, height: number}>((resolve, reject) => {
+        let img = new Image();
+        img.onload = () => resolve({ width: img.width, height: img.height });
+        img.onerror = () => reject();
+        img.src = url;
+    });
+}
+
+/**
+ * Download a file from a url
+ * https://stackoverflow.com/a/15832662/512042
+ * @param uri
+ * @param name
+ */
+export function downloadURI(uri: string, name: string) {
+    const link = document.createElement('a');
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+

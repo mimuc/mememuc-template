@@ -1,9 +1,10 @@
-export type Template = {
+export type TemplateType = {
     id: string
-    name: string
+    name: string,
+    shapes: ShapeInterface[]
 }
 
-export type Meme = {
+export type MemeType = {
     id: string;
     name: string;
     image: string;
@@ -18,7 +19,7 @@ export type Meme = {
     }
 }
 
-export type Comment = {
+export type CommentType = {
     id: string;
     text: string;
     createdAt: string;
@@ -28,10 +29,37 @@ export type Comment = {
     }
 }
 
-export type User = {
+export type UserType = {
     name: string
 }
 
-export type Session = {
+export type SessionType = {
     id: string
 }
+
+
+export interface ShapeInterface {
+    id: string;
+    type: 'text' | 'image'
+    x: number
+    y: number
+    width?: number
+    height?: number
+}
+
+export interface TextShapeInterface extends ShapeInterface {
+    text: string
+    fontSize?: number
+    fill?: string
+    fontStyle?: 'bold' | 'normal'
+};
+
+export interface ImageShapeInterface extends ShapeInterface {
+    url: string
+}
+
+export type DraftType = {
+    id: string;
+    shapes: ShapeInterface[]
+}
+

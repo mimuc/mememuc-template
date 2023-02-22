@@ -1,14 +1,14 @@
 import {useCopyToClipboard} from "react-use";
 import {Button, message} from "antd";
 import {ShareAltOutlined} from "@ant-design/icons";
-import {Meme} from "src/types";
+import {MemeType} from "src/types";
 
 type ShareButtonProps = {
-    meme: Meme
+    meme: MemeType
 }
 
 export const ShareButton = ({meme}: ShareButtonProps) => {
-    const [messageApi, contextHolder] = message.useMessage();
+    const [messageApi, contextHolder] = message.useMessage({maxCount: 3});
     const [, copyToClipboard] = useCopyToClipboard()
 
     const handleShare = () => {

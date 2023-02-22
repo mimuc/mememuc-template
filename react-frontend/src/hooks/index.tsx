@@ -1,17 +1,22 @@
 import {useEffect, useRef, useState} from "react";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {useAsync, useUnmount} from "react-use";
-import {useMemesState} from "src/states";
-import {Input, Modal} from "antd";
-import {CameraOutlined, LinkOutlined} from "@ant-design/icons";
-import {isImgUrl} from "src/utils";
+import {useEditorState, useMemesState, useStageRef} from "src/states";
+import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Space} from "antd";
+import {
+    AppstoreOutlined,
+    CameraOutlined,
+    DownloadOutlined,
+    FormOutlined,
+    LinkOutlined,
+    PictureOutlined
+} from "@ant-design/icons";
+import {downloadURI, isImgUrl} from "src/utils";
 import Webcam from "react-webcam";
+import {useTemplates} from "src/hooks/state-hooks";
+import {MemeType} from "src/types";
 
-export const useApi = <T, >(endpoint: () => Promise<T>) => {
-    const loadable = useAsync(endpoint);
-
-    return loadable.value ? loadable.value as T : null;
-}
+export * from './state-hooks';
 
 export const useAutoplay = () => {
     const [timer, setTimer] = useState<number>(0);
@@ -58,6 +63,35 @@ export const useAutoplay = () => {
     };
 }
 
+export const useImgflipInputModal = () => {
+    const memesLoadable = useAsync(() => fetch('https://api.imgflip.com/get_memes').then(res => res.json()));
+
+    return () => new Promise<string | undefined>(resolve =>
+        Modal.info({
+            width: 1000,
+            closable: true,
+            icon: <AppstoreOutlined/>,
+            title: 'Enter Imgflip URL',
+            content: <Row gutter={[16, 16]}>
+                {
+                    memesLoadable.value && memesLoadable.value.data.memes.map((i: any) => (
+                        <Col span={8} key={i.id}>
+                            <Card title={i.name} hoverable onClick={() => {
+                                resolve(i.url);
+                                Modal.destroyAll()
+                            }}>
+                                <img src={i.url} style={{maxHeight: '100%', maxWidth: '100%'}} alt={'Template image'}/>
+                            </Card>
+                        </Col>
+                    ))
+                }
+            </Row>,
+            onCancel: () => resolve(undefined),
+            footer: null
+        })
+    );
+}
+
 export const useUrlInputModal = () => {
     const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
 
@@ -69,7 +103,6 @@ export const useUrlInputModal = () => {
             content: <Input placeholder={'Image URL'} onChange={(e: any) => {
                 setImageUrl(e.target.value)
             }}/>,
-            onCancel: () => resolve(undefined),
             onOk: () => {
                 const url = imageUrl && imageUrl.trim();
                 if (url && isImgUrl(url)) resolve(url);
@@ -97,7 +130,6 @@ export const useWebcamInputModal = () => {
                     screenshotFormat={"image/jpeg"}
                 />
             </div>,
-            onCancel: () => resolve(undefined),
             onOk: () => {
                 if (webcamRef.current == null) return;
 
@@ -111,4 +143,149 @@ export const useWebcamInputModal = () => {
             }
         })
     );
+}
+
+export const useShape = <T, >(id: string) => {
+    const [shapes, setShapes] = useEditorState();
+    const [shape, setShape] = useState<T>(shapes.find(s => s.id === id) as T);
+
+    const updateShape = (values: Partial<Omit<T, 'id'>>) => {
+        setShapes(prev => prev.map(s => s.id === id ? {...s, ...values} : s));
+    }
+
+    const deleteShape = () => {
+        setShapes(shapes.filter(s => s.id !== id));
+    }
+
+    useEffect(() => {
+        setShape(shapes.find(s => s.id === id) as T);
+    }, [id, shapes]);
+
+    return {shape, updateShape, deleteShape};
+}
+
+export const useDownloadModal = () => {
+    const [shapes,] = useEditorState();
+    const [stageRef,] = useStageRef();
+    const [fileFormat, setFileFormat] = useState<string>('png');
+    const [fileSize, setFileSize] = useState<number>(1000);
+
+    // If no id is provided, download the current meme from the editor
+    return (id?: string) => new Promise<string | undefined>(resolve => {
+        Modal.info({
+            title: 'Download',
+            icon: <DownloadOutlined/>,
+            content: <>
+                <span style={{display: 'block', marginBottom: 5}}>File Size (KB):</span>
+                <InputNumber style={{width: 200}} min={50} max={10000} value={fileSize} onChange={setFileSize as any}/>
+                <span style={{display: 'block', marginTop: 20, marginBottom: 5}}>File Format:</span>
+                <Select
+                    style={{width: 200}}
+                    defaultValue={fileFormat}
+                    options={[{label: 'PNG', value: 'png'}, {label: 'JPEG', value: 'jpeg'}]}
+                    value={fileFormat}
+                    onChange={setFileFormat}
+                />
+            </>,
+            onOk: async () => {
+                let url = '';
+
+                if (!id) {
+                    url = stageRef.current.toDataURL();
+                } else {
+                    //  TODO: fetch meme url if id is given
+                }
+
+                // TODO: compress/resize to match file size
+                downloadURI(url, 'meme.' + fileFormat);
+                resolve(undefined);
+            }
+        })
+    });
+}
+
+export const useCreateTemplateModal = () => {
+    const [shapes,] = useEditorState();
+    const {addTemplate} = useTemplates();
+    const [name, setName] = useState<string>('');
+
+    const handleNameChange = (e: any) => {
+        console.log('name', e.target.value)
+        setName(e.target.value);
+    }
+
+    return () => new Promise<string | undefined>(resolve => {
+        Modal.info({
+            closable: true,
+            title: 'Create template',
+            icon: <FormOutlined/>,
+            content: <>
+                <Input placeholder={'Template name (required)'} onChange={handleNameChange} required/>
+            </>,
+            onOk: async () => {
+                console.log('name', name);
+
+                if (name === '') throw new Error('Name is required');
+
+                await addTemplate(name, shapes);
+
+                // Reset
+                setName('');
+
+                resolve(undefined);
+            }
+        });
+    });
+}
+
+export const useCreateMemeModal = () => {
+    const [stageRef,] = useStageRef();
+    const [name, setName] = useState<string>('');
+    const [publishType, setPublishType] = useState<string>('public');
+    const navigate = useNavigate();
+
+    const handleNameChange = (e: any) => {
+        setName(e.target.value);
+    }
+
+    const handlePublishTypeChange = (e: any) => {
+        setPublishType(e.target.value);
+    }
+
+    return () => new Promise<string | undefined>(resolve => {
+        Modal.info({
+            closable: true,
+            title: 'Create meme',
+            icon: <PictureOutlined/>,
+            content: <Space style={{width: '100%'}} size={'large'} direction={'vertical'}>
+                <Input placeholder={'Meme name (required)'} onChange={handleNameChange} required/>
+                <Radio.Group
+                    options={[{label: 'Public', value: 'public'}, {
+                        label: 'Private',
+                        value: 'private'
+                    }, {label: 'Unlisted', value: 'unlisted'}]}
+                    onChange={handlePublishTypeChange}
+                    value={publishType}
+                    optionType="button"
+                    buttonStyle="solid"
+                />
+            </Space>,
+            onOk: async () => {
+                if (name === '') throw new Error('Name is required');
+
+                // TODO: publish meme on server (consider publish type)
+                // TODO: and if logged in attribute to user
+                const url = stageRef.current.toDataURL();
+                const newMeme = {} as MemeType;
+
+                navigate(`/memes/${newMeme.id}`);
+
+                // Reset
+                setName('');
+                setPublishType('public');
+
+                resolve(undefined);
+            }
+        });
+    });
 }
