@@ -646,6 +646,118 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Template'
+  /my:
+    get:
+      summary: Get user data of the currently authenticated user
+      tags:
+        - My
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+  /my/templates:
+    get:
+      summary: Get templates of the currently authenticated user
+      tags:
+        - My
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Template'
+        '401':
+          description: Unauthorized
+  /my/memes:
+    get:
+      summary: Get a list of the authenticated user's memes as JSON
+      description: Returns a list of the memes created by the user
+      tags:
+        - My
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meme'
+  /my/memes/image:
+    get:
+      summary: Get a list of the authenticated user's memes as image URLs
+      description: Returns a list of the memes created by the user
+      tags:
+        - My
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  schema:
+                    type: string
+  /my/memes/download:
+    get:
+      summary: Get a list of the authenticated user's memes as zip download
+      description: Returns a list of the memes created by the user
+      tags:
+        - My
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+  /my/memes/single-view:
+    get:
+      summary: Get a list of the authenticated user's memes as single-view URLs
+      description: Returns a list of the memes created by the user
+      tags:
+        - My
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  schema:
+                    type: string
+  
 components:
   parameters:
     text:
