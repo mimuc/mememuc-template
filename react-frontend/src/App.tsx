@@ -1,7 +1,7 @@
 import 'antd/dist/reset.css';
 import './index.css';
 
-import {ConfigProvider, message} from 'antd';
+import {ConfigProvider} from 'antd';
 import React, {StrictMode} from 'react';
 import {Router} from './router';
 import {ThemeConfig} from "antd/es/config-provider/context";
@@ -10,10 +10,8 @@ const theme: ThemeConfig = {
     token: {
     },
 };
-export const App = () => {
-    // TODO: does not work
-    message.config({maxCount: 3});
 
+export const App = () => {
     return (
         <StrictMode>
             <ConfigProvider theme={theme}>

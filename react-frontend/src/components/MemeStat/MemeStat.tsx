@@ -1,13 +1,13 @@
-import {Meme} from "src/types";
+import {MemeType} from "src/types";
 
 type MemeStatProps = {
-    meme: Meme
+    meme: MemeType
 }
 
 export const MemeStat = ({meme}: MemeStatProps) => {
     return (
         <div style={{height: 500}}>
-        {/*TODO*/}
+        {/*TODO: add meme stats*/}
         </div>
     )
 }

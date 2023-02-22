@@ -1,5 +1,4 @@
 import Cookies from 'js-cookie';
-import bcrypt from 'bcryptjs';
 import { useState } from 'react';
 import {Button, Col, Form, Input, Row, theme, Typography} from "antd";
 import {Link/* , useHistory */} from "react-router-dom";
@@ -12,16 +11,15 @@ export const LoginPage = () => {
     const { token } = theme.useToken();
     //const history = useHistory();
     const [error, setError] = useState('');
-
+    // TODO: Provide feedback
+    // TODO: Forward on success
     const handleFinish = async (values: any) => {
         console.log("LOgging in", values)
         try {
-            const hashedPassword = await bcrypt.hash(values.password, 10);
-            console.log(hashedPassword)
             const response = await fetch('http://localhost:3001/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({username: values.username, password: hashedPassword}),
+                body: JSON.stringify({username: values.username, password: values.password}),
             });
             console.log(response)
 
@@ -35,7 +33,7 @@ export const LoginPage = () => {
             //history.push('/dashboard');
         } catch (error) {
             console.error(error);
-            //setError(error);
+            //setError(error as string);
         }
     };
 
@@ -44,10 +42,10 @@ export const LoginPage = () => {
             <Col offset={8} span={6}>
                 <Title>Login</Title>
                 <Form name={'login'} onFinish={handleFinish}>
-                    <Form.Item required>
+                    <Form.Item name="username" required rules={[{ required: true, message: 'Please input your username!' }]}>
                         <Input placeholder={'Username'} name="username" />
                     </Form.Item>
-                    <Form.Item required>
+                    <Form.Item name="password" required rules={[{ required: true, message: 'Please input your password!' }]}>
                         <Input.Password placeholder={'Password'} name="password" />
                     </Form.Item>
                     <Form.Item>

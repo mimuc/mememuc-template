@@ -2,7 +2,7 @@ import {useMemo, useState} from "react";
 import {Button, Form, Input, Typography} from "antd";
 import {SendOutlined} from "@ant-design/icons";
 import {api} from "src/api";
-import {Comment as CommentType, Meme} from "src/types";
+import {CommentType as CommentType, MemeType} from "src/types";
 import {useEffectOnce} from "react-use";
 import {getTimeSince} from "src/utils";
 import styled from "styled-components";
@@ -10,7 +10,7 @@ import randomColor from "randomcolor";
 
 
 type CommentsProps = {
-    meme: Meme
+    meme: MemeType
 }
 
 const {Text} = Typography;

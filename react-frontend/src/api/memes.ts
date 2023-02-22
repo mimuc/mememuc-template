@@ -1,4 +1,4 @@
-import {Meme} from "src/types";
+import {MemeType} from "src/types";
 
 const mock = [
     {
@@ -49,7 +49,7 @@ const mock = [
         vote: -1,
         createdAt: '2022-03-04',
     }
-] as Meme[];
+] as MemeType[];
 
 
 const all = () => {
@@ -57,11 +57,11 @@ const all = () => {
 }
 
 const get = (memeId: string) => {
-    return Promise.resolve<Meme>(mock.find(m => m.id === memeId) as Meme)
+    return Promise.resolve<MemeType>(mock.find(m => m.id === memeId) as MemeType)
 }
 
 const getRandomMeme = () => {
-    return Promise.resolve<Meme>(mock[0])
+    return Promise.resolve<MemeType>(mock[0])
 }
 
 const upvote = (memeId: string) => {

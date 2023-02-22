@@ -1,9 +1,10 @@
 import {Dropdown, MenuProps, Upload} from "antd";
-import {useUrlInputModal, useWebcamInputModal} from "src/hooks";
+import {useImgflipInputModal, useUrlInputModal, useWebcamInputModal} from "src/hooks";
+import uuid from "react-uuid";
+import {useEditorState} from "src/states";
+import {ImageShapeInterface} from "src/types";
+import {getMeta} from "src/utils";
 
-type AddImageButtonProps = {
-    onClick: (imageUrl: string) => void
-}
 
 const imageButtonOptions: MenuProps['items'] = [
     {
@@ -17,23 +18,51 @@ const imageButtonOptions: MenuProps['items'] = [
     {
         label: 'Take Screenshot',
         key: 'screenshot'
+    },
+    {
+        label: 'Imgflip',
+        key: 'imgflip'
     }
 ];
 
-export const AddImageButton = ({onClick}: AddImageButtonProps) => {
+export const AddImageButton = () => {
+    const [, setShapes] = useEditorState();
     const openUrlInput = useUrlInputModal();
     const openWebcamInput = useWebcamInputModal();
+    const openImgflipInput = useImgflipInputModal();
+
+    const createImageElement = async (url: string) => {
+        const meta = await getMeta(url);
+
+        // Normalize width and height to 100px
+        const width = meta.width;
+        const height = meta.height;
+        const ratio = width / height;
+        const newWidth = 200;
+        const newHeight = 200 / ratio;
+
+        setShapes(prev => [...prev, {
+            id: uuid(),
+            type: 'image',
+            x: 0,
+            y: 0,
+            url,
+            width: newWidth,
+            height: newHeight,
+        } as ImageShapeInterface]);
+    }
     const handleAddImage = async (event: any) => {
             const key = event?.key;
 
             if (key === 'url') {
                 const imageUrl = await openUrlInput();
-                if (imageUrl) onClick(imageUrl);
+                if (imageUrl) createImageElement(imageUrl);
             } else if (key === 'camera') {
                 const imageUrl = await openWebcamInput();
-                if (imageUrl) onClick(imageUrl);
+                if (imageUrl) createImageElement(imageUrl);
             } else if (key === 'screenshot') {
                 // TODO: Screenshot does not capture the entire screen
+                // TODO: Move to hook
                 const stream = await navigator.mediaDevices.getDisplayMedia();
                 const track = stream.getTracks()[0];
                 const imageCapture = new ImageCapture(track);
@@ -63,11 +92,14 @@ export const AddImageButton = ({onClick}: AddImageButtonProps) => {
                     return canvas.toDataURL();
                 });
                 track.stop()
-                onClick(data);
+                createImageElement(data)
+            } else if (key === 'imgflip') {
+                const imageUrl = await openImgflipInput();
+                if (imageUrl) createImageElement(imageUrl);
             } else {
                 // Upload image from disk
                 const imageUrl = URL.createObjectURL(event);
-                onClick(imageUrl);
+                createImageElement(imageUrl);
                 return false;
             }
         }
@@ -79,7 +111,7 @@ export const AddImageButton = ({onClick}: AddImageButtonProps) => {
                 menu={{items: imageButtonOptions, onClick: handleAddImage}}
             >
                 <Upload showUploadList={false} beforeUpload={handleAddImage} accept={"image/*"}>
-                    Upload Image
+                    Add Image
                 </Upload>
             </Dropdown.Button>
         </div>

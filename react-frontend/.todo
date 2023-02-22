@@ -1,22 +1,12 @@
 - [ ] Simple OAuth2 Login/Logout
-- [ ] Improve OverviewMemesPage (add endless scroll, add filters and sort, add comments)
-- [ ] Sort and Filter for sinlge and overview
-    - [ ] Add sort (latest/popular)
-    - [ ] Add filters (template, user, date, popularity, categories implement discord like search)
-- [ ] Implement Profile (history of own memes, votes and comments <- acitvity)
-- [ ] Implement Editor
-    - upload image
-    - save current as template
-    - draft mode locally in browser
-    - full navigation through templates
-    - download image (file size and file type) [meme should be generated server-side]
-    - freely adjustable canvas with up to three freely movable text boxes and multiple images
-    - upload image from multiple sources (wecam, screenshot, image, url, etc.)
-
 - [ ] Can only upvote if logged in
 - [ ] Add logo
-
-## Tests
 - [ ] Test API page '/api'
 - [ ] Test links from /memes to /meme/:memeId
-
+- [ ] Add note that code was inspired/used from react-konva docs
+- [ ] Check all functionalities and code
+- [ ] Add commentss
+- [ ] In modals should we aling icon wiht stuff below?
+- [ ] Make responsive?s
+- [ ] Which text format are supported by the API?
+- [ ] Modal onOk does not work because it has not access to state after rendering

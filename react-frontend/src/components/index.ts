@@ -1,8 +1,6 @@
-export * from './Buttons/DislikeButton';
-export * from './Buttons/DownloadButton';
-export * from './Buttons/LikeButton';
-export * from './Buttons/ShareButton';
+export * from './Buttons';
 export * from './Comments/Comments';
+export * from './Draft';
 export * from './Editor/CanvasEditor/CanvasEditor';
 export * from './Editor/VideoEditor/VideoEditor';
 export * from './Header/Header';
@@ -10,5 +8,5 @@ export * from './Navigation/Navigation';
 export * from './MemeStat/MemeStat';
 export * from './Profile/Profile';
 export * from './Sider/Sider';
-export * from './Template/Template';
-export * from './TemplateList/TemplateList';
+export * from './Template';
+

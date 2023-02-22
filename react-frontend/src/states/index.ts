@@ -1,6 +1,12 @@
 import {createGlobalState} from "react-use";
-import {Meme, Session} from 'src/types';
+import {MemeType, SessionType, TemplateType} from 'src/types';
 
-export const useMemesState = createGlobalState<Meme[]>([]);
+export * from './editor-states';
 
-export const useSessionState = createGlobalState<Session | null>(null);
+export const useMemesState = createGlobalState<MemeType[]>([]);
+
+export const useSessionState = createGlobalState<SessionType | null>(null);
+
+export const useTemplatesState = createGlobalState<TemplateType[]>([]);
+
+

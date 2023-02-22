@@ -1,4 +1,4 @@
-import {Comment} from "src/types";
+import {CommentType} from "src/types";
 
 const mock = [
     {
@@ -114,14 +114,14 @@ const mock = [
             name: 'Amanda Taylor'
         }
     }
-] as Comment[];
+] as CommentType[];
 
 const forMeme = (memeId: string) => {
-    return Promise.resolve<Comment[]>(mock)
+    return Promise.resolve<CommentType[]>(mock)
 }
 
 const add = (memeId: string, text: string) => {
-    return Promise.resolve<Comment>({text, createdAt: new Date().toDateString(), id: 'new'})
+    return Promise.resolve<CommentType>({text, createdAt: new Date().toDateString(), id: 'new'})
 }
 
 export const comments = {

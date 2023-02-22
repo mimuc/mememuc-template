@@ -1,78 +1,100 @@
-import {Circle, Image as KImage, Layer, Rect, Stage} from 'react-konva';
-import {Button, Col, Row, theme} from "antd";
-import {AddImageButton} from "src/components/Editor/AddImageButton";
-import {SaveButton} from "src/components/Editor/SaveButton";
-import useImage from "use-image";
-import {ReactNode, useState} from "react";
-import {useToggle} from "react-use";
-import {EditOutlined} from "@ant-design/icons";
-import uuid from 'react-uuid';
+import {Layer, Stage} from 'react-konva';
+import {Col, InputNumber, Row, Space, theme} from "antd";
+import {ImageShape, TextShape} from "../Shape";
+import {useEditorState, useSelectedShapeIdState, useStageRef} from "src/states";
+import {useRef, useState} from "react";
+import {AddImageButton, AddTextButton, ClearButton, CreateButton} from 'src/components/Buttons';
+import {useEffectOnce, useToggle} from "react-use";
+import {
+    BoldOutlined,
+    CloseCircleOutlined,
+    DeleteOutlined,
+    FontColorsOutlined,
+    FontSizeOutlined
+} from "@ant-design/icons";
+import {TwitterPicker} from "react-color";
+import styled from "styled-components";
+import {ContextMenu} from "src/components/Editor/ContextMenu/ContextMenu";
 
-type Element = {
-    id: string;
-    node: ReactNode
-};
-
-const Image = ({url, onSelect}: any) => {
-    const [image] = useImage(url);
-    return <KImage image={image as any} draggable dashEnabled={true}/>
-}
-
-//  TODO: type properly
+// TOOD: align columns vertically
+// div style={{
+//     display: 'flex',
+//         position: 'relative',
+//         alignItems: 'center',
+//         backgroundColor: 'white',
+//         border: 'solid 1px lightgray',
+//         borderRadius: 10,
+//         paddingInline: 8,
+//         paddingBlock: 4
+// }}
 export const CanvasEditor = () => {
-    const {token} = theme.useToken()
-    const [freeDrawingOn, toggleFreeDrawing] = useToggle(false)
-    const [elements, setElements] = useState<Element[]>([
-        {
-            id: 'rect',
-            node: <Rect width={50} height={50} fill={'red'} draggable key={'rect'}/>
-        },
-        {
-            id: 'circle',
-            node: <Circle x={200} y={200} stroke={"black"} radius={50} draggable key={'circle'}/>
+    const {token} = theme.useToken();
+    const [shapes,] = useEditorState();
+    const [, setStageRef] = useStageRef();
+    const [selectedShapeId, setSelectedShapeId] = useSelectedShapeIdState();
+    const [width, setWidth] = useState(700);
+    const [height, setHeight] = useState(700);
+
+    const stageRef = useRef<any>(null);
+
+    const checkDeselect = (e: any) => {
+        // Deselect when clicked on empty area
+        const clickedOnEmpty = e.target === e.target.getStage();
+        if (clickedOnEmpty) {
+            setSelectedShapeId(null);
         }
-    ]);
-
-    const handleAddImage = (imageUrl: string) => {
-        const id = uuid();
-        setElements(prev => [...prev, {id, node: <Image key={id} url={imageUrl}/>}]);
     };
 
-    const handleSave = (type: any) => {
-
-    };
+    // Effects
+    useEffectOnce(() => {
+        setStageRef(stageRef);
+    });
 
 
     return (
-        <>
+        <Space direction={'vertical'} size={'large'} style={{width: '100%'}}>
             <Row>
-                <Col span={12}>
-                    <div>
-                        <AddImageButton onClick={handleAddImage}/>
-                        <Button
-                            icon={<EditOutlined/>}
-                            style={{marginLeft: token.marginXS}}
-                            onClick={toggleFreeDrawing}
-                            type={freeDrawingOn ? 'primary' : 'default'}/>
-
-                    </div>
-                    <Row>
-                        <Stage width={window.innerWidth} height={window.innerHeight} style={{border: '1px solid gray'}}>
-                            <Layer>
-                                {elements.map(e => e.node)}
-                            </Layer>
-                        </Stage>
-                    </Row>
+                <Col span={5} style={{display: 'flex', alignItems: 'center'}}>
+                    Canvas Size (w x h):
+                    <InputNumber min={100} max={1000} value={width} style={{width: 70, marginInline: token.marginXS}}
+                                 onChange={setWidth as any}/>
+                    x
+                    <InputNumber min={100} max={1000} value={height} style={{width: 70, marginInline: token.marginXS}}
+                                 onChange={setHeight as any}/>
+                </Col>
+                <Col offset={1} span={4} style={{display: 'flex', alignItems: 'center'}}>
+                    <AddImageButton/>
+                    <AddTextButton/>
+                    <ClearButton/>
+                </Col>
+                <Col offset={1} span={4} style={{display: 'flex', alignItems: 'center'}}>
+                    <ContextMenu id={selectedShapeId}/>
+                </Col>
+                <Col offset={1} span={4}>
+                    <CreateButton/>
                 </Col>
             </Row>
             <Row>
-
-                <Col span={12}>
-                    <Row>
-                        <SaveButton onClick={handleSave}/>
-                    </Row>
+                <Col>
+                    <Stage
+                        ref={stageRef}
+                        onMouseDown={checkDeselect}
+                        onTouchStart={checkDeselect}
+                        width={width}
+                        height={height}
+                        style={{border: '1px solid gray'}}
+                    >
+                        <Layer>
+                            {shapes.map(s => s.type === 'text' ?
+                                <TextShape key={s.id} id={s.id} selected={s.id === selectedShapeId}
+                                           onSelect={setSelectedShapeId}/> :
+                                <ImageShape key={s.id} id={s.id} selected={s.id === selectedShapeId}
+                                            onSelect={setSelectedShapeId}/>
+                            )}
+                        </Layer>
+                    </Stage>
                 </Col>
             </Row>
-        </>
+        </Space>
     )
 }

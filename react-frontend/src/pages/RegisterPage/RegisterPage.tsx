@@ -6,12 +6,19 @@ const {Title, Text} = Typography;
 export const RegisterPage = () => {
     const {token} = theme.useToken();
 
-    const handleFinish = (values: any) => {
-        console.log(values);
+    const handleFinish = async (values: any) => {
+        console.log("vals", values);
 
         // Check passwords
 
         // Check username
+
+        const response = await fetch('http://localhost:3001/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({username: values.username, displayName: values.displayName, password: values.password}),
+        });
+        console.log(response)
     }
 
     // TODO: allow only some characters in username
@@ -24,10 +31,13 @@ export const RegisterPage = () => {
             <Col offset={8} span={6}>
                 <Title>Register</Title>
                 <Form onFinish={handleFinish}>
-                    <Form.Item required>
+                    <Form.Item required name="username">
                         <Input placeholder={'Username'}/>
                     </Form.Item>
-                    <Form.Item required>
+                    <Form.Item required name="displayName">
+                        <Input placeholder={'Display Name'}/>
+                    </Form.Item>
+                    <Form.Item required name="password">
                         <Input placeholder={'Password'}/>
                     </Form.Item>
                     <Form.Item required>

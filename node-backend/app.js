@@ -40,9 +40,15 @@ var myRouter = require('./routes/my');
 
 var app = express();
 
-app.use(cors({
-  origin: 'http://localhost:3000' // Allow requests from the frontend
-}));
+var corsOptions = {
+  origin: `http://${process.env.FE_DOMAIN}`,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Authorization']
+}
+
+app.use(cors(corsOptions));
+
+app.options('*', cors(corsOptions));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
