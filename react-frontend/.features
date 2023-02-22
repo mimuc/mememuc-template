@@ -39,12 +39,12 @@
 ## Memes
 - [x] Display metadata
 - [x] Actions (share, download, votes)
-- [ ] Filter should additionally influence random
-- [ ] Sort and filter influence endless scroll and left-right button on meme single view
-- [ ] Endless scroll
-- [ ] Sort by creation date, popular
-- [ ] Filter by votes
-- [ ] Filter after format (?), template, title, text <- search
+- [x] Filter should additionally influence random
+- [x] Sort and filter influence endless scroll and left-right button on meme single view
+- [x] Endless scroll
+- [x] Sort by creation date, popular
+- [x] Filter by votes
+- [x] Filter after format (?), template, title, text <- search
 
 ### Single View
 - [x] Display metadata
@@ -62,8 +62,8 @@
 
 ## Statistics
 - [x] Detailed graph in single view  for meme
-- [ ] Dynamically generated graphs about general stats
-- [ ] Details graph in single view for template
+- [x] Dynamically generated graphs about general stats
+- [x] Details graph in single view for template
 
 ## Accessibility
 - [ ] ScreenReader implementation
