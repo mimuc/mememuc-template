@@ -830,6 +830,37 @@ paths:
           description: User successfully deleted
         '500':
           description: Error deleting user
+  /resources/{type}/{publicId}:
+    get:
+      summary: Gets the resource of the provided type and id
+      tags:
+        - Resources
+      parameters:
+        - in: path
+          name: type
+          required: true
+          description: Type of the resource to retrieve.
+          schema:
+            type: string
+            enum: [images]
+        - in: path
+          name: publicId
+          required: true
+          description: ID of the resource to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Resource not found
+        '401':
+          description: Unauthorized
 components:
   parameters:
     text:
