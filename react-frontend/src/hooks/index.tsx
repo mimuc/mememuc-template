@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from "react";
-import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {useAsync, useUnmount} from "react-use";
-import {useEditorState, useMemesState, useStageRef} from "src/states";
+import {useNavigate, useParams, useSearchParams} from "react-router-dom";
+import Webcam from "react-webcam";
 import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Space} from "antd";
 import {
     AppstoreOutlined,
@@ -11,10 +11,10 @@ import {
     LinkOutlined,
     PictureOutlined
 } from "@ant-design/icons";
+import {useEditorState, useMemesState, useStageRef} from "src/states";
 import {downloadURI, isImgUrl} from "src/utils";
-import Webcam from "react-webcam";
-import {useTemplates} from "src/hooks/state-hooks";
 import {MemeType} from "src/types";
+import {useTemplates} from "./state-hooks";
 
 export * from './state-hooks';
 

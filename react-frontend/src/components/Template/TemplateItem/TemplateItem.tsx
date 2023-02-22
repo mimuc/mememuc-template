@@ -1,6 +1,6 @@
 import {theme, Typography} from "antd";
-import {ImageShapeInterface, TemplateType, TextShapeInterface} from "src/types";
 import {useEditorState} from "src/states";
+import {ImageShapeInterface, TemplateType, TextShapeInterface} from "src/types";
 
 type TemplateItemProps = {
     template: TemplateType;

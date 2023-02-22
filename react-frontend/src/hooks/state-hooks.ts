@@ -1,10 +1,10 @@
-import uuid from "react-uuid";
-import {useLocalStorage} from "react-use";
-import {DraftType, ShapeInterface} from "src/types";
-import {useEditorState, useTemplatesState} from "src/states";
-import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
+import {useLocalStorage} from "react-use";
+import {useNavigate} from "react-router-dom";
+import uuid from "react-uuid";
 import {api} from "src/api";
+import {useEditorState, useTemplatesState} from "src/states";
+import {DraftType, ShapeInterface} from "src/types";
 
 export const useDrafts = () => {
     const [shapes, setShapes] = useEditorState();

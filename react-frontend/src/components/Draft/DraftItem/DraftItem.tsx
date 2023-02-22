@@ -1,7 +1,7 @@
-import {DraftType, ImageShapeInterface} from "src/types";
-import {useDrafts} from "src/hooks";
 import {Button} from "antd";
 import {DeleteOutlined} from "@ant-design/icons";
+import {useDrafts} from "src/hooks";
+import {DraftType, ImageShapeInterface} from "src/types";
 
 type DraftItemProps = {
     draft: DraftType

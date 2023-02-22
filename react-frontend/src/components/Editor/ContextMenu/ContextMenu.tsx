@@ -1,6 +1,6 @@
-import {Alert, Button, InputNumber, theme} from "antd";
-import {useToggle} from "react-use";
 import {useEffect, useState} from "react";
+import {useToggle} from "react-use";
+import {Alert, Button, InputNumber, theme} from "antd";
 import {
     BoldOutlined,
     CloseCircleOutlined,
@@ -8,10 +8,10 @@ import {
     FontColorsOutlined,
     FontSizeOutlined
 } from "@ant-design/icons";
-import {TwitterPicker} from "react-color";
 import styled from "styled-components";
-import {ImageShapeInterface, ShapeInterface, TextShapeInterface} from "src/types";
+import {TwitterPicker} from "react-color";
 import {useEditorState, useSelectedShapeIdState} from "src/states";
+import {ImageShapeInterface, ShapeInterface, TextShapeInterface} from "src/types";
 
 type ContextMenuProps = {
     id: string | null;

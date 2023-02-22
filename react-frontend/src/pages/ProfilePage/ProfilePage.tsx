@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
-import {theme, Typography} from "antd";
 import Cookies from 'js-cookie';
+import {theme, Typography} from "antd";
 import {DraftList} from "src/components";
 
 const {Title} = Typography;

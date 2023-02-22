@@ -11,11 +11,11 @@ import {
     RightOutlined,
 } from "@ant-design/icons";
 import {Comments, DislikeButton, DownloadButton, LikeButton, MemeStat, ShareButton} from "src/components";
-import {getTimeSince} from "src/utils";
-import {useMemesState} from "src/states";
-import {MemeType} from "src/types";
 import {api} from "src/api";
+import {useMemesState} from "src/states";
 import {useAutoplay} from "src/hooks";
+import {getTimeSince} from "src/utils";
+import {MemeType} from "src/types";
 
 const {Title} = Typography;
 

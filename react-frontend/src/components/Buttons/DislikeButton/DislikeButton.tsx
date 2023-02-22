@@ -1,9 +1,9 @@
-import {MemeType} from "src/types";
 import {Button, Typography} from "antd";
-import {api} from "src/api";
 import {DislikeFilled, DislikeOutlined} from "@ant-design/icons";
+import {api} from "src/api";
 import {useMemesState} from "src/states";
 import {abbreviateNumber} from "src/utils";
+import {MemeType} from "src/types";
 
 type DislikeButtonProps = {
     meme: MemeType

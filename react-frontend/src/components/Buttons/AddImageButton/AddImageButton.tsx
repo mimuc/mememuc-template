@@ -1,10 +1,9 @@
-import {Dropdown, MenuProps, Upload} from "antd";
-import {useImgflipInputModal, useUrlInputModal, useWebcamInputModal} from "src/hooks";
 import uuid from "react-uuid";
+import {Dropdown, MenuProps, Upload} from "antd";
 import {useEditorState} from "src/states";
-import {ImageShapeInterface} from "src/types";
+import {useImgflipInputModal, useUrlInputModal, useWebcamInputModal} from "src/hooks";
 import {getMeta} from "src/utils";
-
+import {ImageShapeInterface} from "src/types";
 
 const imageButtonOptions: MenuProps['items'] = [
     {

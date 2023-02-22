@@ -1,6 +1,6 @@
-import {useEditorState, useSelectedShapeIdState} from "src/states";
-import {ClearOutlined} from "@ant-design/icons";
 import {Button, Popconfirm, theme} from "antd";
+import {ClearOutlined} from "@ant-design/icons";
+import {useEditorState, useSelectedShapeIdState} from "src/states";
 
 export const ClearButton = () => {
     const [, setSelectedShapeId] = useSelectedShapeIdState();

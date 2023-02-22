@@ -1,10 +1,10 @@
-import {Layer, Stage} from 'react-konva';
-import {Col, InputNumber, Row, Space, theme} from "antd";
-import {ImageShape, TextShape} from "../Shape";
-import {useEditorState, useSelectedShapeIdState, useStageRef} from "src/states";
 import {useRef, useState} from "react";
-import {AddImageButton, AddTextButton, ClearButton, CreateButton} from 'src/components/Buttons';
+import {Layer, Stage} from 'react-konva';
 import {useEffectOnce} from "react-use";
+import {Col, InputNumber, Row, Space, theme} from "antd";
+import {useEditorState, useSelectedShapeIdState, useStageRef} from "src/states";
+import {AddImageButton, AddTextButton, ClearButton, CreateButton} from 'src/components/Buttons';
+import {ImageShape, TextShape} from "../Shape";
 import {ContextMenu} from "../ContextMenu/ContextMenu";
 
 export const CanvasEditor = () => {

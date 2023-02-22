@@ -1,6 +1,6 @@
 import {Alert, Empty} from "antd";
 import {useDrafts} from "src/hooks";
-import {DraftItem} from "src/components/Draft/DraftItem/DraftItem";
+import {DraftItem} from "../DraftItem/DraftItem";
 
 export const DraftList = () => {
     const {drafts} = useDrafts();

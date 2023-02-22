@@ -1,6 +1,6 @@
+import {MutableRefObject} from "react";
 import {createGlobalState} from "react-use";
 import {ImageShapeInterface, ShapeInterface, TextShapeInterface} from "src/types";
-import {MutableRefObject} from "react";
 
 // TODO: remove this
 const Text1: TextShapeInterface = {

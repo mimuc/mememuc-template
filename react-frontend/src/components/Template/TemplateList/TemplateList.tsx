@@ -1,7 +1,7 @@
-import {useTemplates} from "src/hooks";
-import {TemplateItem} from "src/components/Template/TemplateItem/TemplateItem";
 import {useState} from "react";
 import {Alert, Empty} from "antd";
+import {useTemplates} from "src/hooks";
+import {TemplateItem} from "../TemplateItem/TemplateItem";
 
 export const TemplateList = () => {
     const {templates} = useTemplates();

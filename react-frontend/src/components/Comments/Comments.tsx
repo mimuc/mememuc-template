@@ -1,13 +1,12 @@
 import {useMemo, useState} from "react";
+import {useEffectOnce} from "react-use";
 import {Button, Form, Input, Typography} from "antd";
 import {SendOutlined} from "@ant-design/icons";
-import {api} from "src/api";
-import {CommentType, MemeType} from "src/types";
-import {useEffectOnce} from "react-use";
-import {getTimeSince} from "src/utils";
 import styled from "styled-components";
 import randomColor from "randomcolor";
-
+import {api} from "src/api";
+import {getTimeSince} from "src/utils";
+import {CommentType, MemeType} from "src/types";
 
 type CommentsProps = {
     meme: MemeType

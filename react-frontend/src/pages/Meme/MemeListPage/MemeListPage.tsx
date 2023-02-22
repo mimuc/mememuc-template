@@ -1,10 +1,10 @@
 import {useNavigate} from "react-router-dom";
 import {Button, Card, Typography} from "antd";
 import {CommentOutlined} from "@ant-design/icons";
+import {DislikeButton, DownloadButton, LikeButton, ShareButton} from "src/components";
+import {useMemesState} from "src/states";
 import {MemeType} from "src/types";
 import {abbreviateNumber, getTimeSince} from "src/utils";
-import {useMemesState} from "src/states";
-import {DislikeButton, DownloadButton, LikeButton, ShareButton} from "src/components";
 
 type ItemProps = {
     meme: MemeType;

@@ -9,8 +9,6 @@ type TextShapeProps = {
     onSelect: (id: string) => void
 }
 
-
-
 export const TextShape = ({id, selected, onSelect}: TextShapeProps) => {
     // State
     const {shape, updateShape} = useShape<TextShapeInterface>(id);

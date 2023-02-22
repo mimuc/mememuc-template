@@ -2,10 +2,10 @@ import {ReactNode, useEffect} from "react";
 import {useAsync} from "react-use";
 import {Input, Layout, Segmented} from "antd";
 import {ClockCircleOutlined, HeartOutlined} from "@ant-design/icons";
+import styled from "styled-components";
 import {api} from "src/api";
 import {useMemesState} from "src/states";
 import {Header} from "src/components";
-import styled from "styled-components";
 
 type MemeLayoutProps = {
     children: ReactNode;

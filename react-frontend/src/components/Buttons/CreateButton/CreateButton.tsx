@@ -1,7 +1,6 @@
 import {Dropdown, MenuProps, message} from "antd";
 import { useCreateMemeModal, useCreateTemplateModal, useDownloadModal, useDrafts} from "src/hooks";
 
-
 const createButtonOptions: MenuProps['items'] = [
     {
         label: 'Save as template',
