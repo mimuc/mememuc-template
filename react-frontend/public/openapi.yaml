@@ -423,6 +423,50 @@ paths:
           description: Comment deleted
         '404':
           description: Comment not found
+  /memes/{publicId}/likes:
+    get:
+        summary: Get all likes for the meme with the publicId
+        tags:
+          - Memes
+        parameters:
+          - $ref: "#/components/parameters/publicIdPathParam"
+        responses:
+          '200':
+            description: Returns all likes for the specified meme.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Like"
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+  /memes/{publicId}/views:
+    get:
+        summary: Get all views for the meme with the publicId
+        tags:
+          - Memes
+        parameters:
+          - $ref: "#/components/parameters/publicIdPathParam"
+        responses:
+          '200':
+            description: Returns all views for the specified meme.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/View"
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
   /templates:
     get:
       summary: Get a list of all templates
@@ -1007,6 +1051,9 @@ components:
         comments:
           type: number
           description: The total number of comments the meme received
+        views:
+          type: number
+          description: Unique views the meme received
       required:
         - name
         - creator
@@ -1123,6 +1170,9 @@ components:
         memePublicId:
           type: string
           required: true
+        createdAt:
+            type: string
+            format: date-time
       required:
         - username
         - memePublicId
