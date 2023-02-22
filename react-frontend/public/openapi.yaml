@@ -486,12 +486,56 @@ paths:
           description: Success
         '404':
           description: Template not found
-  /user/memes:
+  /users:
     get:
-      summary: Get a list of the user's memes
-      description: Returns a list of the memes created by the authenticated user
+      summary: Get a list of all users
       tags:
-        - User
+        - Users
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /users/{username}:
+    get:
+      summary: Get all data of a specific user
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: Name of the user to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/{username}/memes:
+    get:
+      summary: Get a list of the user's memes as JSON
+      description: Returns a list of the memes created by the user
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: Name of the user to retrieve.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
       responses:
         '200':
           description: Success
@@ -501,29 +545,98 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Meme'
-        '401':
-          description: Unauthorized
-  /user/account:
+  /users/{username}/memes/image:
     get:
-      summary: Get the user's account information
-      description: Returns the account information for the authenticated user
+      summary: Get a list of the user's memes as image URLs
+      description: Returns a list of the memes created by the user
       tags:
-        - User
+        - Users
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: Name of the user to retrieve.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
       responses:
         '200':
-          description: Success
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          description: Unauthorized
-  /user/templates:
+                type: array
+                items:
+                  schema:
+                    type: string
+  /users/{username}/memes/download:
+    get:
+      summary: Get a list of the user's memes as zip download
+      description: Returns a list of the memes created by the user
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: Name of the user to retrieve.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+  /users/{username}/memes/single-view:
+    get:
+      summary: Get a list of the user's memes as single-view URLs
+      description: Returns a list of the memes created by the user
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: Name of the user to retrieve.
+          schema:
+            type: string
+        - $ref: '#/components/parameters/sort'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/skip'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  schema:
+                    type: string
+  /users/{username}/templates:
     get:
       summary: Get a list of the user's templates
-      description: Returns a list of the templates created by the authenticated user
+      description: Returns a list of the templates created by the user
       tags:
-        - User
+        - Users
+      parameters:
+        - in: path
+          name: username
+          required: true
+          description: Name of the user to retrieve.
+          schema:
+            type: string
       responses:
         '200':
           description: Success
@@ -533,8 +646,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Template'
-        '401':
-          description: Unauthorized
 components:
   parameters:
     text:
