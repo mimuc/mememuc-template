@@ -216,6 +216,17 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Remove a single meme by public ID
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      responses:
+        '200':
+          description: Meme successfully deleted
+        '404':
+          description: Meme not found
   /memes/{publicId}/image:
     get:
       summary: Retrieve a single meme by public ID as an image
@@ -391,6 +402,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Comment"
+    delete:
+      summary: Remove a specific comment
+      description: Remove the comment with the specified ID for the meme with the specified publicId (requires authentication).
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+        - name: commentId
+          in: path
+          required: true
+          description: The ID of the comment to retrieve.
+          schema:
+            type: string
+      response:
+        '200':
+          description: Comment deleted
+        '404':
+          description: Comment not found
   /templates:
     get:
       summary: Get a list of all templates
