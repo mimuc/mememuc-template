@@ -6,13 +6,13 @@ export const DraftList = () => {
     const {drafts} = useDrafts();
 
     return (
-        <div style={{width: '100%', overflow: 'auto', whiteSpace: 'nowrap'}}>
+        <div style={{height: 300, width: '100%', overflow: 'auto', whiteSpace: 'nowrap'}}>
             {drafts && drafts.length > 0 && drafts.map(d => <DraftItem
                     key={d.id}
                     draft={d}
                 />
             )}
-            {!drafts || drafts.length === 0 && <Alert message={<Empty description={'No drafts found'}/>}/>}
+            {(!drafts || drafts.length === 0) && <Alert message={<Empty description={'No drafts found'}/>}/>}
         </div>
     );
 }

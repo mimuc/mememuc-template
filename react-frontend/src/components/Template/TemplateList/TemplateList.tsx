@@ -7,10 +7,8 @@ export const TemplateList = () => {
     const {templates} = useTemplates();
     const [selected, setSelectedId] = useState<string | null>(null);
 
-    if (!templates) return null;
-
     return (
-        <div style={{width: '100%', overflow: 'auto', whiteSpace: 'nowrap'}}>
+        <div style={{height: 300, width: '100%', overflow: 'auto', whiteSpace: 'nowrap'}}>
             {templates && templates.length > 0 && templates.map(t => <TemplateItem
                     key={t.id}
                     template={t}
@@ -18,7 +16,7 @@ export const TemplateList = () => {
                     onSelect={setSelectedId}
                 />
             )}
-            {!templates || templates.length === 0 && <Alert message={<Empty description={'No templates found'}/>}/>}
+            {(!templates || templates.length === 0) && <Alert message={<Empty description={'No templates found'}/>}/>}
         </div>
     );
 }
