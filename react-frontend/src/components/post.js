@@ -59,14 +59,16 @@ const PostComponent = ( props) => {
           })
           .catch((error) => console.log(error));
       };
-    const [like, setLike] = useState(456),
+    const [like, setLike] = useState(props.likes),
         [isLike, setIsLike] = useState(false),
 
         onLikeButtonClick = () => {
             setLike(like + (isLike ? -1 : 1));
             setIsLike(!isLike);
             if(!isLike){
-            Like.like_post(props.post_id,props.user_id,"like")
+                console.log(`the post ${props.id} es like par ${props.user_id}`);
+                
+                Like.like_post(props.id,props.user_id,"like")
             }
             if (isDislike) { 
                 setDislike(dislike - 1); 
@@ -131,13 +133,14 @@ const PostComponent = ( props) => {
     }
     //dislike button function
     //need to set dislike usestate from 12 to the number of dislikes specific to the post ID
-    const [dislike, setDislike] = useState(12),
+    const [dislike, setDislike] = useState(props.dislikes),
         [isDislike, setIsDislike] = useState(false),
 
         onDislikeButtonClick = () => {
             setDislike(dislike + (isDislike ? -1 : 1));
             setIsDislike(!isDislike);
             if(!isDislike){
+                console.log(`the post ${props.id} es like par ${props.user_id}`);
                 Like.like_post(props.id,props.user_id,"dislike")
                 }
             if (isLike) { setLike(like - 1); setIsLike(!isLike) };
@@ -277,7 +280,7 @@ const PostComponent = ( props) => {
     );
                         }                     
 
-const Post = ({ image,type, variant, className, id, onClick, size, children, user_id, comments }) => {
+const Post = ({ image,type, variant, className, id, onClick, size, children, user_id, comments,likes,dislikes }) => {
     
     
     return <PostComponent
@@ -290,6 +293,8 @@ const Post = ({ image,type, variant, className, id, onClick, size, children, use
         user_id={user_id}
         image = {image}
         comments = {comments}
+        likes = {likes}
+        dislikes = {dislikes}
     >
         {children}
     </PostComponent >

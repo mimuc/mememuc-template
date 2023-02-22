@@ -84,7 +84,7 @@ const Discover =() =>{
     return (<>
     <p>Wow look at these memes :o</p>
     
-    {posts.length > 0 && <Post key={posts[0]._id} image={posts[0].image} id={posts[0]._id} comments={posts[0].comments} user_id={posts[0].user_id}/>}
+    
     {
     <InfiniteScroll 
         dataLength={posts.length} 
@@ -97,7 +97,7 @@ const Discover =() =>{
         {posts.map((item,index)=>{
             
             return( 
-            <Post key={item._id} image={item.image} id={item._id} comments={item.comments} user_id={item.user_id}>
+            <Post key={item._id} likes= {item.n_likes} dislikes = {item.n_dislikes} image={item.image} id={item._id} comments={item.comments} user_id={item.user_id}>
                 This is post #{index+1} inside the infinite scroll
             </Post>
             );
