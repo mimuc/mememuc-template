@@ -7,7 +7,6 @@ const {authenticate} = require('../db/authentication');
 const jwt = require('jsonwebtoken');
 
 router.post('/login', async (req, res) => {
-    // TODO: Implement cookie saving
     const { username, password } = req.body;
 
     if (!username || !password) {
@@ -57,14 +56,15 @@ router.post('/register', async (req, res) => {
 
         await user.save();
 
-        return res.status(201).send({ message: 'User created successfully' });
+        return res.status(201).send('User created successfully');
     } catch (error) {
-        console.log(error)
-        return res.status(500).send({ message: 'Error creating user' });
+        console.error(error)
+        return res.status(500).send('Error creating user');
     }
 });
 
 router.delete('/register', authenticate(), async (req, res) => {
+    // TODO: Remove memes and templates + update API description
     try {
         const user = await User.findOneAndDelete({username: req.username});
         if (!user) {

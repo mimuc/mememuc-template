@@ -39,7 +39,7 @@ async function handleMemeFind(req) {
     else {
         // Search for the memes, according to the config options
         switch(query.sort){
-            case 'all':
+            /* case 'all':
                 // TODO: Debug function
                 documents = await Meme.find({
                     $or: [
@@ -47,7 +47,7 @@ async function handleMemeFind(req) {
                         { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
                       ]
                 }, MEME_EXCLUDE_PROPERTIES);
-                break;
+                break; */
             case 'random': {
 
                 const pipeline = [
@@ -147,7 +147,7 @@ async function handleMemesResponse(res, documents, format) {
                     archive.append(imgData, { name });
                 }
                 catch (error){
-                    console.log(error);
+                    console.error(error);
                     return res.status(500).send();
                 }
             }

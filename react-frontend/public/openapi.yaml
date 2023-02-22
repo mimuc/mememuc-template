@@ -63,6 +63,9 @@ paths:
                     name:
                       type: string
                       description: The name of the template that should be used. This template has to exist on the server, and will fill the texts, images, and canvas parameters with default values (which can be overridden).
+                    memeName:
+                      type: string
+                      description: The name of the meme
                     texts:
                       type: array
                       description: The list of texts that should be rendered. Using a simple string array will cause default values to be used.
