@@ -69,30 +69,7 @@ paths:
                       items:
                         anyOf:
                           - type: string
-                          - type: object
-                            properties:
-                              x:
-                                type: number
-                                description: The x position of the text (default is middle)
-                              y:
-                                type: number
-                                description: The y position of the text (default is top/bottom for the first two images)
-                              fontSize:
-                                type: number
-                                default: 50
-                              fontStyle:
-                                type: string
-                                default: impact
-                              strokeWidth:
-                                type: number
-                                default: 1
-                              resizeText:
-                                type: boolean
-                                default: false
-                                description: Determines whether the text should be resized if it is too large
-                              textColor:
-                                type: string
-                                default: white
+                          - $ref: '#/components/parameters/text'
                     images:
                       description: The list of image URLs for the memes. Using a simple string array will cause default values to be used.
                       anyOf:
@@ -417,7 +394,7 @@ paths:
   /templates:
     get:
       summary: Get a list of all templates
-      description: Returns a list of all available templates
+      description: Returns a list of all available templates the user is allowed to see
       tags:
         - Templates
       responses:
@@ -429,6 +406,86 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Template'
+    post:
+      summary: Creates a new template from the provided data
+      tags:
+        - Templates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                visibility:
+                  type: string
+                  enum: [public, private, unlisted]
+                  default: public
+                image:
+                  description: The image in base64 format
+                  type: string
+                  format: byte
+                texts:
+                  type: array
+                  description: The list of texts that should be rendered. Using a simple string array will cause default values to be used.
+                  items:
+                    anyOf:
+                      - type: string
+                      - $ref: '#/components/parameters/text'
+                creator:
+                  type: string
+                url:
+                  description: The image url, which will be used if no image parameter is specified
+                  type: string
+              required:
+                - name
+                - oneOf:
+                  - image
+                  - url
+      responses:
+        '201':
+          description: Template created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'        
+  /templates/{name}:
+    get:
+      summary: Gets a template by name
+      tags:
+        - Templates
+      parameters:
+        - in: path
+          name: name
+          required: true
+          description: Name of the template to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+    delete:
+      summary: Deletes a template by name
+      tags:
+        - Templates
+      parameters:
+        - in: path
+          name: name
+          required: true
+          description: Name of the template to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Template not found
   /user/memes:
     get:
       summary: Get a list of the user's memes
@@ -480,11 +537,36 @@ paths:
           description: Unauthorized
 components:
   parameters:
+    text:
+      type: object
+      properties:
+        x:
+          type: number
+          description: The x position of the text (default is middle)
+        y:
+          type: number
+          description: The y position of the text (default is top/bottom for the first two images)
+        fontSize:
+          type: number
+          default: 50
+        fontStyle:
+          type: string
+          default: impact
+        strokeWidth:
+          type: number
+          default: 1
+        resizeText:
+          type: boolean
+          default: false
+          description: Determines whether the text should be resized if it is too large
+        textColor:
+          type: string
+          default: white
     publicIdPathParam:
       in: path
       name: publicId
       required: true
-      description: Public ID of the meme to retrieve.
+      description: Public ID of the document to retrieve.
       schema:
         type: string
     sort:
