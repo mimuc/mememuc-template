@@ -9,27 +9,49 @@ const ObjectID = require('mongodb').ObjectId;
 router.post('/create', function(req, res, next) {
     const db = req.db;
     const collection = db.get('comments');
-    const data = req.body;
-    const user = req.query.user_id;
+    const postCollection = db.get('posts');
+    const userCollection = db.get('users');
+    const text = req.body.text;
+    const user_id = req.query.user_id;
     const post_id = req.query.post_id;
     //add a comment document
     collection.insert({ 
         post_id: new ObjectID(post_id),
-        user_id: new ObjectID(user),
-        text: data.text,
-        n_likes: 0,
-        date: data.date
-    }).catch(err => {
-        
-        console.log(err);
-        res.status(500).send('Error creating comment');
+        user_id: new ObjectID(user_id),
+        text: text,
+        n_likes: 0
+    }).then(result => {
+        const insertedId = result._id;
+
+                
+        const updatePost = 
+        { $addToSet: { comments: insertedId.toString() } 
+
+        };
+
+        const updateUser = {$addToSet:{ comments:{post_id:insertedId.toString()}}};
+            filterPost = {_id: post_id};
+            filterUser = {_id : user_id};
+        postCollection.update(filterPost,updatePost )
+            .catch((error)=>{
+            console.log(error)
+            res.status(500).send('Error creating like');}
+            )
+
+        userCollection.update(filterUser,updateUser)
+            .then((result) => res.status(200).send(result))
+
+            .catch((error)=>{
+            console.log(error)
+            res.status(500).send('Error creating like');}
+            )
+            }
+                )
     
-        
+    
+    
 
 
-}   
-);
-res.status(202).send('comment created');
     
   
 });

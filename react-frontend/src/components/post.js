@@ -159,7 +159,7 @@ const PostComponent = ( props) => {
     const handleSubmit=(e)=>{
         e.preventDefault();
         
-        Comment.comment_post(props.post_id,props.user_id,newinpt);
+        Comment.commentPost(props.post_id,props.user_id,newinpt);
         setListCom((ls)=> [...ls,newinpt]);
         setNewinpt("");
     }
