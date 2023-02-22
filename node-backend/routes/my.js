@@ -20,7 +20,7 @@ router.get('/', authenticate(), async function(req, res, next) {
   if(!user) {
     return res.status(404).send("User not found");
   }
-  return res.json({...user.toObject(), likes: await user.getLikesCount(), likesReceived: await user.getLikesReceivedCount(), comments: await user.getCommentsCount(), commentsReceived: await getCommentsReceivedCount(), memes: await user.getMemesCount()});
+  return res.json({...user.toObject(), likes: await user.getLikesCount(), likesReceived: await user.getLikesReceivedCount(), comments: await user.getCommentsCount(), commentsReceived: await user.getCommentsReceivedCount(), memes: await user.getMemesCount()});
 });
 
 router.get('/templates', authenticate(), async function(req, res, next) {
