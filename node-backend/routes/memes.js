@@ -520,6 +520,50 @@ router.get('/:publicId/like', authenticate(), async function(req, res, next) {
     else req.send(200, {"liked": false});
 });
 
+router.get('/:publicId/likes', authenticate(false), async function(req, res, next) {
+    const memePublicId = req.params.publicId;
+
+    // Check visibility permissions of meme
+    req.query = {
+        id: memePublicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
+    const likes = await Like.find({ memePublicId }, { _id: 0, __v: 0 })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+    res.json(likes);
+});
+
+router.get('/:publicId/views', authenticate(false), async function(req, res, next) {
+    const memePublicId = req.params.publicId;
+
+    // Check visibility permissions of meme
+    req.query = {
+        id: memePublicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
+    const views = await View.find({ memePublicId }, { _id: 0, __v: 0 })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+    res.json(views);
+});
+
 router.get('/:publicId', authenticate(false), async function(req, res, next) {
     req.query = {
         id: req.params.publicId
