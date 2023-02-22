@@ -9,43 +9,39 @@
 - [x] Single View
 
 ## Editor
-- [ ] Locally stored templates
-- [ ] Distinguish between template and meme editor
-- [ ] Choose template
-- [ ] 5 Upload options (file upload, provide image url, imgflip third party, screenshot, photo from camera, hand drawn)
-- [ ] WYSIWYG editor with 3+ freely movable text boxes
-- [ ] Freely adjust canvas size + Add images everywhere
-- [ ] Generate with file-size and download and share (local and server)
-- [ ] Full Navigation through templates
-- [ ] Place images anywhere inside the canvas
-- [ ] The user can choose to either create the meme locally on their device or on the
-      webserver. Afterwards they are shown the image and provided with a download button.
-- [ ] In addition to intermediate, the user can specify a target file-size before the image
-      creating and share buttons are presented below the image. The generated meme should have the
-      specified (or lower) file-size.
-- [ ] Redirect link to created meme page
-- [ ] Full navigation through other templates should be possible (sidebar, dropdown or similar).
+- [x] WYSIWYG editor with 3+ freely movable text boxes
+- [x] Place images anywhere inside the canvas
+- [x] 5 Upload options
+    - [x] File upload
+    - [x] Provide image url
+    - [x] Screenshot
+    - [x] Photo from camera
+    - [x] imgflip third party
+
+- [x] Choose template
+- [x] Display template preview
+- [x] Full navigation through other templates should be possible (sidebar, dropdown or similar).
       Keep already entered text or other settings, but provide a “clear” button.
 
-## API
-- [ ] Single image with formattable text
-- [ ] Create a set of images with same template
-- [ ] Get any meme (random)
-- [ ] Get a specific meme by id (+metadata)
-- [ ] Get a set of images using sort/filters or random (+metadata)
-- [ ] Given a template and a set (more than two possible) of texts the meme is returned.
-      For each text at least two of the following should be customizable: size, position, color, font,
-      transparency, background, but for one template a list of sets of text is given and as many memes are returned (list of URLs
-- [ ]
+- [x] When saving templates -> replace text with generic placeholder
+
+- [x] Redirect link to created meme page
+- [x] Generate with file-size and download and share (local and server)
+- [x] The user can choose to either create the meme locally on their device or on the
+      webserver. Afterwards they are shown the image and provided with a download button.
+- [x] In addition to intermediate, the user can specify a target file-size before the image
+      creating and share buttons are presented below the image. The generated meme should have the
+      specified (or lower) file-size.
+
+- [x] Freely adjust canvas size
+- [x] Implement menu3sss for text and image (to foreground, delete, text size, color, fontStyle);
 
 ## Memes
-- [ ] Sort and filter influence endless scroll and left-right button on meme single view
-- [ ] Filter should additionally influence random
-
-### List
-- [ ] Endless scroll
 - [x] Display metadata
 - [x] Actions (share, download, votes)
+- [ ] Filter should additionally influence random
+- [ ] Sort and filter influence endless scroll and left-right button on meme single view
+- [ ] Endless scroll
 - [ ] Sort by creation date, popular
 - [ ] Filter by votes
 - [ ] Filter after format (?), template, title, text <- search
@@ -57,31 +53,42 @@
 - [x] "Autoplay" button
 
 ## Profile
-- [ ] SignIn with email & password
-- [ ] Upload/Mark memes as private or unlisted
-- [ ] Show history of created memes
-- [ ] Save / Continue draft of meme
+- [x] SignIn with email & password
+- [x] Upload/Mark memes as private or unlisted
+- [x] Show history of created memes
+- [x] Save / Continue draft of meme ("no draft info" if no draft)
 - [x] Account bound votes
 - [x] Account bound comments
 
-## Template
+## Statistics
+- [x] Detailed graph in single view  for meme
+- [ ] Dynamically generated graphs about general stats
+- [ ] Details graph in single view for template
+
+## Accessibility
+- [ ] ScreenReader implementation
+- [ ] Use a third party API like google Lens to get a description for any image.
+- [ ] Read title, captions, name of the user
+- [ ] Voice control press button, select and dictate text fields, ect.
+
+## TemplateItem
 - [ ] GIF with static caption
 - [ ] Video with static caption
 
 ## Videostream
 - [ ] Slideshow of memes as encrypted videostream (rendered every hour)
 
-## Accessibility
-- [ ] ScreenReader implementation
-- [ ] Use a third party API like google Lens to get a description for any image.
-- [ ] Read title, captions, name of the user
-- [ ] Voice control press buton, select and dictate text fields, ec.t
-
 ## Offline
 - [x] Note that user is offline
+- [x] Locally stored templates
 - [ ] Store memes in local storage
 
-## Statistics
-- [ ] Dynamically generated graphs about general stats
-- [ ] Detailed graph in single view  for meme
-- [ ] Details graph in single view for template
+## API
+- [ ] Single image with formattable text
+- [ ] Create a set of images with same template
+- [ ] Get any meme (random)
+- [ ] Get a specific meme by id (+metadata)
+- [ ] Get a set of images using sort/filters or random (+metadata)
+- [ ] Given a template and a set (more than two possible) of texts the meme is returned.
+      For each text at least two of the following should be customizable: size, position, color, font,
+      transparency, background, but for one template a list of sets of text is given and as many memes are returned (list of URLs
