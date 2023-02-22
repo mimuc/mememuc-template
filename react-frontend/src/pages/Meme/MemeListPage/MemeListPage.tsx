@@ -1,13 +1,13 @@
 import {useNavigate} from "react-router-dom";
 import {Button, Card, Typography} from "antd";
 import {CommentOutlined} from "@ant-design/icons";
-import {Meme} from "src/types";
+import {MemeType} from "src/types";
 import {abbreviateNumber, getTimeSince} from "src/utils";
 import {useMemesState} from "src/states";
 import {DislikeButton, DownloadButton, LikeButton, ShareButton} from "src/components";
 
 type ItemProps = {
-    meme: Meme;
+    meme: MemeType;
 }
 
 const {Text} = Typography;
@@ -59,7 +59,7 @@ const MemeItem = ({meme}: ItemProps) => {
 }
 
 export const MemeListPage = () => {
-    const [memes,] = useMemesState() as [Meme[], any];
+    const [memes,] = useMemesState() as [MemeType[], any];
 
     return (
         <>

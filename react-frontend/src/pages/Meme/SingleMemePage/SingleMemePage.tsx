@@ -13,13 +13,13 @@ import {
 import {Comments, DislikeButton, DownloadButton, LikeButton, MemeStat, ShareButton} from "src/components";
 import {getTimeSince} from "src/utils";
 import {useMemesState} from "src/states";
-import {Meme} from "src/types";
+import {MemeType} from "src/types";
 import {api} from "src/api";
 import {useAutoplay} from "src/hooks";
 
 const {Title} = Typography;
 
-const ModalHeader = ({meme}: { meme: Meme }) => {
+const ModalHeader = ({meme}: { meme: MemeType }) => {
     const [memes, setMemes] = useMemesState();
     const navigate = useNavigate();
     const {autoplay, startAutoplay, stopAutoplay} = useAutoplay();
@@ -54,7 +54,7 @@ const ModalHeader = ({meme}: { meme: Meme }) => {
         navigate('../' + meme.id);
     };
 
-    // TODO: add loading indicator
+    // TODO: add loading indicator for autoplay
     return (
         <div style={{marginBottom: 20}}>
             <Button.Group size={'small'}
@@ -79,7 +79,7 @@ export const SingleMemePage = () => {
 
     const [memes,] = useMemesState()
     // TODO: if meme not in memes => try to load meme and append at front to memes
-    const meme: Meme | undefined = memes && memes.find((m: Meme) => m.id === params.memeId);
+    const meme: MemeType | undefined = memes && memes.find((m: MemeType) => m.id === params.memeId);
 
     // Handlers
     const handleClose = () => navigate(`/memes`);
@@ -123,7 +123,7 @@ export const SingleMemePage = () => {
                     </div>
                     <div style={{marginTop: 20}}>
                         <div>
-                            {/*TODO: how to break text without maxWidth?*/}
+                            {/*TODO: how to break text without maxWidth? -> wordWrap: 'white-space'*/}
                             <Title level={4} style={{display: 'inline-block', maxWidth: 500}}>Mein
                                 {meme.name}
                             </Title>
