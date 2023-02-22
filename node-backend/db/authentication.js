@@ -32,7 +32,7 @@ const authenticate = (isRequired = true) => async (req, res, next) => {
     const login = auth(req);
 
     if (!login || !login.name || !login.pass) {
-        return res.status(401).send({ message: 'Username and password are required' });
+        return res.status(401).send({ message: 'Invalid username or password' });
     }
 
     const user = await User.findOne({ username: login.name });

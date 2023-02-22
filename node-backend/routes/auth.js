@@ -37,10 +37,13 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         const { username, displayName, password } = req.body;
+        if(username == undefined || displayName == undefined || password == undefined) {
+            return res.status(400).send("Please provide username, display name, and password")
+        }
 
         const existingUser = await User.findOne({ username });
         if (existingUser) {
-            return res.status(400).send({ error: 'Username already exists' });
+            return res.status(409).send('Username already exists');
         }
 
         // Hash the password using bcrypt
