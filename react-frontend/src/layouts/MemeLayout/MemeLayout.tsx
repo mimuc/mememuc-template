@@ -31,6 +31,12 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
 
     // TODO: apply sorter 'popular' | 'latest'
     // TODO: add filter
+    // TODO: filter should additionally influence random meem get
+    // TODO: sort and filter influence endless scroll and left-right navigation
+    // TODO: endless scroll
+    // TODO: sort by creation date and popularity
+    // TODO: filter by votes
+    // TODO: filter after firatm template, title, text <- search field
     // TODO: load memes based on filter and sort
     return (
         <Layout>
