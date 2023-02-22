@@ -34,13 +34,13 @@ const Login = ({ onLogin, onSignup, usernames }) => {
     return (
         <div>
             <div style={{ background: "#EBFBDB",padding: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <h1 style={{ color: "#40A62F",  fontSize: "24px" }}>Welcome to the MemeGenerator!</h1></div>
-            
+                <h1 style={{ color: "#40A62F",  fontSize: "24px" }}>Welcome to the MemeGenerator!</h1></div>      
             {errorMessage && <div style={{ background: "pink", color: "darkred", display: "flex", alignItems: "center", justifyContent: "center" }}>{errorMessage}</div>}
-            
-            <div style={{ background: "#8FBC8F", padding: "2rem", height: "100vh", display: "flex", alignItems: "top", justifyContent: "center" }}>
+            <div style={{ background: "#8FBC8F", color: "white", paddingTop: "2rem", display: "flex", alignItems: "center", justifyContent: "center" }}>Please sign up or log in to continue...</div>
+            <div style={{ background: "#8FBC8F", padding: "1.5rem", height: "100vh", display: "flex", alignItems: "top", justifyContent: "center" }}>
+                
                 <div style={{ background: "#fff", padding: "2rem", borderRadius: "0.5rem", width: "20rem", height:"15rem"}}>
-                    <label htmlFor="username">Username:</label> 
+                    <label style={{ color: "#40A62F"}} htmlFor="username">Username:</label> 
                     <input
                         type="text"
                         id="username"
