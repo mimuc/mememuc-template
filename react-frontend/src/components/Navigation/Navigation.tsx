@@ -11,6 +11,7 @@ export const Navigation = () => {
             <NavLink to={'/'}>Start</NavLink>
             <NavLink to={'/profile'}>Profile</NavLink>
             <NavLink to={'/new'}>New</NavLink>
+            <NavLink to={'/statistics'}>Statistics</NavLink>
         </div>
     )
 }
