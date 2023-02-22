@@ -4,16 +4,10 @@ async function comment_post(post_id,user_id, text ) {
     try {
         const now = new Date();
         const dateString = now.toISOString();
-      const res = await fetch(localserv+"/posts/create", {
+      const res = await fetch(localserv+`/posts/create?post_id=${post_id}&user_id=${user_id}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      },
-      query: {
-        user_id:user_id,
-        post_id:post_id,
-        
-        
       },
       body:{
         text: text,

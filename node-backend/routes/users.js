@@ -10,4 +10,13 @@ router.get('/', function(req, res, next) {
       .catch((e) => res.status(500).send())
 });
 
+router.post('/create', function(req, res, next) {
+  const db = req.db;
+  const name = req.query.name;
+  const users = db.get('users');
+  users.post({username: name}) // return all user properties, except the basic auth token
+      .then((result) => res.status(200).send("user created"))
+      .catch((e) => res.status(500).send())
+});
+
 module.exports = router;
