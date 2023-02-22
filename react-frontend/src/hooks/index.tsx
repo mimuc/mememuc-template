@@ -80,7 +80,7 @@ export const useImgflipInputModal = () => {
                                 resolve(i.url);
                                 Modal.destroyAll()
                             }}>
-                                <img src={i.url} style={{maxHeight: '100%', maxWidth: '100%'}} alt={'Template image'}/>
+                                <img src={i.url} style={{maxHeight: '100%', maxWidth: '100%'}} alt={'Template'}/>
                             </Card>
                         </Col>
                     ))

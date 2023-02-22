@@ -50,7 +50,7 @@ export const useTemplates = () => {
     // Load templates from server
     useEffect(() => {
         api.templates.all().then(templates => setTemplates(templates));
-    }, []);
+    }, [setTemplates]);
 
 
     const addTemplate = (name: string, shapes: ShapeInterface[]) => {

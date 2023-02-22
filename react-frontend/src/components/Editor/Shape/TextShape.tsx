@@ -1,19 +1,7 @@
-import {useRef, useState} from "react";
-import {Text, Group, Transformer} from "react-konva";
+import {useRef} from "react";
+import {Text, Transformer} from "react-konva";
 import {useShape} from "src/hooks";
 import {TextShapeInterface} from "src/types";
-import {
-    BoldOutlined,
-    CloseCircleOutlined,
-    CloseOutlined,
-    DeleteOutlined, FontColorsOutlined, FontSizeOutlined,
-    FormatPainterFilled,
-    LineHeightOutlined
-} from "@ant-design/icons";
-import {InputNumber, theme} from "antd";
-import {TwitterPicker} from "react-color";
-import {useToggle} from "react-use";
-import styled from "styled-components";
 
 type TextShapeProps = {
     id: string;
@@ -38,12 +26,6 @@ export const TextShape = ({id, selected, onSelect}: TextShapeProps) => {
         x: e.target.x(),
         y: e.target.y()
     })
-    const handleContextMenu = (e: any) => {
-        e.preventDefault();
-
-        const mousePosition = e.target.getStage().getPointerPosition();
-
-    }
 
     // We use onTransform instead of onTransformEnd to avoid skewed text when resizing
     const handleTransform = () => {
@@ -78,7 +60,6 @@ export const TextShape = ({id, selected, onSelect}: TextShapeProps) => {
                 onTap={handleSelect}
                 onDragEnd={handleDragEnd}
                 onTransform={handleTransform}
-                onContextMenu={handleContextMenu}
             />
             {selected && (
                 <>
