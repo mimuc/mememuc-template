@@ -4,9 +4,7 @@ export * from './Draft';
 export * from './Editor/CanvasEditor/CanvasEditor';
 export * from './Editor/VideoEditor/VideoEditor';
 export * from './Header/Header';
-export * from './Navigation/Navigation';
 export * from './MemeStat/MemeStat';
 export * from './Profile/Profile';
-export * from './Sider/Sider';
 export * from './Template';
 
