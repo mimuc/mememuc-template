@@ -54,7 +54,7 @@ function App() {
   return (
     <>
       {isLoggedIn ? ( // render the content if the user is logged in
-        <div className="backgroundimg">
+        <div className="background">
           <Navbar onLogout={handleLogout}/>
           <div className="container">
             <Routes>
