@@ -60,6 +60,9 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
             },
             async getSingleViewUrl() {
                 return `${urlFrontend}memes/${this.publicId}`;
+            },
+            async getViewCount() {
+                return await View.countDocuments({ memePublicId: this.publicId });
             }
         },
         statics: {
@@ -121,7 +124,13 @@ const Comment = mongoose.model('Comment', new mongoose.Schema({
 
 const Like = mongoose.model('Like', new mongoose.Schema({
     username: { type: String, required: true },
-    memePublicId: { type: String, required: true } // Uses the publicId, because that requires less operations in this case
+    memePublicId: { type: String, required: true }
+    })
+);
+
+const View = mongoose.model('View', new mongoose.Schema({
+    username: { type: String, required: true },
+    memePublicId: { type: String, required: true }
     })
 );
 
@@ -147,5 +156,6 @@ module.exports = {
     Meme,
     Template,
     Like,
-    Comment
+    Comment,
+    View
 }

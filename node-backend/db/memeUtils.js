@@ -122,8 +122,10 @@ async function handleMemeFind(req) {
 }
 
 async function handleMemesResponse(res, documents, format) {
+
     // Return the found memes
-    documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), image: undefined, _id: undefined, __v: undefined, imageUrl: await doc.getImageUrl(), singleViewUrl: await doc.getSingleViewUrl(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount()}) ) ); 
+    if(!Array.isArray(documents)) documents = {...documents.toObject(), image: undefined, _id: undefined, __v: undefined, imageUrl: await documents.getImageUrl(), singleViewUrl: await documents.getSingleViewUrl(), likes: await documents.getLikesCount(), comments: await documents.getCommentsCount(), views: await documents.getViewCount()};
+    else documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), image: undefined, _id: undefined, __v: undefined, imageUrl: await doc.getImageUrl(), singleViewUrl: await doc.getSingleViewUrl(), likes: await doc.getLikesCount(), comments: await doc.getCommentsCount(), views: await doc.getViewCount()}) ) ); 
     switch(format) {
         case 'json':
             res.json(documents);

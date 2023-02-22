@@ -10,7 +10,7 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, Like, Comment} = require('../db/models');
+const {Meme, User, Template, Like, Comment, View} = require('../db/models');
 const {authenticate} = require('../db/authentication');
 const {handleMemeFind, handleMemesResponse} = require('../db/memeUtils');
 const {renameDuplicates} = require('../utils/utils');
@@ -437,6 +437,27 @@ router.delete('/:publicId/comments/:commentId', authenticate(), async function(r
     else return res.status(404).send();
 });
 
+// Adds a view to the meme, only one per user
+async function addView(memePublicId, username) {
+    const existingView = await View.findOne({ username, memePublicId })
+    .catch(function(error) {
+        return;
+    });
+
+    if (existingView) {
+        return;
+    }
+
+    const view = new View({ username, memePublicId });
+    try {
+        view.save();
+    }
+    catch(error) {
+        console.error(error);
+    }
+    return;
+}
+
 // Like the meme with the currently authenticated user
 router.put('/:publicId/like', authenticate(), async function(req, res, next) {
     const username = req.username;
@@ -510,6 +531,9 @@ router.get('/:publicId', authenticate(false), async function(req, res, next) {
     if(documents.length === 0) {
         return res.status(404).send("Meme not found");
     }
+
+    // Add view if the user is authenticated
+    if(req.username) addView(req.params.publicId, req.username);
 
     handleMemesResponse(res, documents[0], 'json');
 });
