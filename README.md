@@ -27,7 +27,7 @@ _In an additional terminal:_
 cd react-frontend && npm start
 ```
 
-Also make sure that your mongodb database is running
+For us the in-memory mongoserver didn't work, so make sure a mongod instance is running on your computer!
 
 ### Requirements for our project:
 
