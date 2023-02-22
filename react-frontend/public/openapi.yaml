@@ -757,7 +757,79 @@ paths:
                 items:
                   schema:
                     type: string
-  
+  /auth/login:
+    post:
+      summary: Logs in the user
+      description: Logs in the user with the provided username and encrypted password
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  description: The encrypted password
+              required: ['username', 'password']
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: The JWT token
+                  displayName:
+                    type: string
+        '401':
+          description: Invalid username or password
+  /auth/register:
+    post:
+      summary: Registers the user with the provided information
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  description: The encrypted password
+                displayName:
+                  type: string
+                  description: The name visible on the user's profile
+              required: ['username', 'password', 'displayName']
+      responses:
+        '201':
+          description: User created successfully
+        '500':
+          description: Error creating user
+        '409': 
+          description: Username already exists
+        '400':
+          description: Please provide username, display name, and password
+    delete:
+      summary: De-registers (removes) the authenticated user
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: User successfully deleted
+        '500':
+          description: Error deleting user
 components:
   parameters:
     text:
