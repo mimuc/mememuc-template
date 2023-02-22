@@ -377,11 +377,12 @@ router.get('/:publicId/comments/:commentId', authenticate(false), async function
     // TODO: Check visibility permissions of meme
     const memePublicId = req.params.publicId;
     const commentId = req.params.commentId;
-    const comments = await Comment.findOne({ memePublicId, publicId: commentId }, { _id: 0, __v: 0 })
+    const comment = await Comment.findOne({ memePublicId, publicId: commentId }, { _id: 0, __v: 0 })
     .catch(function(error) {
         res.status(500).send();
     }); 
-    res.json(comments);
+    if(comment) res.status(404).send();
+    else res.json(comment);
 });
 
 router.delete('/:publicId/comments/:commentId', authenticate(), async function(req, res, next) {
@@ -395,7 +396,7 @@ router.delete('/:publicId/comments/:commentId', authenticate(), async function(r
     }); 
     
     if(comment) return res.status(200).send();
-    else return res.status(409).send();
+    else return res.status(404).send();
 });
 
 // Like the meme with the currently authenticated user
@@ -525,7 +526,18 @@ router.get('/:publicId/single-view', authenticate(false), async function(req, re
     handleMemesResponse(res, documents[0], 'single-view');
 });
 
-
+router.delete('/:publicId', authenticate(), async function(req, res, next) {
+    const username = req.username;
+    const publicId  = req.params.publicId;
+  
+    const meme = await Meme.findOneAndDelete({ creator: username, publicId })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+  
+    if(meme) return res.status(200).send("Meme deleted");
+    else return res.status(404).send("Meme not found");
+  });
 
 
 
