@@ -16,7 +16,7 @@ const {Title} = Typography;
 
 const LayoutHeader = styled(Layout.Header)`
   height: 70px;
-  paddingInline: 100px !important;
+  padding-inline: 100px !important;
   position: fixed;
   z-index: 100;
   width: 100%;
@@ -65,6 +65,8 @@ export const Header = ({children}: HeaderProps) => {
                         {/*TODO: if registered add profile page */}
                         <NavLink to={'/profile'}
                                  style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>Profile</NavLink>
+                        <NavLink to={'/statistics'}
+                                 style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>Statistics</NavLink>
                     </Navigation>
                 </div>
                 <div style={{display: 'inline-flex', alignItems: 'center'}}>

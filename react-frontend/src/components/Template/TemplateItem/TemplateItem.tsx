@@ -11,6 +11,8 @@ type TemplateItemProps = {
 const {Title} = Typography;
 
 export const TemplateItem = ({template, selected, onSelect}: TemplateItemProps) => {
+    // TODO: add button to open modal containing template statistics
+
     const {token} = theme.useToken();
     const [shapes, setShapes] = useEditorState();
 
