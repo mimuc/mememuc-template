@@ -13,6 +13,7 @@ const Canvas = require('canvas');
 const {Meme, User, Template, Like, Comment} = require('../db/models');
 const {authenticate} = require('../db/authentication');
 const {handleMemeFind, handleMemesResponse} = require('../db/memeUtils');
+const {renameDuplicates} = require('../utils/utils');
 
 const Image = Canvas.Image;
 
@@ -27,7 +28,6 @@ const EXCLUDE_PROPERTIES = { image: 0, _id: 0, __v: 0 };
  * @param {*} param0 
  */
 function writeText({text="", x=0, y=0, fontSize=50, fontStyle="impact", strokeWidth=1, resizeText=false, textColor='white'}) {
-    console.log("Writing text", text, x, y, fontSize, fontStyle)
     ctx.lineWidth = strokeWidth;
     ctx.fillStyle = textColor;
 
@@ -58,14 +58,11 @@ function drawMeme({texts=[], loadedImages=[]}={}) {
         const height = img.image.height;
         ctx.drawImage(img.image, x, y, width, height);
     }
-    
         
     ctx.strokeStyle = 'black';
     ctx.mutterLine = 2;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-
-    console.log("Texts", texts)
 
     for(const i in texts) {
         // TODO: Wrap text
@@ -188,7 +185,6 @@ router.get('/single-view', authenticate(false), async function(req, res, next) {
 
 
 router.post('/', authenticate(), async function(req, res) {
-    // TODO: Fix generated names. It should be memeCount + 1 (no zero padding anymore)
 
     const username = req.username;
     if(username == undefined) return res.status(401).send();
@@ -224,10 +220,8 @@ router.post('/', authenticate(), async function(req, res) {
     // Generate the meme images from the provided templates, and the text objects
     for(const i in templates) {
         const template = templates[i];
-        // Create nice, 0-padded names
-        const paddedIndex = (i + 1).toString().padStart(templates.length.toString().length, '0');
         const data_default = {
-            memeName: generateName(username) + " " + paddedIndex,
+            memeName: generateName(username),
             texts: ["ONE DOES NOT SIMPLY", "USE JS FOR BACKEND PROGRAMMING"], 
             images: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
             canvas: {
@@ -248,7 +242,7 @@ router.post('/', authenticate(), async function(req, res) {
             data_template.texts = templateInDatabase.texts;
             data_template.images = [{url: templateInDatabase.url}];
         }
-        const data = Object.assign(data_default, data_template, template); // TODO: Currently does not check whether memeNames collide
+        const data = Object.assign(data_default, data_template, template);
         if(!Array.isArray(data.images)) {
             data.images = [{url: data.images}];
         }
@@ -306,9 +300,11 @@ router.post('/', authenticate(), async function(req, res) {
             const archive = archiver('zip', { zlib: { level: 9 } });
             res.attachment('memes.zip');
             archive.pipe(res);
+            const names = renameDuplicates(createdMemes.map(m => m.name));
+
             for(let i = 0; i < createdMemes.length; i++) {
-                const extension = 'image/png'.split('/')[1]; // TODO: Names...
-                archive.append(createdMemes[i].img, { name: createdMemes[i].name + "." + extension});
+                const extension = 'image/png'.split('/')[1];
+                archive.append(createdMemes[i].img, { name: names[i] + "." + extension});
             }
             archive.finalize();
             return;

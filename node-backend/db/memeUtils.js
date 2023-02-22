@@ -3,6 +3,7 @@
 const archiver = require('archiver');
 const axios = require('axios');
 const {Meme, User} = require('./models');
+const {renameDuplicates} = require('../utils/utils');
 
 const MEME_EXCLUDE_PROPERTIES = { image: 0, _id: 0, __v: 0 };
 async function handleMemeFind(req) {
@@ -135,14 +136,14 @@ async function handleMemesResponse(res, documents, format) {
             const archive = archiver('zip', { zlib: { level: 9 } });
             res.attachment('memes.zip');
             archive.pipe(res);
+            const names = renameDuplicates(documents.map(d => d.name));
             for(let i = 0; i < documents.length; i++) {
                 try {
                     const response = await axios.get(documents[i].imageUrl, {responseType: 'arraybuffer'});
                     //const imageBase64 =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
                     const imgData = Buffer.from(response.data, 'binary');
-                    const paddedIndex = (i + 1).toString().padStart(documents.length.toString().length, '0'); // TODO: Fix the names (only rename when they clash)
                     const extension = documents[i].contentType.split('/')[1];
-                    const name = `meme_${documents[i].name}_${paddedIndex}.${extension}`;
+                    const name = `${names[i]}.${extension}`;
                     archive.append(imgData, { name });
                 }
                 catch (error){
