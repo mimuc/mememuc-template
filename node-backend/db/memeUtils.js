@@ -192,10 +192,11 @@ async function handleGetMemeRequest(req={}, res={}, contentType='json') {
     }
     
     req.query = {
-        sort: 'newest',
-        limit: req.query.limit ? +req.query.limit : 10,
+        sort: req.query.sort,
+        id: req.query.id,
+        limit: req.query.limit,
         creator: username,
-        skip: req.query.skip ? +req.query.skip : 0
+        skip: req.query.skip
     };
 
     const documents = await handleMemeFind(req);
