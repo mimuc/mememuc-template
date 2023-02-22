@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const url = `http://${process.env.BE_DOMAIN}/resources/images/`;
-const urlFrontend = `http://${process.env.FE_DOMAIN}/memes/`;
+const urlFrontend = `http://${process.env.FE_DOMAIN}/`;
 
 const User = mongoose.model('User', new mongoose.Schema({
         username: { type: String, required: true, unique: true },
@@ -59,7 +59,7 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
                 return `${url}${this.publicId}`;
             },
             async getSingleViewUrl() {
-                return `${urlFrontend}${this.publicId}`;
+                return `${urlFrontend}memes/${this.publicId}`;
             }
         },
         statics: {
@@ -84,6 +84,14 @@ const Template = mongoose.model('Template', new mongoose.Schema({
         id: false,
         toObject: { virtuals: true },
         toJSON: { virtuals: true },
+        methods: {
+            async getImageUrl() {
+                return `${url}${this.publicId}`;
+            },
+            async getSingleViewUrl() {
+                return `${urlFrontend}templates/${this.publicId}`;
+            }
+        },
         statics: {
             async generatePublicId(publicIdSet) {
                 return await generatePublicId(Template, "t", publicIdSet);
