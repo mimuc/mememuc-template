@@ -137,7 +137,7 @@ async function handleMemesResponse(res, documents, format) {
             archive.pipe(res);
             for(let i = 0; i < documents.length; i++) {
                 try {
-                    const response = await axios.get(documents[i].url, {responseType: 'arraybuffer'});
+                    const response = await axios.get(documents[i].imageUrl, {responseType: 'arraybuffer'});
                     //const imageBase64 =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
                     const imgData = Buffer.from(response.data, 'binary');
                     const paddedIndex = (i + 1).toString().padStart(documents.length.toString().length, '0'); // TODO: Fix the names (only rename when they clash)
