@@ -1,4 +1,4 @@
-import {theme, Tooltip, Typography} from "antd";
+import {theme, Typography} from "antd";
 import {ImageShapeInterface, TemplateType as TemplateType, TextShapeInterface} from "src/types";
 import {useEditorState} from "src/states";
 
@@ -55,7 +55,6 @@ export const TemplateItem = ({template, selected, onSelect}: TemplateItemProps) 
         <div style={{
             display: 'inline-block',
             width: 200,
-            height: 200,
             marginRight: 20,
         }}>
             <div style={{
