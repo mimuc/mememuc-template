@@ -71,9 +71,9 @@ export default function Create(props) {
       <div>
         <form onSubmit={handleCreate}>
           <input type="file" accept="image/*" onChange={handleImageUpload} />
-          <input type="text" placeholder="Enter image URL" value={imageUrl} onChange={handleImageUrlChange} />
+          <input type="text" placeholder="Take your Picture" value={imageUrl} onChange={handleImageUrlChange} />
           <Button type="submit" variant="primary" disabled={!image && !imageUrl}>Create</Button>
-          <Button onClick={handleCameraClick}>Take a Picture</Button>
+          <Button onClick={handleCameraClick}>Take your Picture</Button>
         </form>
       </div>
       <div className="grid-container">
