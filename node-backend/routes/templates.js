@@ -3,7 +3,7 @@ var router = express.Router();
 const axios = require('axios');
 const {authenticate} = require('../db/authentication');
 
-const {Template, ImageResource} = require('../db/models');
+const {Template, ImageResource, TemplateUsage} = require('../db/models');
 
 const EXCLUDE_PROPERTIES = { _id: 0, __v: 0 };
 
@@ -32,6 +32,16 @@ router.get('/:name', authenticate(false), async function(req, res, next) {
     return res.json(doc);
   })
   .catch((e) => res.status(500).send());
+});
+
+router.get('/:name/memes', authenticate(false), async function(req, res, next) {
+  const name = req.params.name;
+
+  const templateUsage = await TemplateUsage.find({ template: name }, { _id: 0, __v: 0 })
+  .catch(function(error) {
+      res.status(500).send();
+  }); 
+  res.json(templateUsage);
 });
 
 router.delete('/:name', authenticate(), async function(req, res, next) {

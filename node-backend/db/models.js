@@ -50,6 +50,7 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
         publicId: { type: String, required: true, unique: true },
         contentType: { type: String, default: 'image/png', enum: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] },
         createdAt: { type: Date, default: Date.now },
+        usedTemplate: { type: String }
         //likes: {type: Number, default: 0 }
     }, 
     {
@@ -177,6 +178,13 @@ const Template = mongoose.model('Template', new mongoose.Schema({
     })
 );
 
+const TemplateUsage = mongoose.model('TemplateUsage', new mongoose.Schema({
+    template: { type: String, required: true },
+    memePublicId: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    })
+);
+
 const Comment = mongoose.model('Comment', new mongoose.Schema({
     content: { type: String, required: true },
     username: { type: String, required: true },
@@ -238,5 +246,6 @@ module.exports = {
     Dislike,
     Comment,
     View,
-    ImageResource
+    ImageResource,
+    TemplateUsage
 }
