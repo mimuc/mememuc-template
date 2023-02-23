@@ -129,8 +129,8 @@ async function handleMemesResponse(res, documents, format, username) {
         imageUrl: await documents.getImageUrl(), singleViewUrl: await documents.getSingleViewUrl(), 
         likes: await documents.getLikesCount(), dislikes: await documents.getDislikesCount(), 
         comments: await documents.getCommentsCount(), views: await documents.getViewCount(), 
-        vote: await doc.getVote(username),
-        creatorDisplayName: await doc.getCreatorDisplayName()
+        vote: await documents.getVote(username),
+        creatorDisplayName: await documents.getCreatorDisplayName()
     };
     else documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), 
         image: undefined, _id: undefined, __v: undefined, 
