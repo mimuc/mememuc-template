@@ -48,9 +48,9 @@ export const useAutoplay = () => {
         if (autoplay) {
             // Cycle through list of memes with modulo
             const timer: any = setTimeout(() => {
-                const index = memes.findIndex(meme => meme.publicId === memeId);
+                const index = memes.findIndex(meme => meme.id === memeId);
                 const nextMeme = memes[(index + 1) % memes.length];
-                navigate(`/memes/${nextMeme.publicId}?${searchParams}`);
+                navigate(`/memes/${nextMeme.id}?${searchParams}`);
             }, autoplay * 1000);
             setTimer(timer);
         }
@@ -164,6 +164,44 @@ export const useShape = <T, >(id: string) => {
     }, [id, shapes]);
 
     return {shape, updateShape, deleteShape};
+}
+
+export const useScreenshot = () => {
+    // TODO: Screenshot does not capture the entire screen
+
+    return async () => {
+        const stream = await navigator.mediaDevices.getDisplayMedia();
+        const track = stream.getTracks()[0];
+        const imageCapture = new ImageCapture(track);
+        const screenshotUrl = await imageCapture.grabFrame().then((bitmap) => {
+            var MAX_WIDTH = 300;
+            var MAX_HEIGHT = 300;
+
+            var width = bitmap.width;
+            var height = bitmap.height;
+
+            // Change the resizing logic
+            if (width > height) {
+                if (width > MAX_WIDTH) {
+                    height = height * (MAX_WIDTH / width);
+                    width = MAX_WIDTH;
+                }
+            } else {
+                if (height > MAX_HEIGHT) {
+                    width = width * (MAX_HEIGHT / height);
+                    height = MAX_HEIGHT;
+                }
+            }
+
+            let canvas = document.createElement('canvas');
+            let context = canvas.getContext('2d') as CanvasRenderingContext2D;
+            context.drawImage(bitmap, 0, 0, width, height)
+            return canvas.toDataURL();
+        });
+        track.stop();
+
+        return screenshotUrl;
+    }
 }
 
 export const useDownloadModal = () => {
@@ -280,7 +318,7 @@ export const useCreateMemeModal = () => {
                 const url = stageRef.current.toDataURL();
                 const newMeme = {} as MemeType;
 
-                navigate(`/memes/${newMeme.publicId}`);
+                navigate(`/memes/${newMeme.id}`);
 
                 // Reset
                 setName('');
