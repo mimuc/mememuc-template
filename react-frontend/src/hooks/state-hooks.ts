@@ -3,7 +3,7 @@ import {useLocalStorage} from "react-use";
 import {useNavigate} from "react-router-dom";
 import uuid from "react-uuid";
 import {api} from "src/api";
-import {useEditorState, useTemplatesState} from "src/states";
+import {useEditorState} from "src/states";
 import {DraftType, ShapeInterface} from "src/types";
 
 export const useDrafts = () => {
@@ -43,19 +43,29 @@ export const useDrafts = () => {
 }
 
 export const useTemplates = () => {
-    // TODO: store templates in local storage (we need to download all images, create urls locally and load them again...)
-    // TODO: make sure to not overwrite them with templates from server
-    const [templates, setTemplates] = useTemplatesState();
+    const [templates, setTemplates] = useLocalStorage('templates', []);
 
     // Load templates from server
     useEffect(() => {
-        api.templates.all().then(templates => setTemplates(templates));
+        api.templates.all().then(templates => {
+            // For all image urls in templates, download them and replace the url with the local url
+            const offlineTemplates = templates.map(template => {
+                template.shapes.map(shape => {
+                    if (shape.type === 'image') {
+                        // TODO
+                    }
+
+                    return shape;
+                })
+            })
+
+            setTemplates(offlineTemplates)
+        });
     }, [setTemplates]);
 
 
-    const addTemplate = (name: string, shapes: ShapeInterface[]) => {
-        // TODO: save server side and locally
-        // TODO: if logged in attribute to user
+    const addTemplate = async (name: string, shapes: ShapeInterface[]) => {
+        await api.templates.add(name, shapes);
 
         // Replace text with placeholders
         const templateShapes = shapes.map(s => s.type === 'text' ? {...s, text: 'Text Here'} : s);
