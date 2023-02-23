@@ -222,8 +222,8 @@ router.post('/', authenticate(), async function(req, res) {
         const template = templates[i];
         const data_default = {
             memeName: generateName(username),
-            texts: ["ONE DOES NOT SIMPLY", "USE JS FOR BACKEND PROGRAMMING"], 
-            images: 'https://8ms.com/uploads/2022/08/image-3-700x412.png',
+            texts: [], 
+            images: undefined,
             canvas: {
                 width: 1000,
                 height: 1000,
@@ -247,6 +247,8 @@ router.post('/', authenticate(), async function(req, res) {
             newMeme.usedTemplate = templateInDatabase.publicId;
         }
         const data = Object.assign(data_default, data_template, template);
+        if(data.images == undefined) continue;
+
         if(!Array.isArray(data.images)) {
             data.images = [{url: data.images}];
         }
