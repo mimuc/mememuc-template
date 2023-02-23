@@ -1,10 +1,10 @@
-import {useEffect} from "react";
-import {useLocalStorage} from "react-use";
+import {useEffect, useState} from "react";
+import {useEffectOnce, useLocalStorage} from "react-use";
 import {useNavigate} from "react-router-dom";
 import uuid from "react-uuid";
 import {api} from "src/api";
 import {useEditorState} from "src/states";
-import {DraftType, ShapeInterface} from "src/types";
+import {DraftType, ShapeInterface, TemplateType} from "src/types";
 
 export const useDrafts = () => {
     const [shapes, setShapes] = useEditorState();
@@ -43,26 +43,12 @@ export const useDrafts = () => {
 }
 
 export const useTemplates = () => {
-    const [templates, setTemplates] = useLocalStorage('templates', []);
+    const [templates, setTemplates] = useLocalStorage<TemplateType[]>('templates', []);
 
     // Load templates from server
-    useEffect(() => {
-        api.templates.all().then(templates => {
-            // For all image urls in templates, download them and replace the url with the local url
-            const offlineTemplates = templates.map(template => {
-                template.shapes.map(shape => {
-                    if (shape.type === 'image') {
-                        // TODO
-                    }
-
-                    return shape;
-                })
-            })
-
-            setTemplates(offlineTemplates)
-        });
-    }, [setTemplates]);
-
+    useEffectOnce(() => {
+        api.templates.all().then(templates => setTemplates(templates as TemplateType[]));
+    });
 
     const addTemplate = async (name: string, shapes: ShapeInterface[]) => {
         await api.templates.add(name, shapes);
@@ -74,9 +60,17 @@ export const useTemplates = () => {
             id: uuid(),
             name,
             shapes: templateShapes as ShapeInterface[]
+        } as TemplateType;
+
+        // Update local storage
+        const updatedTemplates: TemplateType[] = [];
+
+        if (templates) {
+            updatedTemplates.push(...templates);
         }
 
-        setTemplates(prev => [...prev, newTemplate]);
+        updatedTemplates.push(newTemplate);
+        setTemplates(updatedTemplates);
     }
 
     return {templates, addTemplate};
