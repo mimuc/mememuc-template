@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {createUser} from "../callback/callback_user"
+const localserver = "http://localhost:3001";
 
 const Login = ({ onLogin, onSignup, usernames }) => {
     const [username, setUsername] = useState("");
@@ -12,22 +14,56 @@ const Login = ({ onLogin, onSignup, usernames }) => {
     };
   
     const handleLogin = () => {
-      if (usernames.includes(username)) {
+      
+      fetch(`${localserver}/users?connexion_name=${username}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log("data:"+data);
+        localStorage.clear();
+        localStorage.setItem("username",username);
+        navigate("/discover");
+      })
+      .catch((error)=>{setErrorMessage("error: username not found")});
+      /*if (usernames.includes(username)) {
         onLogin(username);
         navigate("/discover");
       } else {
         setErrorMessage("Invalid username. Please try again or sign up.");
-      }
+      }*/
     };
   
-    const handleSignup = () => {
-      if (usernames.includes(username)) {
-        setErrorMessage("Username is already taken. Please choose a different one.");
-      } else {
-        onSignup(username);
-        onLogin(username);
+    const handleSignup =  () => {
+        var isTaken = false;
+         fetch(`${localserver}/users?connexion_name=${username}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log("in signup data:"+data);
+          if (data.connexion_name === username ){
+            isTaken = true;
+            console.log("user already taken");
+            setErrorMessage("User already taken")
+          }
+          
+        })
+        console.log("istaken is "+isTaken)
+        if (isTaken === false){
+           fetch(localserver+`/users/create?username=${username}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+            .then(() => {
+            localStorage.setItem("username",username);
+            console.log("username created "+username)
+            }
+            )
+            .catch(error => setErrorMessage("signup didnt work, please retry"));
+          }
+        /*onSignup(username);
+        onLogin(username);*/
         navigate("/discover");
-      }
+      
     };
   
   
