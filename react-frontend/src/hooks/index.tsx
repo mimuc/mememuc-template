@@ -11,10 +11,12 @@ import {
     LinkOutlined,
     PictureOutlined
 } from "@ant-design/icons";
-import {useEditorState, useMemesState, useStageRef} from "src/states";
+import {useEditorState, useMemesState, useSessionState, useStageRef} from "src/states";
 import {downloadURI, isImgUrl} from "src/utils";
 import {MemeType} from "src/types";
 import {useTemplates} from "./state-hooks";
+import Cookies from "js-cookie";
+import {api} from "src/api";
 
 export * from './state-hooks';
 
@@ -288,4 +290,20 @@ export const useCreateMemeModal = () => {
             }
         });
     });
+}
+
+export const useAuth = () => {
+    const [, setSession] = useSessionState();
+
+    const login = (token: string | object) => {
+        Cookies.set('token', token);
+        api.my.account().then((data) => setSession(data));
+    }
+
+    const logout = () => {
+        setSession(null)
+        Cookies.remove('token');
+    }
+
+    return {login, logout};
 }
