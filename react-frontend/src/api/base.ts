@@ -8,9 +8,14 @@ export const client = axios.create({
 
 // TODO: how to set this config as default after login?
 export const authConfig = () => {
-    return {
-        headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-        }
-    } as AxiosRequestConfig;
+    const token = Cookies.get("token");
+    if (!token) {
+        return {};
+    } else {
+        return {
+            headers: {
+                Authorization: `Bearer ${Cookies.get("token")}`,
+            }
+        } as AxiosRequestConfig;
+    }
 }
