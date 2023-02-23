@@ -88,7 +88,7 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
                 return 0;
             },
             async getCreatorDisplayName() {
-                const user = await User.findOne({ username: this.username });
+                const user = await User.findOne({ username: this.creator });
                 if(user) return user.displayName;
                 else return "Unknown";
             }
