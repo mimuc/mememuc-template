@@ -1,10 +1,12 @@
 import {ReactNode} from "react";
 import {useNetworkState} from "react-use";
 import {Link, NavLink} from "react-router-dom";
-import {LoginOutlined} from "@ant-design/icons";
-import styled from "styled-components";
 import {Alert, Button, Layout, theme, Typography} from "antd";
+import {LoginOutlined, LogoutOutlined} from "@ant-design/icons";
+import styled from "styled-components";
 import {config} from "src/config";
+import {useSessionState} from "src/states";
+import {useAuth} from "src/hooks";
 
 type HeaderProps = {
     children?: ReactNode
@@ -45,6 +47,8 @@ const NetworkStatus = () => {
 
 export const Header = ({children}: HeaderProps) => {
     const {token} = theme.useToken();
+    const {logout} = useAuth();
+    const [session,] = useSessionState();
 
     return (
         <LayoutHeader style={{backgroundColor: token.colorBgContainer}}>
@@ -70,12 +74,18 @@ export const Header = ({children}: HeaderProps) => {
                 <div style={{display: 'inline-flex', alignItems: 'center'}}>
                     {children}
                 </div>
-                {/*TODO: login/logout button -> on login page, register page */}
-                <div style={{display: 'inline-flex', justifyContent: 'flex-end'}}>
-                    <Link to={'/login'}>
-                        <Button icon={<LoginOutlined/>}>Login</Button>
-                    </Link>
-                </div>
+                {session ?
+                    <div style={{display: 'inline-flex', justifyContent: 'flex-end', alignItems: 'center'}}>
+                        <span style={{marginRight: 10}}>{session.username}</span>
+                        <Button icon={<LogoutOutlined/>} onClick={logout}>Logout</Button>
+                    </div>
+                    :
+                    <div style={{display: 'inline-flex', justifyContent: 'flex-end'}}>
+                        <Link to={'/login'}>
+                            <Button icon={<LoginOutlined/>}>Login</Button>
+                        </Link>
+                    </div>
+                }
             </div>
         </LayoutHeader>
     )
