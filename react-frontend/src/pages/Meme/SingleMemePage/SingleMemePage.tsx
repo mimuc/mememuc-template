@@ -12,20 +12,24 @@ import {
 } from "@ant-design/icons";
 import {Comments, DislikeButton, DownloadButton, LikeButton, MemeStat, ShareButton} from "src/components";
 import {api} from "src/api";
-import {useMemesState} from "src/states";
+import {useFilterState, useMemesState, useSearchState, useSortState} from "src/states";
 import {useAutoplay, useMeme} from "src/hooks";
 import {getTimeSince} from "src/utils";
 import {MemeType} from "src/types";
-import { useEffectOnce } from "react-use";
 
 const {Title} = Typography;
 
 const ModalHeader = ({meme}: { meme: MemeType }) => {
     const [memes, setMemes] = useMemesState();
+    const [sort,] = useSortState();
+    const [search,] = useSearchState();
+    const [filter,] = useFilterState();
+
     const navigate = useNavigate();
     const {autoplay, startAutoplay, stopAutoplay} = useAutoplay();
     const isLast = memes.indexOf(meme) === memes.length - 1;
     const isPrevButtonDisabled = memes.findIndex(m => m.publicId === meme.publicId) === 0;
+
 
     const toggleAutoplay = () => {
         if (autoplay) {
@@ -37,7 +41,7 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
 
     useEffect(() => {
         if (isLast) {
-            api.memes.list(memes.length).then(memes => {
+            api.memes.list(memes.length, 10, sort, filter, search).then(memes => {
                 setMemes(prev => [...prev, ...memes]);
             }).catch(console.error)
         }
@@ -53,7 +57,7 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
         navigate('../' + memes[currentIndex + 1].publicId);
     };
     const handleRandom = async () => {
-        meme = await api.memes.getRandomMeme();
+        meme = await api.memes.getRandomMeme(filter, search);
         navigate('../' + meme.publicId);
     };
 
