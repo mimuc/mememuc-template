@@ -15,10 +15,27 @@ export const all = async () => {
     // } as AxiosRequestConfig).then(res => res.data);
 }
 
-export const add = () => {
-    return Promise.resolve();
-    // TODO: and if logged in attribute to user
+export const add = async (store: "unlisted" | "private" | "public", memeName: string, image: string, width: number, height: number) => {
 
+     return client.post(`http://localhost:3001/memes/`, {
+        config: {
+            store,
+            return: 'json'
+        },
+        template: {
+            memeName,
+            images: image,
+            canvas: {
+                width,
+                height
+            }
+        }
+     }, {
+        headers: {
+             Authorization: `Bearer ${Cookies.get("token")}`,
+        }
+     })
+     .then(res => res.data);
 }
 const get = (memeId: string) => {
     return Promise.resolve<MemeType>({} as MemeType);
