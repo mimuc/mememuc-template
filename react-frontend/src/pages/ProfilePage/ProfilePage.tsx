@@ -1,47 +1,46 @@
-import {useEffect, useState} from "react";
-import Cookies from 'js-cookie';
-import {theme, Typography} from "antd";
+import {Alert, Card, Col, Row, theme, Typography} from "antd";
 import {DraftList} from "src/components";
+import {Link} from "react-router-dom";
+import {useSessionState} from "src/states";
+import {useAsync} from "react-use";
+import {api} from "src/api";
 
 const {Title} = Typography;
 
+const MyMemeList = () => {
+    const myMemesLoadable = useAsync(api.my.memes);
+
+    if (!myMemesLoadable.value) return null;
+
+    return (
+        <Row gutter={[50, 50]}>
+            {
+                myMemesLoadable.value.map((meme) => (
+                    <Col span={8}>
+                        <Link to={`/memes/${meme.id}`}>
+                            <Card hoverable title={meme.name}>
+                                <img src={meme.image} alt={'Meme'}
+                                     style={{width: "100%", height: "100%", objectFit: 'contain'}}/>
+                            </Card>
+                        </Link>
+                    </Col>
+                ))
+            }
+        </Row>
+    )
+}
+
 export const ProfilePage = () => {
     const {token} = theme.useToken();
-
-    const [userData, setUserData] = useState<any>(null);
-
-    useEffect(() => {
-        const fetchUserData = async () => {
-            const response = await fetch("http://localhost:3001/my", {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${Cookies.get("token")}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setUserData(data);
-            }
-        };
-
-        fetchUserData();
-    }, []);
+    const [session,] = useSessionState();
 
     return (
         <>
-            <Title>Profile Page</Title>
-            {userData && (
-                <>
-                    <p>Name: {userData.name}</p>
-                    <p>Email: {userData.email}</p>
-                    <p>Username: {userData.username}</p>
-                </>
-            )}
             <Title level={2}>Your Drafts</Title>
             <DraftList/>
             <Title level={2} style={{marginTop: token.marginXXL}}>Your Memes</Title>
-            {/*TODO: display memes here if signed in, else Empty with not signed in info and link to sign in page*/}
+            {!session ? <MyMemeList/> :
+                <Alert showIcon message={<>You are not logged in. <Link to={'/login'}>Login</Link></>}/>}
         </>
     )
 }
