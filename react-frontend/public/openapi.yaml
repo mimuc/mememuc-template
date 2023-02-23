@@ -619,7 +619,7 @@ paths:
           description: Success
         '404':
           description: Template not found
-/templates/{publicId}/memes:
+  /templates/{publicId}/memes:
     get:
       summary: Returns all template usages of the template by memes
       tags:
@@ -1046,17 +1046,18 @@ components:
     image:
       type: object
       properties:
-        url: string
-        description: The image url
-      x:
-        type: number
-        description: The x position of the image on the canvas
-      y:
-        type: number
-        description: The y position of the image on the canvas
-      contentType:
-        type: string
-        description: The content type of the saved image, otherwise inferred from the url
+        url:
+          type: string
+          description: The image url
+        x:
+          type: number
+          description: The x position of the image on the canvas
+        y:
+          type: number
+          description: The y position of the image on the canvas
+        contentType:
+          type: string
+          description: The content type of the saved image, otherwise inferred from the url
     publicIdPathParam:
       in: path
       name: publicId
@@ -1242,11 +1243,11 @@ components:
           format: date-time
         texts:
           type: array
-            description: The list of texts that should be rendered. Using a simple string array will cause default values to be used.
-            items:
-              anyOf:
-                - type: string
-                - $ref: '#/components/parameters/text'
+          description: The list of texts that should be rendered. Using a simple string array will cause default values to be used.
+          items:
+            anyOf:
+              - type: string
+              - $ref: '#/components/parameters/text'
       required:
         - name
         - image
