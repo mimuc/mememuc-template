@@ -10,7 +10,7 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, Like, Dislike, Comment, View} = require('../db/models');
+const {Meme, User, Template, Like, Dislike, Comment, View, TemplateUsage} = require('../db/models');
 const {authenticate} = require('../db/authentication');
 const {handleMemeFind, handleMemesResponse} = require('../db/memeUtils');
 const {renameDuplicates} = require('../utils/utils');
@@ -231,6 +231,7 @@ router.post('/', authenticate(), async function(req, res) {
             }
         };
         const data_template = {};
+        const newMeme = {};
         if(template.name) {
             // Load template from database
             let templateInDatabase = await Template.findOne({ name: template.name }, { image: 0, _id: 0, __v: 0 });
@@ -242,6 +243,8 @@ router.post('/', authenticate(), async function(req, res) {
             data_template.texts = templateInDatabase.texts;
             data_template.images = templateInDatabase.images;
             data_template.canvas = templateInDatabase.canvas;
+
+            newMeme.usedTemplate = template.name;
         }
         const data = Object.assign(data_default, data_template, template);
         if(!Array.isArray(data.images)) {
@@ -283,7 +286,9 @@ router.post('/', authenticate(), async function(req, res) {
         await Promise.all(promises);
         data.loadedImages = loadedImages;
         const img = await generateMemeCanvas({config, data});
-        createdMemes.push({img, name: data.memeName});
+        newMeme.img = img;
+        newMeme.name = data.memeName;
+        createdMemes.push(newMeme);
     }
     
 
@@ -320,11 +325,26 @@ router.post('/', authenticate(), async function(req, res) {
             visibility: config.store, 
             creator: username, 
             name: m.name,
+            usedTemplate: m.usedTemplate
         }});
 
         let publicIdSet = new Set();
         for(const m of storeMemes) {
             m.publicId = await Meme.generatePublicId(publicIdSet);
+
+            if(m.usedTemplate) {
+                try {
+                    TemplateUsage.create({
+                        template: m.usedTemplate,
+                        memePublicId: m.publicId
+                    })
+                }
+                catch(error) {
+                    console.error(error);
+                    res.status(500).send();
+                }
+            }
+            
         }
 
         Meme.create(storeMemes)
@@ -335,9 +355,9 @@ router.post('/', authenticate(), async function(req, res) {
             console.error(error);
             if (error.name === 'ValidationError') {
                 // handle validation error
-                res.status(400).send(error);
+                res.status(400).send();
             } else {
-                res.status(500).send(error);
+                res.status(500).send();
             }
         });
     }
