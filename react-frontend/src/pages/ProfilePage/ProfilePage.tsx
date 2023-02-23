@@ -16,7 +16,7 @@ const MyMemeList = () => {
         <Row gutter={[50, 50]}>
             {
                 myMemesLoadable.value.map((meme) => (
-                    <Col span={8}>
+                    <Col key={meme.publicId} span={8}>
                         <Link to={`/memes/${meme.publicId}`}>
                             <Card hoverable title={meme.name}>
                                 <img src={meme.imageUrl} alt={'Meme'}
