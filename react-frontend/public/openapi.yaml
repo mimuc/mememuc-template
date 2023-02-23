@@ -1128,6 +1128,11 @@ components:
           format: date-time
         texts:
           type: array
+            description: The list of texts that should be rendered. Using a simple string array will cause default values to be used.
+            items:
+              anyOf:
+                - type: string
+                - $ref: '#/components/parameters/text'
         url:
           type: string
           description: The resource URL of the image
