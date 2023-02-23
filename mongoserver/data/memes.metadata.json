@@ -1,1 +1,1 @@
-{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"publicId":{"$numberInt":"1"}},"name":"publicId_1","background":true,"unique":true}],"uuid":"3c849eba6346499ebbd9bd56533362bd","collectionName":"memes","type":"collection"}
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"publicId":{"$numberInt":"1"}},"name":"publicId_1","background":true,"unique":true}],"uuid":"ee9194a8b1984dc1920016387f833b14","collectionName":"memes","type":"collection"}
