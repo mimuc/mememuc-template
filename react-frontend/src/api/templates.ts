@@ -1,12 +1,16 @@
 import {client} from "./base";
-import {ImageShapeInterface, ShapeInterface, TemplateType} from "src/types";
+import {ImageShapeInterface, ShapeInterface, TextShapeInterface} from "src/types";
 import uuid from "react-uuid";
 
-const mapTemplate = (rawTemplate: { publicId: string, name: string, texts: any[], url: string }) => {
+const toLocalImageUrl = (url: string) => {
+    return fetch(url)
+        .then(res => res.blob())
+        .then(blob => URL.createObjectURL(blob));
+}
+
+const mapTemplate = async (rawTemplate: { publicId: string, name: string, texts: any[], images: any[], canvas: { width: number, height: number } }) => {
     const textShapes = rawTemplate.texts.map((txt: any) => {
         const isString = typeof txt === 'string';
-
-        // TODO: convert template url to image and and create imageobjecturl from image
 
         return {
             id: uuid(),
@@ -17,26 +21,53 @@ const mapTemplate = (rawTemplate: { publicId: string, name: string, texts: any[]
             fontSize: isString ? 20 : (txt?.fontSize || 20),
             fill: isString ? 'black' : (txt?.fill || 'black'),
             fontStyle: isString ? 'normal' : (txt?.fontStyle || 'normal'),
-        }
+        } as TextShapeInterface;
     });
 
-    const imageShapes = [{url: rawTemplate.url, x: 0, y: 0, type: 'image'} as ImageShapeInterface];
+    const imageShapes: ImageShapeInterface[] = [];
 
-    return {id: rawTemplate.publicId, name: rawTemplate.name, shapes: [...imageShapes, ...textShapes]}
+    for (const img of rawTemplate.images) {
+        const localUrl = await toLocalImageUrl(img.url);
+        imageShapes.push({
+            id: uuid(),
+            type: 'image',
+            x: img?.x || 0,
+            y: img?.y || 0,
+            url: localUrl,
+        } as ImageShapeInterface);
+    }
+
+    return {
+        id: rawTemplate.publicId,
+        name: rawTemplate.name,
+        shapes: [...imageShapes, ...textShapes],
+        canvas: rawTemplate.canvas
+    };
 };
 
-export const all = () => {
-    return Promise.resolve<TemplateType[]>([])
+export const all = async () => {
+    console.log("Getting templates...")
+    const data = await client.get<any[]>('/templates').then(res => res.data)
 
-    return client.get<any[]>('/templates')
-        .then(res => res.data)
-        .then((data) => data.map(mapTemplate));
+    console.log("Templates:", data);
+
+    const templates = [];
+    for (const template of data) {
+        templates.push(await mapTemplate(template));
+    }
+
+    return templates;
 }
 
-export const add = (name: string, shapes: ShapeInterface[]) => {
-    // TODO
+export const add = (name: string, shapes: ShapeInterface[], canvas: { width: number, height: number }) => {
+    const data = {
+        name,
+        image: [],
+        texts: [],
+        canvas
+    };
 
-    return client.post('/templates', {name, shapes}).then(res => res.data);
+    return client.post('/templates', data).then(res => res.data);
 }
 
 export const templates = {all, add};
