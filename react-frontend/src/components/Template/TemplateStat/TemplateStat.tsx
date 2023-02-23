@@ -65,9 +65,10 @@ export const TemplateStat = ({template}: TemplateStatProps) => {
                 const days = Array.from({ length: daysAmount }, (_, i) => {
                     const date = new Date(today);
                     date.setDate(date.getDate() - i);
-                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    const dayName = date.toLocaleDateString('en-UK', { weekday: 'short' });
                     return { date: dayName, usage: 0 };
                 });
+                days.reverse();
 
                 for (const usage of usages) {
                     const viewDate = Date.parse(usage.createdAt);

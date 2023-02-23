@@ -94,7 +94,7 @@ export const MemeStat = ({meme}: MemeStatProps) => {
 
                 const views = response_views.data;
                 const likes = response_likes.data;
-                const dislikes = response_likes.data;
+                const dislikes = response_dislikes.data;
                 const comments = response_comments.data;
 
                 // Aggregate the data from the last daysAmount days
@@ -103,9 +103,10 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                 const days = Array.from({ length: daysAmount }, (_, i) => {
                     const date = new Date(today);
                     date.setDate(date.getDate() - i);
-                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    const dayName = date.toLocaleDateString('en-UK', { weekday: 'short' });
                     return { date: dayName, views: 0, likes: 0, dislikes: 0, comments: 0 };
                 });
+                days.reverse();
 
                 for (const view of views) {
                     const viewDate = Date.parse(view.createdAt);
@@ -146,9 +147,7 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                         day.comments += 1;
                     }
                 }
-
-                console.log("Days", days);
-
+              
                 const labels = days.map(d => d.date);
 
                 const dataTop = {
