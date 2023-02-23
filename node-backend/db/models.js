@@ -85,6 +85,11 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
                 if(dislike) return -1;
 
                 return 0;
+            },
+            async getCreatorDisplayName() {
+                const user = await User.findOne({ username });
+                if(user) return user.displayName;
+                else return "Unknown";
             }
         },
         statics: {
