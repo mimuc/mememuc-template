@@ -12,6 +12,7 @@ async function handleMemeFind(req) {
         id: undefined,
         limit: 10,
         creator: undefined,
+        displayName: undefined,
         skip: 0
     };
     const query = Object.assign({}, query_default, req.query);
@@ -53,22 +54,32 @@ async function handleMemeFind(req) {
                 break; */
             case 'random': {
 
-                const pipeline = [
-                    {
-                        $match: {
-                            $or: [
-                                { visibility: 'public' },
-                                { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
-                            ]
-                        }
-                    },
-                    {
-                        $sample: { size: query.limit }
-                    },
-                    {
-                        $project: MEME_EXCLUDE_PROPERTIES
+                const pipeline = [];
+
+                if(query.creator != undefined) pipeline.push({$match: { creator: query.creator }});
+                
+                if(query.name != undefined) pipeline.push({
+                    $match: {
+                        name: { $regex: query.name, $options: 'i' }
                     }
-                ];
+                });
+
+                pipeline.push({
+                    $match: {
+                        $or: [
+                            { visibility: 'public' },
+                            { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
+                        ]
+                    }
+                });
+
+                pipeline.push({
+                    $sample: { size: query.limit }
+                });
+
+                pipeline.push({
+                    $project: MEME_EXCLUDE_PROPERTIES
+                });
 
                 // Restrict to creator parameter
                 if(query.creator) pipeline.unshift({$match: { creator: query.creator }});
@@ -79,31 +90,39 @@ async function handleMemeFind(req) {
             case 'newest': // Same as oldest but with different sortOrder
             case 'oldest': {
                 const sortOrder = query.sort === 'newest' ? -1 : 1;
-                const pipeline = [
-                    {
-                        $match: {
-                            $or: [
-                                { visibility: 'public' },
-                                { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
-                            ]
-                        }
-                    },
-                    {
-                        $sort: { createdAt: sortOrder }
-                    },
-                    {
-                        $skip: query.skip
-                    },
-                    {
-                        $limit: query.limit
-                    },
-                    {
-                        $project: MEME_EXCLUDE_PROPERTIES
-                    }
-                ];
+                const pipeline = [];
+                if(query.creator != undefined) pipeline.push({$match: { creator: query.creator }});
 
-                // Restrict to creator parameter
-                if(query.creator) pipeline.unshift({$match: { creator: query.creator }})
+                if(query.name != undefined) pipeline.push({
+                    $match: {
+                        name: { $regex: query.name, $options: 'i' }
+                    }
+                });
+
+                pipeline.push({
+                    $match: {
+                        $or: [
+                            { visibility: 'public' },
+                            { visibility: { $in: ['private', 'unlisted'] }, creator: req.username }
+                        ]
+                    }
+                });
+
+                pipeline.push({
+                    $sort: { createdAt: sortOrder }
+                });
+
+                if(query.skip != undefined) pipeline.push({
+                    $skip: query.skip
+                });
+
+                if(query.limit != undefined) pipeline.push({
+                    $limit: query.limit
+                });
+
+                pipeline.push({
+                    $project: MEME_EXCLUDE_PROPERTIES
+                });
 
                 documents = await Meme.aggregate(pipeline);
                 //documents = documents.map(doc => Meme.hydrate(doc)); 
