@@ -57,7 +57,7 @@ paths:
                       default: single-view
                       description: Whether the memes should be returned as a image/ZIP download, JSON, list of image-urls, or list of single-view urls.
                   default: {store: undefined, return: single-view}
-                template:
+                templates:
                   type: object
                   properties:
                     name:
