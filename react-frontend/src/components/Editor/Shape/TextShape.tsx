@@ -16,8 +16,6 @@ export const TextShape = ({id, selected, onSelect}: TextShapeProps) => {
     // References
     const shapeRef = useRef(null);
 
-    // TODO: Implement menu3sss for text and image (to foreground, delete, text size, color, fontStyle);
-
     // Handlers
     const handleSelect = () => onSelect(id);
     const handleDragEnd = (e: any) => updateShape({

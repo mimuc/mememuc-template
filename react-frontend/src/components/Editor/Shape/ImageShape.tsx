@@ -13,8 +13,6 @@ export const ImageShape = ({id, selected, onSelect}: ShapeProps) => {
     // References
     const shapeRef = useRef(null);
 
-    // TODO: Implement menus image (to delete);
-
     // Handlers
     const handleSelect = () => onSelect(id);
     const handleDragEnd = (e: any) => updateShape({
