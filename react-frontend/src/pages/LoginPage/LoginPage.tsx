@@ -14,14 +14,12 @@ export const LoginPage = () => {
     // TODO: Provide feedback
     // TODO: Forward on success
     const handleFinish = async (values: any) => {
-        console.log("LOgging in", values)
         try {
             const response = await fetch('http://localhost:3001/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({username: values.username, password: values.password}),
             });
-            console.log(response)
 
             if (!response.ok) {
                 const error = await response.text();
