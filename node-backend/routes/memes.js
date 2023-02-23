@@ -419,7 +419,9 @@ router.get('/:publicId/comments', authenticate(false), async function(req, res, 
     .catch(function(error) {
         res.status(500).send();
     }); 
-    res.json(comments);
+    const commentsJSON = await Promise.all(comments.map(async c => ({...c.toObject(), creatorDisplayName: await c.getCreatorDisplayName()})));
+
+    res.json(commentsJSON);
 });
 
 router.get('/:publicId/comments/:commentId', authenticate(false), async function(req, res, next) {

@@ -87,8 +87,8 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
 
                 return 0;
             },
-            async getCreatorDisplayName(username) {
-                const user = await User.findOne({ username });
+            async getCreatorDisplayName() {
+                const user = await User.findOne({ username: this.username });
                 if(user) return user.displayName;
                 else return "Unknown";
             }
@@ -192,6 +192,13 @@ const Comment = mongoose.model('Comment', new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     publicId: { type: String, required: true, unique: true },
     }, {
+        methods: {
+            async getCreatorDisplayName() {
+                const user = await User.findOne({ username: this.username });
+                if(user) return user.displayName;
+                else return "Unknown";
+            }
+        },
         statics: {
             async generatePublicId(publicIdSet) {
                 return await generatePublicId(Comment, "c", publicIdSet);
