@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"publicId":{"$numberInt":"1"}},"name":"publicId_1","background":true,"unique":true}],"uuid":"4c67a62b15f146e689a141e15a8d266d","collectionName":"imageresources","type":"collection"}
