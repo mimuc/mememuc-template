@@ -62,4 +62,8 @@ const downvoteRemove = (memeId: string) => {
     .then(res => res.data));
 }
 
-export const memes = {all, list, get, getRandomMeme, upvote, upvoteRemove, downvote, downvoteRemove};
+const addView = (memeId: string) => {
+    client.put(`/memes/${memeId}/views`, {}, authConfig());
+}
+
+export const memes = {all, list, get, getRandomMeme, upvote, upvoteRemove, downvote, downvoteRemove, addView};

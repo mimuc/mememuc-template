@@ -16,6 +16,7 @@ import {useMemesState} from "src/states";
 import {useAutoplay, useMeme} from "src/hooks";
 import {getTimeSince} from "src/utils";
 import {MemeType} from "src/types";
+import { useEffectOnce } from "react-use";
 
 const {Title} = Typography;
 
@@ -82,6 +83,10 @@ export const SingleMemePage = () => {
 
     // Handlers
     const handleClose = () => navigate(`/memes`);
+
+    useEffect( () => { // TODO: 
+        if(meme) api.memes.addView(meme.publicId); //FIXME:
+    }, [meme]);
 
     if (meme === null) return null;
 
