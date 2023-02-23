@@ -46,9 +46,9 @@ export const useAutoplay = () => {
         if (autoplay) {
             // Cycle through list of memes with modulo
             const timer: any = setTimeout(() => {
-                const index = memes.findIndex(meme => meme.id === memeId);
+                const index = memes.findIndex(meme => meme.publicId === memeId);
                 const nextMeme = memes[(index + 1) % memes.length];
-                navigate(`/memes/${nextMeme.id}?${searchParams}`);
+                navigate(`/memes/${nextMeme.publicId}?${searchParams}`);
             }, autoplay * 1000);
             setTimer(timer);
         }
@@ -278,7 +278,7 @@ export const useCreateMemeModal = () => {
                 const url = stageRef.current.toDataURL();
                 const newMeme = {} as MemeType;
 
-                navigate(`/memes/${newMeme.id}`);
+                navigate(`/memes/${newMeme.publicId}`);
 
                 // Reset
                 setName('');

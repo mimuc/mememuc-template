@@ -16,16 +16,16 @@ const MemeItem = ({meme}: ItemProps) => {
     const navigate = useNavigate();
 
     // Conversion
-    const totalComments = abbreviateNumber(meme.totalComments)
+    const totalComments = abbreviateNumber(meme.comments)
     const createdAt = getTimeSince(new Date(meme.createdAt));
 
     // Nav events
-    const navigateToMeme = () => navigate(meme.id);
+    const navigateToMeme = () => navigate(meme.publicId);
 
     return (
         <Card
             style={{marginBottom: 50, marginInline: 'auto', borderRadius: 15, width: 500}}
-            cover={<img src={meme.image} onClick={navigateToMeme} alt={meme.name}/>}
+            cover={<img src={meme.imageUrl} onClick={navigateToMeme} alt={meme.name}/>}
             hoverable
             actions={[
                 <LikeButton meme={meme}/>,
@@ -64,7 +64,7 @@ export const MemeListPage = () => {
     return (
         <>
             <div>
-                {memes.map(item => <MemeItem key={item.id} meme={item}/>)}
+                {memes.map(item => <MemeItem key={item.publicId} meme={item}/>)}
             </div>
         </>
     )

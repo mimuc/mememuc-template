@@ -1,6 +1,8 @@
 import {MemeType} from "src/types";
+import Cookies from 'js-cookie';
+import {client} from "./base";
 
-const mock = [
+/* const mock = [
     {
         id: '1',
         name: 'I\'m not a scientist, but I think we can all agree that...',
@@ -50,18 +52,49 @@ const mock = [
         createdAt: '2022-03-04',
     }
 ] as MemeType[];
+ */
 
-
-const all = () => {
+/* const all = () => {
     return Promise.resolve(mock)
 }
+ */
 
-const get = (memeId: string) => {
-    return Promise.resolve<MemeType>(mock.find(m => m.id === memeId) as MemeType)
+export const all = () => {
+    // return client.get('/templates');
+    return Promise.resolve(client.get('http://localhost:3001/memes', {
+        headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+        }
+    })
+    .then(res => res.data));
 }
 
-const getRandomMeme = () => {
+/* const get = (memeId: string) => {
+    return Promise.resolve<MemeType>(mock.find(m => m.id === memeId) as MemeType)
+} */
+
+const get = (memeId: string) => {
+    // return client.get('/templates');
+    return Promise.resolve(client.get(`http://localhost:3001/memes/{memeId}`, {
+        headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+        }
+    })
+    .then(res => res.data));
+}
+
+/* const getRandomMeme = () => {
     return Promise.resolve<MemeType>(mock[0])
+} */
+
+const getRandomMeme = () => {
+    // return client.get('/templates');
+    return Promise.resolve(client.get('http://localhost:3001/memes?sort=random&limit=1', {
+        headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+        }
+    })
+    .then(res => res.data[0]));
 }
 
 const upvote = (memeId: string) => {

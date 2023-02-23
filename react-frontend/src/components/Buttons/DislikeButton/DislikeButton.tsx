@@ -17,11 +17,11 @@ export const DislikeButton = ({meme}: DislikeButtonProps) => {
 
     const handleDislikeToggle = async () => {
         if (meme.vote === -1) {
-            await api.memes.upvote(meme.id)
-            setMemes(prev => prev && prev.map(m => m.id === meme.id ? {...m, vote: 0} : m))
+            await api.memes.upvote(meme.publicId)
+            setMemes(prev => prev && prev.map(m => m.publicId === meme.publicId ? {...m, vote: 0} : m))
         } else {
-            await api.memes.downvote(meme.id)
-            setMemes(prev => prev.map(m => m.id === meme.id ? {...m, vote: -1} : m))
+            await api.memes.downvote(meme.publicId)
+            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, vote: -1} : m))
         }
     }
 

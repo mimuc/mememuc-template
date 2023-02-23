@@ -57,12 +57,12 @@ export const Comments = ({meme}: CommentsProps) => {
     const handlePostComment = async ({text}: any) => {
         if (!text) return;
 
-        const newComment = await api.comments.add(meme.id, text);
+        const newComment = await api.comments.add(meme.publicId, text);
         setComments(prev => [newComment, ...prev]);
     }
 
     useEffectOnce(() => {
-        api.comments.forMeme(meme.id).then(data => setComments(data));
+        api.comments.forMeme(meme.publicId).then(data => setComments(data));
     })
 
     return (

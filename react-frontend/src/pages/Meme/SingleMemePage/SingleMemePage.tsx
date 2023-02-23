@@ -24,7 +24,7 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
     const navigate = useNavigate();
     const {autoplay, startAutoplay, stopAutoplay} = useAutoplay();
     const isLast = memes.indexOf(meme) === memes.length - 1;
-    const isPrevButtonDisabled = memes.findIndex(m => m.id === meme.id) === 0;
+    const isPrevButtonDisabled = memes.findIndex(m => m.publicId === meme.publicId) === 0;
 
     const toggleAutoplay = () => {
         if (autoplay) {
@@ -42,16 +42,16 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
 
     const handleGoPrev = () => {
         const currentIndex = memes.indexOf(meme);
-        navigate('../' + memes[currentIndex - 1].id);
+        navigate('../' + memes[currentIndex - 1].publicId);
     };
     const handleGoNext = async () => {
         const currentIndex = memes.indexOf(meme);
 
-        navigate('../' + memes[currentIndex + 1].id);
+        navigate('../' + memes[currentIndex + 1].publicId);
     };
     const handleRandom = async () => {
         meme = await api.memes.getRandomMeme();
-        navigate('../' + meme.id);
+        navigate('../' + meme.publicId);
     };
 
     // TODO: add loading indicator for autoplay
@@ -79,7 +79,7 @@ export const SingleMemePage = () => {
 
     const [memes,] = useMemesState()
     // TODO: if meme not in memes => try to load meme and append at front to memes
-    const meme: MemeType | undefined = memes && memes.find((m: MemeType) => m.id === params.memeId);
+    const meme: MemeType | undefined = memes && memes.find((m: MemeType) => m.publicId === params.memeId);
 
     // Handlers
     const handleClose = () => navigate(`/memes`);
@@ -118,7 +118,7 @@ export const SingleMemePage = () => {
 
                     </div>
                     <div style={{marginTop: 20}}>
-                        {view === 'meme' && <Image src={meme.image} preview={false} style={{borderRadius: 5}}/>}
+                        {view === 'meme' && <Image src={meme.imageUrl} preview={false} style={{borderRadius: 5}}/>}
                         {view === 'stats' && <MemeStat meme={meme}/>}
                     </div>
                     <div style={{marginTop: 20}}>

@@ -5,12 +5,12 @@ export type TemplateType = {
 }
 
 export type MemeType = {
-    id: string;
+    publicId: string;
     name: string;
-    image: string;
-    totalLikes: number;
+    imageUrl: string;
+    likes: number;
     totalDislikes: number;
-    totalComments: number;
+    comments: number;
     createdAt: string;
     vote: number;
     creator?: {

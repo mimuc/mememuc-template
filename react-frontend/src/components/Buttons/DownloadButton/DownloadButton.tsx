@@ -11,7 +11,7 @@ export const DownloadButton = ({meme}: DownloadButtonProps) => {
     const openDownloadModal = useDownloadModal();
 
     const handleDownload = async () => {
-        await openDownloadModal(meme.id);
+        await openDownloadModal(meme.publicId);
     };
 
     return <Button icon={<DownloadOutlined/>} onClick={handleDownload} type={'text'} style={{width: 80}}/>
