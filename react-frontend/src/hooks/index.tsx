@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {useAsync, useUnmount} from "react-use";
+import {useAsync, useLocalStorage, useUnmount} from "react-use";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Webcam from "react-webcam";
 import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Space} from "antd";
@@ -11,9 +11,9 @@ import {
     LinkOutlined,
     PictureOutlined
 } from "@ant-design/icons";
-import {useEditorState, useMemesState, useSessionState, useStageRef} from "src/states";
+import {useEditorState, useMemesState, useStageRef} from "src/states";
 import {downloadURI, isImgUrl} from "src/utils";
-import {MemeType} from "src/types";
+import {MemeType, SessionType} from "src/types";
 import {useTemplates} from "./state-hooks";
 import Cookies from "js-cookie";
 import {api} from "src/api";
@@ -292,8 +292,14 @@ export const useCreateMemeModal = () => {
     });
 }
 
+export const useSession = () => {
+    const [session,] = useLocalStorage<SessionType | null>('session', null);
+
+    return session;
+}
+
 export const useAuth = () => {
-    const [, setSession] = useSessionState();
+    const [, setSession] = useLocalStorage<SessionType | null>('session', null);
 
     const login = (token: string | object) => {
         Cookies.set('token', token);

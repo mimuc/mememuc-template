@@ -1,9 +1,9 @@
 import {Alert, Card, Col, Row, theme, Typography} from "antd";
 import {DraftList} from "src/components";
 import {Link} from "react-router-dom";
-import {useSessionState} from "src/states";
 import {useAsync} from "react-use";
 import {api} from "src/api";
+import {useSession} from "src/hooks";
 
 const {Title} = Typography;
 
@@ -32,7 +32,7 @@ const MyMemeList = () => {
 
 export const ProfilePage = () => {
     const {token} = theme.useToken();
-    const [session,] = useSessionState();
+    const session = useSession();
 
     return (
         <>
