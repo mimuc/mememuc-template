@@ -4,12 +4,6 @@ import {FilterType, MemeType} from "src/types";
 export const list = async (offset: number = 0, limit: number = 10, sort: 'latest' | 'popular' = 'latest', filter: FilterType = {creationDate: null}, search: string | null = null) => {
     // TODO: use this instead of all
     // TODO: convert filter Date.parse()
-    return Promise.resolve<MemeType[]>([]);
-}
-
-export const all = () => {
-    //return Promise.resolve<MemeType[]>([]);
-
     return Promise.resolve(client.get('http://localhost:3001/memes', authConfig())
         .then(res => res.data));
 }
@@ -71,4 +65,4 @@ const addView = (memeId: string) => {
     client.put(`/memes/${memeId}/views`, {}, authConfig());
 }
 
-export const memes = {all, list, get, getRandomMeme, upvote, upvoteRemove, downvote, downvoteRemove, addView};
+export const memes = {list, get, getRandomMeme, upvote, upvoteRemove, downvote, downvoteRemove, addView};
