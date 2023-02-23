@@ -88,9 +88,9 @@ export const SingleMemePage = () => {
     // Handlers
     const handleClose = () => navigate(`/memes`);
 
-    useEffect( () => { // TODO: 
-        if(meme) api.memes.addView(meme.publicId); //FIXME:
-    }, [meme]);
+    useEffect( () => {
+        if(meme) api.memes.addView(meme.publicId);
+    }, [meme?.publicId]);
 
     if (meme === null) return null;
 

@@ -65,8 +65,6 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
         setSearch(value === '' ? null : value);
     }
 
-    // TODO: endless scroll
-
     return (
         <Layout>
             <Header>
