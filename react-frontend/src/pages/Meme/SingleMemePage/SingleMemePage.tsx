@@ -36,7 +36,9 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
 
     useEffect(() => {
         if (isLast) {
-            // TODO: try to extend array
+            api.memes.list(memes.length).then(memes => {
+                setMemes(prev => [...prev, ...memes]);
+            }).catch(console.error)
         }
     }, [isLast, setMemes]);
 
