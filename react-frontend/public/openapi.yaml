@@ -18,6 +18,7 @@ paths:
         - $ref: '#/components/parameters/creator'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -135,6 +136,7 @@ paths:
         - $ref: '#/components/parameters/creator'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -161,6 +163,7 @@ paths:
         - $ref: '#/components/parameters/creator'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -189,6 +192,7 @@ paths:
         - $ref: '#/components/parameters/creator'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -706,6 +710,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: Success
@@ -733,6 +738,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -761,6 +767,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -787,6 +794,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -861,6 +869,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: Success
@@ -882,6 +891,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -904,6 +914,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -924,6 +935,7 @@ paths:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/skip'
         - $ref: '#/components/parameters/name'
+        - $ref: '#/components/parameters/after'
       responses:
         '200':
           description: OK
@@ -1127,6 +1139,12 @@ components:
         type: integer
         default: 0
         minimum: 0
+    after:
+      name: after
+      in: query
+      description: Only memes younger than this are shown (UNIX time)
+      schema:
+        type: integer
     name:
       name: name
       in: query

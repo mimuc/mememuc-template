@@ -13,7 +13,8 @@ async function handleMemeFind(req) {
         limit: 10,
         creator: undefined,
         name: undefined,
-        skip: 0
+        skip: 0,
+        after: undefined
     };
     const query = Object.assign({}, query_default, req.query);
 
@@ -73,6 +74,15 @@ async function handleMemeFind(req) {
                     }
                 });
 
+                if(query.after != undefined && typeof query.after === "number") {
+                    const afterDate = new Date(parseInt(req.query.after));
+                    pipeline.push({
+                        $match: {
+                            createdAt: { $gte: afterDate }
+                        }
+                    });
+                }
+
                 pipeline.push({
                     $sample: { size: query.limit }
                 });
@@ -107,6 +117,15 @@ async function handleMemeFind(req) {
                         ]
                     }
                 });
+
+                if(query.after != undefined && typeof query.after === "number") {
+                    const afterDate = new Date(parseInt(req.query.after));
+                    pipeline.push({
+                        $match: {
+                            createdAt: { $gte: afterDate }
+                        }
+                    });
+                }
 
                 pipeline.push({
                     $sort: { createdAt: sortOrder }
@@ -236,7 +255,8 @@ async function handleGetMemeRequest(req={}, res={}, contentType='json') {
         limit: req.query.limit ?? 10,
         creator: username,
         skip: req.query.skip ?? 0,
-        name: req.query.name
+        name: req.query.name,
+        after: req.query.after
     };
 
     const documents = await handleMemeFind(req);
