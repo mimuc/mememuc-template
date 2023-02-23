@@ -619,6 +619,25 @@ paths:
           description: Success
         '404':
           description: Template not found
+/templates/{name}/memes:
+    get:
+      summary: Returns all template usages of the template by memes
+      tags:
+        - Templates
+      parameters:
+        - in: path
+          name: name
+          required: true
+          description: Name of the template to retrieve.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateUsage'
   /users:
     get:
       summary: Get a list of all users
@@ -1269,6 +1288,22 @@ components:
             format: date-time
       required:
         - username
+        - memePublicId
+    TemplateUsage:
+      type: object
+      x-model: TemplateUsage
+      properties:
+        template:
+          type: string
+          required: true
+        memePublicId:
+          type: string
+          required: true
+        createdAt:
+            type: string
+            format: date-time
+      required:
+        - template
         - memePublicId
   responses:
     BadRequest:
