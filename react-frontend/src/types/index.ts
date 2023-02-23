@@ -2,6 +2,10 @@ export type TemplateType = {
     id: string
     name: string,
     shapes: ShapeInterface[]
+    canvas: {
+        width: number
+        height: number
+    }
 }
 
 export type MemeType = {
