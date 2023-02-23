@@ -7,7 +7,7 @@ const account = () => {
 }
 
 const memes = async () => {
-    return client.put(`http://localhost:3001/my/memes`, {}, {
+    return client.get(`http://localhost:3001/my/memes`, {
         headers: {
             Authorization: `Bearer ${Cookies.get("token")}`,
         }
