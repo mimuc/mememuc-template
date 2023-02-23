@@ -7,7 +7,7 @@ export const ErrorPage = () => {
     let errorMessage;
 
     const handleBack = () => {
-        if(window.history.length > 0 && window.history.state) {
+        if (window.history.length > 0 && window.history.state) {
             navigate(-1);
         } else {
             navigate('/');
@@ -27,9 +27,7 @@ export const ErrorPage = () => {
             <div>
                 <h1>{error.status} Error</h1>
                 <p>{errorMessage}</p>
-                <Button
-                    onClick={handleBack}
->
+                <Button onClick={handleBack}>
                     Back
                 </Button>
             </div>
