@@ -16,7 +16,7 @@ async function handleMemeFind(req) {
         skip: 0,
         after: undefined
     };
-    const query = Object.assign({}, query_default, req.query);
+    const query = Object.assign(query_default, req.query);
 
     query.limit = +query.limit;
     query.skip = +query.skip;
@@ -26,7 +26,7 @@ async function handleMemeFind(req) {
     if(typeof query.skip != 'number') query.skip = query_default.skip;
 
     query.limit = Math.min(100, Math.max(1, +query.limit));
-    query.skip = Math.max(1, +query.skip);
+    query.skip = Math.max(0, +query.skip);
 
     // The found memes
     let documents;
