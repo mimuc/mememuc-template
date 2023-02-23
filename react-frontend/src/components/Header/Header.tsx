@@ -53,8 +53,8 @@ export const Header = ({children}: HeaderProps) => {
         <LayoutHeader style={{backgroundColor: token.colorBgContainer}}>
             <NetworkStatus/>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                {/*TODO: add logo */}
                 <div style={{display: 'inline-flex', alignItems: 'center'}}>
+                    <img src={'/logo.png'} height={40} style={{marginRight: 20}} alt={'Logo'}/>
                     <Title level={3} style={{display: 'inline-block', color: '#232323', margin: 0, marginRight: 50}}>
                         {config.APP_TITLE}
                     </Title>
@@ -63,7 +63,6 @@ export const Header = ({children}: HeaderProps) => {
                                  style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>Editor</NavLink>
                         <NavLink to={'/memes'}
                                  style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>Memes</NavLink>
-                        {/*TODO: if registered add profile page */}
                         <NavLink to={'/profile'}
                                  style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>Profile</NavLink>
                         <NavLink to={'/statistics'}
