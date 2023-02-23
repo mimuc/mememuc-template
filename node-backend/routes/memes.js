@@ -154,7 +154,7 @@ router.get('/', authenticate(false), async function(req, res, next) {
     if(typeof(documents) === 'number') { // error code returned
         return res.status(documents).send();
     }
-    handleMemesResponse(res, documents, 'json');
+    handleMemesResponse(res, documents, 'json', req.username);
     // Example request:
     // /memes?limit=50&skip=50&sort=newest
 });
@@ -164,7 +164,7 @@ router.get('/download', authenticate(false), async function(req, res, next) {
     if(typeof(documents) === 'number') { // error code returned
         return res.status(documents).send();
     }
-    handleMemesResponse(res, documents, 'zip');
+    handleMemesResponse(res, documents, 'zip', req.username);
 });
 
 router.get('/image', authenticate(false), async function(req, res, next) {
@@ -172,7 +172,7 @@ router.get('/image', authenticate(false), async function(req, res, next) {
     if(typeof(documents) === 'number') { // error code returned
         return res.status(documents).send();
     }
-    handleMemesResponse(res, documents, 'image');
+    handleMemesResponse(res, documents, 'image', req.username);
 });
 
 router.get('/single-view', authenticate(false), async function(req, res, next) {
@@ -180,7 +180,7 @@ router.get('/single-view', authenticate(false), async function(req, res, next) {
     if(typeof(documents) === 'number') { // error code returned
         return res.status(documents).send();
     }
-    handleMemesResponse(res, documents, 'single-view');
+    handleMemesResponse(res, documents, 'single-view', req.username);
 });
 
 
@@ -240,7 +240,8 @@ router.post('/', authenticate(), async function(req, res) {
             }
             templateInDatabase = templateInDatabase.toObject();
             data_template.texts = templateInDatabase.texts;
-            data_template.images = [{url: templateInDatabase.url}];
+            data_template.images = templateInDatabase.images;
+            data_template.canvas = templateInDatabase.canvas;
         }
         const data = Object.assign(data_default, data_template, template);
         if(!Array.isArray(data.images)) {
@@ -328,7 +329,7 @@ router.post('/', authenticate(), async function(req, res) {
 
         Meme.create(storeMemes)
         .then(async function(documents) {
-            await handleMemesResponse(res, documents, config.return);
+            await handleMemesResponse(res, documents, config.return, req.username);
         })
         .catch(function(error) {
             console.error(error);
@@ -682,7 +683,7 @@ router.get('/:publicId', authenticate(false), async function(req, res, next) {
     // Add view if the user is authenticated
     if(req.username) addView(req.params.publicId, req.username);
 
-    handleMemesResponse(res, documents[0], 'json');
+    handleMemesResponse(res, documents[0], 'json', req.username);
 });
 
 router.get('/:publicId/image', authenticate(false), async function(req, res, next) {
@@ -697,7 +698,7 @@ router.get('/:publicId/image', authenticate(false), async function(req, res, nex
         return res.status(404).send("Meme not found");
     }
 
-    handleMemesResponse(res, documents[0], 'image');
+    handleMemesResponse(res, documents[0], 'image', req.username);
 });
 
 router.get('/:publicId/download', authenticate(false), async function(req, res, next) {
@@ -712,7 +713,7 @@ router.get('/:publicId/download', authenticate(false), async function(req, res, 
         return res.status(404).send("Meme not found");
     }
 
-    handleMemesResponse(res, documents[0], 'zip');
+    handleMemesResponse(res, documents[0], 'zip', req.username);
 });
 
 router.get('/:publicId/single-view', authenticate(false), async function(req, res, next) {
@@ -727,7 +728,7 @@ router.get('/:publicId/single-view', authenticate(false), async function(req, re
         return res.status(404).send("Meme not found");
     }
 
-    handleMemesResponse(res, documents[0], 'single-view');
+    handleMemesResponse(res, documents[0], 'single-view', req.username);
 });
 
 router.delete('/:publicId', authenticate(), async function(req, res, next) {

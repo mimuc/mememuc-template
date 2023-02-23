@@ -121,7 +121,7 @@ async function handleMemeFind(req) {
     return documents;
 }
 
-async function handleMemesResponse(res, documents, format) {
+async function handleMemesResponse(res, documents, format, username) {
 
     // Return the found memes
     if(!Array.isArray(documents)) documents = {...documents.toObject(), 
@@ -129,7 +129,7 @@ async function handleMemesResponse(res, documents, format) {
         imageUrl: await documents.getImageUrl(), singleViewUrl: await documents.getSingleViewUrl(), 
         likes: await documents.getLikesCount(), dislikes: await documents.getDislikesCount(), 
         comments: await documents.getCommentsCount(), views: await documents.getViewCount(), 
-        vote: await doc.getVote(req.username),
+        vote: await doc.getVote(username),
         creatorDisplayName: await doc.getCreatorDisplayName()
     };
     else documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), 
@@ -137,7 +137,7 @@ async function handleMemesResponse(res, documents, format) {
         imageUrl: await doc.getImageUrl(), singleViewUrl: await doc.getSingleViewUrl(), 
         likes: await doc.getLikesCount(), dislikes: await doc.getDislikesCount(), 
         comments: await doc.getCommentsCount(), views: await doc.getViewCount(), 
-        vote: await doc.getVote(req.username),
+        vote: await doc.getVote(username),
         creatorDisplayName: await doc.getCreatorDisplayName()
     }) ) ); 
     switch(format) {
@@ -220,7 +220,7 @@ async function handleGetMemeRequest(req={}, res={}, contentType='json') {
     if(typeof(documents) === 'number') { // error code returned
         return res.status(documents).send();
     }
-    handleMemesResponse(res, documents, contentType);
+    handleMemesResponse(res, documents, contentType, req.username);
 }
 
 module.exports = {
