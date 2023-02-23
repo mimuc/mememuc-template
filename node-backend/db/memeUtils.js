@@ -12,7 +12,7 @@ async function handleMemeFind(req) {
         id: undefined,
         limit: 10,
         creator: undefined,
-        displayName: undefined,
+        name: undefined,
         skip: 0
     };
     const query = Object.assign({}, query_default, req.query);
@@ -57,7 +57,7 @@ async function handleMemeFind(req) {
                 const pipeline = [];
 
                 if(query.creator != undefined) pipeline.push({$match: { creator: query.creator }});
-                
+
                 if(query.name != undefined) pipeline.push({
                     $match: {
                         name: { $regex: query.name, $options: 'i' }
@@ -235,7 +235,8 @@ async function handleGetMemeRequest(req={}, res={}, contentType='json') {
         id: req.query.id,
         limit: req.query.limit ?? 10,
         creator: username,
-        skip: req.query.skip ?? 0
+        skip: req.query.skip ?? 0,
+        name: req.query.name
     };
 
     const documents = await handleMemeFind(req);
