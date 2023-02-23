@@ -584,14 +584,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Template'        
-  /templates/{name}:
+  /templates/{publicId}:
     get:
-      summary: Gets a template by name
+      summary: Gets a template by publicId
       tags:
         - Templates
       parameters:
         - in: path
-          name: name
+          name: publicId
           required: true
           description: Name of the template to retrieve.
           schema:
@@ -604,12 +604,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Template'
     delete:
-      summary: Deletes a template by name
+      summary: Deletes a template by publicId
       tags:
         - Templates
       parameters:
         - in: path
-          name: name
+          name: publicId
           required: true
           description: Name of the template to retrieve.
           schema:
@@ -619,14 +619,14 @@ paths:
           description: Success
         '404':
           description: Template not found
-/templates/{name}/memes:
+/templates/{publicId}/memes:
     get:
       summary: Returns all template usages of the template by memes
       tags:
         - Templates
       parameters:
         - in: path
-          name: name
+          name: publicId
           required: true
           description: Name of the template to retrieve.
           schema:

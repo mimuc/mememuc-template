@@ -19,9 +19,9 @@ router.get('/', authenticate(false), async function(req, res, next) {
   .catch((e) => res.status(500).send())
 });
 
-router.get('/:name', authenticate(false), async function(req, res, next) {
-  const name  = req.params.name;
-  Template.findOne({ name }, EXCLUDE_PROPERTIES)
+router.get('/:publicId', authenticate(false), async function(req, res, next) {
+  const publicId  = req.params.publicId;
+  Template.findOne({ publicId }, EXCLUDE_PROPERTIES)
   .then((doc) => {
     if (!doc) {
       return res.status(404).send({ error: "Template not found" });
@@ -34,21 +34,21 @@ router.get('/:name', authenticate(false), async function(req, res, next) {
   .catch((e) => res.status(500).send());
 });
 
-router.get('/:name/memes', authenticate(false), async function(req, res, next) {
-  const name = req.params.name;
+router.get('/:publicId/memes', authenticate(false), async function(req, res, next) {
+  const publicId = req.params.publicId;
 
-  const templateUsage = await TemplateUsage.find({ template: name }, { _id: 0, __v: 0 })
+  const templateUsage = await TemplateUsage.find({ template: publicId }, { _id: 0, __v: 0 })
   .catch(function(error) {
       res.status(500).send();
   }); 
   res.json(templateUsage);
 });
 
-router.delete('/:name', authenticate(), async function(req, res, next) {
+router.delete('/:publicId', authenticate(), async function(req, res, next) {
   const username = req.username;
-  const name  = req.params.name;
+  const publicId  = req.params.publicId;
 
-  const template = await Template.findOneAndDelete({ creator: username, name })
+  const template = await Template.findOneAndDelete({ creator: username, publicId })
   .catch(function(error) {
       res.status(500).send();
   }); 

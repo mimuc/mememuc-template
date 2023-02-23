@@ -244,7 +244,7 @@ router.post('/', authenticate(), async function(req, res) {
             data_template.images = templateInDatabase.images;
             data_template.canvas = templateInDatabase.canvas;
 
-            newMeme.usedTemplate = template.name;
+            newMeme.usedTemplate = templateInDatabase.publicId;
         }
         const data = Object.assign(data_default, data_template, template);
         if(!Array.isArray(data.images)) {
