@@ -3,9 +3,9 @@ var router = express.Router();
 const axios = require('axios');
 const {authenticate} = require('../db/authentication');
 
-const {Template} = require('../db/models');
+const {Template, ImageResource} = require('../db/models');
 
-const EXCLUDE_PROPERTIES = { image: 0, _id: 0, __v: 0 };
+const EXCLUDE_PROPERTIES = { _id: 0, __v: 0 };
 
 router.get('/', authenticate(false), async function(req, res, next) {
 
@@ -48,8 +48,8 @@ router.delete('/:name', authenticate(), async function(req, res, next) {
 });
 
 router.post('/', authenticate(), async function(req, res) {
-  if(req.body.image == undefined && req.body.url == undefined) {
-    res.status(400).send('Please define a url or a base64 image to upload');
+  if(req.body.images == undefined && req.body.urls == undefined) {
+    res.status(400).send('Please define a list of image urls or base64 images to upload');
     return;
   }
 
@@ -60,13 +60,14 @@ router.post('/', authenticate(), async function(req, res) {
   const templateData = {
     name: req.body.name,
     visibility: req.body.visibility,
-    image: req.body.image,
+    images: [],
+    canvas: req.body.canvas,
     texts: req.body.texts,
     creator: req.username
   }
 
   if (!['unlisted', 'private', 'public'].includes(templateData.visibility)) {
-    res.status(400).send('Invalid visibility option: ' + templateData.visibility);
+    templateData.visibility = 'public';
   }
 
   const existingTemplate = await Template.findOne({ name: templateData.name });
@@ -75,20 +76,54 @@ router.post('/', authenticate(), async function(req, res) {
     return;
   }
 
-  if(!templateData.image && req.body.url) {
-    try {
-      const response = await axios.get(req.body.url, {responseType: 'arraybuffer'});
-      const imageBuffer = new Buffer.from(response.data, 'binary');
-      templateData.image = imageBuffer;
-      templateData.contentType = response.headers['content-type'];
-    } catch (error) {
-      res.status(400).send("The image could not be loaded: " + req.body.url);
-      return;
+  let publicIdSet = new Set();
+  for (const img of req.body.images) {
+    if(img.url == undefined) continue;
+    
+    let imageBuffer;
+    let contentType;
+
+    if(img.url.startsWith('data:image/')) { // image.url is base64
+      const base64Data = img.url.split(',')[1];
+      contentType = base64ImageString.split(';')[0].split(':')[1];
+      imageBuffer = Buffer.from(base64Data, 'base64');
     }
-  }
-  else {
-    templateData.contentType = templateData.image.split(',')[0].split(':')[1].split(';')[0];
-    templateData.image = Buffer.from(templateData.image, 'base64');
+    else { // image.url is an actual url
+        try {
+          const response = await axios.get(img.url, {responseType: 'arraybuffer'});
+          imageBuffer = new Buffer.from(response.data, 'binary');
+          contentType = response.headers['content-type']
+        } catch (error) {
+            console.error(error);
+            return res.status(400).send("The image could not be loaded: " + img.url);
+        }
+    }
+
+    const publicId = await ImageResource.generatePublicId(publicIdSet);
+    
+    const image = new ImageResource({
+      creator: req.username,
+      visibility: req.body.visibility,
+      image: imageBuffer,
+      contentType: contentType,
+      publicId
+    });
+
+    const imageDocument = await image.save()
+    .catch(function(error) {
+        if (error.name === 'ValidationError') {
+            res.status(400).send("The template data could not be validated.");
+        } else {
+            res.status(500).send();
+        }
+    });
+
+    templateData.images.push({
+      url: await imageDocument.getImageUrl(),
+      x: img.x,
+      y: img.y,
+      contentType: imageDocument.contentType
+    });
   }
   
   templateData.publicId = await Template.generatePublicId();
@@ -97,7 +132,7 @@ router.post('/', authenticate(), async function(req, res) {
     
   template.save()
   .then(async function(doc) {
-    res.status(201).json({...doc.toObject(), image: undefined, _id: undefined, __v: undefined, url: await doc.getImageUrl()});
+    res.status(201).json({...doc.toObject(), _id: undefined, __v: undefined});
   })
   .catch(function(error) {
       if (error.name === 'ValidationError') {

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const url = `http://${process.env.BE_DOMAIN}/resources/images/`;
-const urlFrontend = `http://${process.env.FE_DOMAIN}/`;
+const URL = `http://${process.env.BE_DOMAIN}/resources/images/`;
+const URL_FRONTEND = `http://${process.env.FE_DOMAIN}/`;
 
 const User = mongoose.model('User', new mongoose.Schema({
         username: { type: String, required: true, unique: true },
@@ -67,13 +67,29 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
                 return await Comment.countDocuments({ memePublicId: this.publicId });
             },
             async getImageUrl() {
-                return `${url}${this.publicId}`;
+                return `${URL}${this.publicId}`;
             },
             async getSingleViewUrl() {
-                return `${urlFrontend}memes/${this.publicId}`;
+                return `${URL_FRONTEND}memes/${this.publicId}`;
             },
             async getViewCount() {
                 return await View.countDocuments({ memePublicId: this.publicId });
+            },
+            async getVote(username) {
+                if(username == undefined) return 0;
+
+                const like = await Like.findOne({ username, memePublicId: this.publicId });
+                if(like) return 1;
+                
+                const dislike = await Dislike.findOne({ username, memePublicId: this.publicId });
+                if(dislike) return -1;
+
+                return 0;
+            },
+            async getCreatorDisplayName() {
+                const user = await User.findOne({ username });
+                if(user) return user.displayName;
+                else return "Unknown";
             }
         },
         statics: {
@@ -84,13 +100,68 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
     })
 );
 
+const ImageResource = mongoose.model('ImageResource', new mongoose.Schema({
+        creator: { type: String },
+        visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
+        image: { type: Buffer, required: true, default: 'image/png' },
+        publicId: { type: String, required: true, unique: true },
+        contentType: {
+            type: String, 
+            default: 'image/png',
+            enum: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+        }
+    },
+    {
+        id: false,
+        methods: {
+            async getImageUrl() {
+                return `${URL}${this.publicId}`;
+            }
+        },
+        statics: {
+            async generatePublicId(publicIdSet) {
+                return await generatePublicId(ImageResource, "i", publicIdSet);
+            }
+        }
+    })
+);
+
 const Template = mongoose.model('Template', new mongoose.Schema({
         name: { type: String, required: true, unique: true  },
         creator: { type: String },
         visibility: { type: String, enum: ['private', 'unlisted', 'public'], default: 'public' },
-        image: { type: Buffer, required: true },
+        images: [
+            { 
+                url: {
+                    type: String,
+                    required: true
+                }, 
+                x: {
+                    type: Number,
+                    default: 0
+                },
+                y: {
+                    type: Number,
+                    default: 0
+                },
+                contentType: {
+                    type: String, 
+                    default: 'image/png',
+                    enum: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+                }
+            }
+        ],
+        canvas: {
+            width: {
+                type: Number,
+                default: 700
+            },
+            height: {
+                type: Number,
+                default: 700
+            }
+        },
         publicId: { type: String, required: true, unique: true },
-        contentType: { type: String, default: 'image/png', enum: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] },
         createdAt: { type: Date, default: Date.now },
         texts: { type: Array }
     }, 
@@ -98,14 +169,6 @@ const Template = mongoose.model('Template', new mongoose.Schema({
         id: false,
         toObject: { virtuals: true },
         toJSON: { virtuals: true },
-        methods: {
-            async getImageUrl() {
-                return `${url}${this.publicId}`;
-            },
-            async getSingleViewUrl() {
-                return `${urlFrontend}templates/${this.publicId}`;
-            }
-        },
         statics: {
             async generatePublicId(publicIdSet) {
                 return await generatePublicId(Template, "t", publicIdSet);
@@ -113,10 +176,6 @@ const Template = mongoose.model('Template', new mongoose.Schema({
         }
     })
 );
-
-Template.schema.virtual('url').get(function() {
-    return `${url}${this.publicId}`;
-});
 
 const Comment = mongoose.model('Comment', new mongoose.Schema({
     content: { type: String, required: true },
@@ -178,5 +237,6 @@ module.exports = {
     Like,
     Dislike,
     Comment,
-    View
+    View,
+    ImageResource
 }

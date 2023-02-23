@@ -124,8 +124,22 @@ async function handleMemeFind(req) {
 async function handleMemesResponse(res, documents, format) {
 
     // Return the found memes
-    if(!Array.isArray(documents)) documents = {...documents.toObject(), image: undefined, _id: undefined, __v: undefined, imageUrl: await documents.getImageUrl(), singleViewUrl: await documents.getSingleViewUrl(), likes: await documents.getLikesCount(), dislikes: await documents.getDislikesCount(), comments: await documents.getCommentsCount(), views: await documents.getViewCount()};
-    else documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), image: undefined, _id: undefined, __v: undefined, imageUrl: await doc.getImageUrl(), singleViewUrl: await doc.getSingleViewUrl(), likes: await doc.getLikesCount(), dislikes: await doc.getDislikesCount(), comments: await doc.getCommentsCount(), views: await doc.getViewCount()}) ) ); 
+    if(!Array.isArray(documents)) documents = {...documents.toObject(), 
+        image: undefined, _id: undefined, __v: undefined, 
+        imageUrl: await documents.getImageUrl(), singleViewUrl: await documents.getSingleViewUrl(), 
+        likes: await documents.getLikesCount(), dislikes: await documents.getDislikesCount(), 
+        comments: await documents.getCommentsCount(), views: await documents.getViewCount(), 
+        vote: await doc.getVote(req.username),
+        creatorDisplayName: await doc.getCreatorDisplayName()
+    };
+    else documents = await Promise.all(documents.map(async doc =>  ({...doc.toObject(), 
+        image: undefined, _id: undefined, __v: undefined, 
+        imageUrl: await doc.getImageUrl(), singleViewUrl: await doc.getSingleViewUrl(), 
+        likes: await doc.getLikesCount(), dislikes: await doc.getDislikesCount(), 
+        comments: await doc.getCommentsCount(), views: await doc.getViewCount(), 
+        vote: await doc.getVote(req.username),
+        creatorDisplayName: await doc.getCreatorDisplayName()
+    }) ) ); 
     switch(format) {
         case 'json':
             res.json(documents);

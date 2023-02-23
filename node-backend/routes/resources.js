@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const {authenticate} = require('../db/authentication');
 
-const {Meme, Template} = require('../db/models');
+const {Meme, Template, ImageResource} = require('../db/models');
 
 router.get('/:type/:publicId', authenticate(false), async function(req, res, next) {
   const type = req.params.type;
@@ -25,9 +25,9 @@ router.get('/:type/:publicId', authenticate(false), async function(req, res, nex
           res.status(500).send(err);
       }
     }
-    else if(publicId.startsWith('t')) {
+    else if(publicId.startsWith('i')) {
       try {
-        const doc = await Template.findOne({ publicId });
+        const doc = await ImageResource.findOne({ publicId });
         if (!doc) {
             return res.status(404).send('Image not found');
         }

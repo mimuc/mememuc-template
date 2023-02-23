@@ -942,6 +942,9 @@ components:
     text:
       type: object
       properties:
+        text: 
+          type: string
+          description: The text to write
         x:
           type: number
           description: The x position of the text (default is middle)
