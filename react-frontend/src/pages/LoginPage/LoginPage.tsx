@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import { useState } from 'react';
 import {Button, Col, Form, Input, Row, theme, Typography} from "antd";
-import {Link/* , useHistory */} from "react-router-dom";
+import {Link, useNavigate } from "react-router-dom";
 
 const {Title, Text} = Typography;
 
@@ -9,7 +9,7 @@ const {Title, Text} = Typography;
 
 export const LoginPage = () => {
     const { token } = theme.useToken();
-    //const history = useHistory();
+    const navigate = useNavigate();
     const [error, setError] = useState('');
     // TODO: Provide feedback
     // TODO: Forward on success
@@ -29,8 +29,16 @@ export const LoginPage = () => {
             }
 
             const data = await response.json();
-            Cookies.set('token', data.token);
-            //history.push('/dashboard');
+
+            Cookies.remove('token');
+            Cookies.set('token', data.token, {
+                expires: Date.parse(data.expiryTime),
+                //httpOnly: true, 
+                sameSite: 'lax' 
+            });
+
+            if(window.history.length > 0 && window.history.state) navigate(-1);
+            else navigate('/');
         } catch (error) {
             console.error(error);
             //setError(error as string);

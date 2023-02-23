@@ -20,12 +20,13 @@ router.post('/login', async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-        return res.status(401).send({ message: 'Invalid username or password' });
+        return res.status(401).send({ message: 'Invalid username or password' });1
     }
     // Use the database id to sign the user, as it is unique, and should be kept secret anyway
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '6h' });
+    const expiryTime = new Date(Date.now() + 6 * 60 * 60 * 1000); // 6 hours from now
 
-    res.json({ token, displayName: user.displayName });
+    res.json({ token, displayName: user.displayName, expiryTime});
 });
 
 /* router.delete('/logout', authenticate, (req, res) => {
