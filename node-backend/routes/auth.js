@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
-    if (!username || !password) {
+    if (username == undefined || password == undefined) {
         return res.status(401).send('Username and password are required');
     }
 
