@@ -1,14 +1,17 @@
 import {authConfig, client} from "./base";
-import {MemeType} from "src/types";
+import {FilterType, MemeType} from "src/types";
 
-export const list = async (offset: number = 0, limit: number = 10) => {
+export const list = async (offset: number = 0, limit: number = 10, sort: 'latest' | 'popular' = 'latest', filter: FilterType = {creationDate: null}, search: string | null = null) => {
     // TODO: use this instead of all
-    return Promise.resolve([]);
+    // TODO: convert filter Date.parse()
+    return Promise.resolve<MemeType[]>([]);
 }
 
 export const all = () => {
+    //return Promise.resolve<MemeType[]>([]);
+
     return Promise.resolve(client.get('http://localhost:3001/memes', authConfig())
-    .then(res => res.data));
+        .then(res => res.data));
 }
 
 export const add = async (store: "unlisted" | "private" | "public", memeName: string, image: string, width: number, height: number) => {
@@ -38,29 +41,30 @@ const get = async (memeId: string) => {
 }
 
 
-const getRandomMeme = () => {
+const getRandomMeme = (filter: FilterType = {creationDate: null}, search: string | null = null) => {
+    // TODO: convert filter Date.parse()
     return client.get('http://localhost:3001/memes?sort=random&limit=1', authConfig())
-        .then(res => res.data[0]);
+        .then(res => res.data[0] as MemeType);
 }
 
 const upvote = (memeId: string) => {
     return Promise.resolve(client.put(`http://localhost:3001/memes/${memeId}/like`, {}, authConfig())
-    .then(res => res.data));
+        .then(res => res.data));
 }
 
 const upvoteRemove = (memeId: string) => {
     return client.delete(`http://localhost:3001/memes/${memeId}/like`, authConfig())
-    .then(res => res.data);
+        .then(res => res.data);
 }
 
 const downvote = (memeId: string) => {
     return client.put(`http://localhost:3001/memes/${memeId}/dislike`, {}, authConfig())
-    .then(res => res.data);
+        .then(res => res.data);
 }
 
 const downvoteRemove = (memeId: string) => {
     return Promise.resolve(client.delete(`http://localhost:3001/memes/${memeId}/dislike`, authConfig())
-    .then(res => res.data));
+        .then(res => res.data));
 }
 
 const addView = (memeId: string) => {

@@ -20,6 +20,10 @@ export type MemeType = {
     creatorDisplayName: string
 }
 
+export type FilterType = {
+    creationDate: Date | null
+}
+
 export type CommentType = {
     id: string;
     text: string;
