@@ -35,6 +35,7 @@ export type UserType = {
 
 export type SessionType = {
     username: string
+    displayName: string
 }
 
 

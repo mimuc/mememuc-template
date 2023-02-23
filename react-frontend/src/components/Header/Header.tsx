@@ -5,7 +5,7 @@ import {Alert, Button, Layout, theme, Typography} from "antd";
 import {LoginOutlined, LogoutOutlined} from "@ant-design/icons";
 import styled from "styled-components";
 import {config} from "src/config";
-import {useAuth, useSession} from "src/hooks";
+import {useAuth} from "src/hooks";
 
 type HeaderProps = {
     children?: ReactNode
@@ -46,8 +46,7 @@ const NetworkStatus = () => {
 
 export const Header = ({children}: HeaderProps) => {
     const {token} = theme.useToken();
-    const {logout} = useAuth();
-    const session = useSession();
+    const {session, logout} = useAuth();
 
     return (
         <LayoutHeader style={{backgroundColor: token.colorBgContainer}}>
