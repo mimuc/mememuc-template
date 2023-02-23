@@ -74,6 +74,17 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
             },
             async getViewCount() {
                 return await View.countDocuments({ memePublicId: this.publicId });
+            },
+            async getVote(username) {
+                if(username == undefined) return 0;
+
+                const like = await Like.findOne({ username, memePublicId: this.publicId });
+                if(like) return 1;
+                
+                const dislike = await Dislike.findOne({ username, memePublicId: this.publicId });
+                if(dislike) return -1;
+
+                return 0;
             }
         },
         statics: {
