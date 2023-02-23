@@ -14,9 +14,9 @@ export const ErrorPage = () => {
         }
     }
 
-    if (error.status == 404) {
+    if (error.status === 404) {
         errorMessage = "This page does not exist.";
-    } else if (error.status == 401) {
+    } else if (error.status === 401) {
         errorMessage = "You are not authorized to view this page.";
     } else {
         errorMessage = "An unknown error occurred.";
