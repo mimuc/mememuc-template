@@ -62,7 +62,7 @@ paths:
                   properties:
                     name:
                       type: string
-                      description: The name of the template that should be used. This template has to exist on the server, and will fill the texts, images, and canvas parameters with default values (which can be overridden).
+                      description: The name (not the publicId) of the template that should be used. This template has to exist on the server, and will fill the texts, images, and canvas parameters with default values (which can be overridden).
                     memeName:
                       type: string
                       description: The name of the meme
@@ -79,7 +79,20 @@ paths:
                         - type: string
                         - type: array
                           items:
-                            '#/components/parameters/image'
+                            type: object
+                            properties:
+                              url:
+                                type: string
+                                description: The image url or base64 string
+                              x:
+                                type: number
+                                description: The x position of the image on the canvas
+                              y:
+                                type: number
+                                description: The y position of the image on the canvas
+                              contentType:
+                                type: string
+                                description: The content type of the saved image, otherwise inferred from the url
                     canvas:
                       type: object
                       properties:
@@ -619,7 +632,7 @@ paths:
           description: Success
         '404':
           description: Template not found
-/templates/{publicId}/memes:
+  /templates/{publicId}/memes:
     get:
       summary: Returns all template usages of the template by memes
       tags:
@@ -1043,20 +1056,21 @@ components:
         textColor:
           type: string
           default: white
-    image:
+    imageComponent:
       type: object
       properties:
-        url: string
-        description: The image url
-      x:
-        type: number
-        description: The x position of the image on the canvas
-      y:
-        type: number
-        description: The y position of the image on the canvas
-      contentType:
-        type: string
-        description: The content type of the saved image, otherwise inferred from the url
+        url:
+          type: string
+          description: The image url
+        x:
+          type: number
+          description: The x position of the image on the canvas
+        y:
+          type: number
+          description: The y position of the image on the canvas
+        contentType:
+          type: string
+          description: The content type of the saved image, otherwise inferred from the url
     publicIdPathParam:
       in: path
       name: publicId
@@ -1221,10 +1235,23 @@ components:
           type: string
           enum: [private, unlisted, public]
           default: 'public'
-        image:
+        images:
           type: array
           items:
-            '#/components/parameters/image'
+            type: object
+            properties:
+              url:
+                type: string
+                description: The image url
+              x:
+                type: number
+                description: The x position of the image on the canvas
+              y:
+                type: number
+                description: The y position of the image on the canvas
+              contentType:
+                type: string
+                description: The content type of the saved image, otherwise inferred from the url
         canvas:
           type: object
           properties:
@@ -1242,11 +1269,11 @@ components:
           format: date-time
         texts:
           type: array
-            description: The list of texts that should be rendered. Using a simple string array will cause default values to be used.
-            items:
-              anyOf:
-                - type: string
-                - $ref: '#/components/parameters/text'
+          description: The list of texts that should be rendered. Using a simple string array will cause default values to be used.
+          items:
+            anyOf:
+              - type: string
+              - $ref: '#/components/parameters/text'
       required:
         - name
         - image
