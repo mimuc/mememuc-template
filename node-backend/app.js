@@ -59,7 +59,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// From https://stackoverflow.com/questions/46642960/authorization-header-in-img-src-link
+app.use(function(req, res, next) { //function setHeader
+  if(req.cookies && req.headers &&
+     !Object.prototype.hasOwnProperty.call(req.headers, 'authorization') &&
+     Object.prototype.hasOwnProperty.call(req.cookies, 'token') &&
+     req.cookies.token.length > 0
+   ) {
 
+    req.headers.authorization = 'Bearer ' + req.cookies.token.slice(0, req.cookies.token.length);
+  }
+  next();
+});
 
 
 // the login middleware. Requires BasicAuth authentication
