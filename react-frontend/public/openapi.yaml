@@ -1162,7 +1162,7 @@ components:
         likes:
           type: number
           description: The total number of likes the user created
-        doslikes:
+        dislikes:
           type: number
           description: The total number of dislikes the user created
         comments:
