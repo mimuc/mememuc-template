@@ -16,13 +16,16 @@ async function handleMemeFind(req) {
     };
     const query = Object.assign({}, query_default, req.query);
 
+    if(typeof query.limit != 'number') query.limit = query_default.limit;
+    if(typeof query.skip != 'number') query.skip = query_default.skip;
+
     query.limit = Math.min(100, Math.max(1, +query.limit));
     query.skip = Math.max(1, +query.skip);
 
     // The found memes
     let documents;
 
-    if(query.id) {
+    if(query.id != undefined) {
         // ID was given. The meme with the id is return inside an array.
         const publicId  = query.id;
         documents = await Meme.find({ publicId }, MEME_EXCLUDE_PROPERTIES).catch((e) => res.status(500).send());
@@ -209,11 +212,11 @@ async function handleGetMemeRequest(req={}, res={}, contentType='json') {
     }
     
     req.query = {
-        sort: req.query.sort,
+        sort: req.query.sort ?? 'newest',
         id: req.query.id,
-        limit: req.query.limit,
+        limit: req.query.limit ?? 10,
         creator: username,
-        skip: req.query.skip
+        skip: req.query.skip ?? 0
     };
 
     const documents = await handleMemeFind(req);
