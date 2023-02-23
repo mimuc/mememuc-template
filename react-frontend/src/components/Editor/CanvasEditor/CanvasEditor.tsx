@@ -1,32 +1,12 @@
-import {Layer, Stage} from 'react-konva';
-import {Col, InputNumber, Row, Space, theme} from "antd";
-import {ImageShape, TextShape} from "../Shape";
-import {useEditorState, useSelectedShapeIdState, useStageRef} from "src/states";
 import {useRef, useState} from "react";
+import {Layer, Stage} from 'react-konva';
+import {useEffectOnce} from "react-use";
+import {Col, InputNumber, Row, Space, theme} from "antd";
+import {useEditorState, useSelectedShapeIdState, useStageRef} from "src/states";
 import {AddImageButton, AddTextButton, ClearButton, CreateButton} from 'src/components/Buttons';
-import {useEffectOnce, useToggle} from "react-use";
-import {
-    BoldOutlined,
-    CloseCircleOutlined,
-    DeleteOutlined,
-    FontColorsOutlined,
-    FontSizeOutlined
-} from "@ant-design/icons";
-import {TwitterPicker} from "react-color";
-import styled from "styled-components";
-import {ContextMenu} from "src/components/Editor/ContextMenu/ContextMenu";
+import {ImageShape, TextShape} from "../Shape";
+import {ContextMenu} from "../ContextMenu/ContextMenu";
 
-// TOOD: align columns vertically
-// div style={{
-//     display: 'flex',
-//         position: 'relative',
-//         alignItems: 'center',
-//         backgroundColor: 'white',
-//         border: 'solid 1px lightgray',
-//         borderRadius: 10,
-//         paddingInline: 8,
-//         paddingBlock: 4
-// }}
 export const CanvasEditor = () => {
     const {token} = theme.useToken();
     const [shapes,] = useEditorState();
@@ -54,7 +34,7 @@ export const CanvasEditor = () => {
     return (
         <Space direction={'vertical'} size={'large'} style={{width: '100%'}}>
             <Row>
-                <Col span={5} style={{display: 'flex', alignItems: 'center'}}>
+                <Col span={7} style={{display: 'flex', alignItems: 'center'}}>
                     Canvas Size (w x h):
                     <InputNumber min={100} max={1000} value={width} style={{width: 70, marginInline: token.marginXS}}
                                  onChange={setWidth as any}/>

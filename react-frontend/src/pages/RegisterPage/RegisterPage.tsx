@@ -1,5 +1,5 @@
-import {Button, Col, Form, Input, Row, theme, Typography} from "antd";
 import {Link} from "react-router-dom";
+import {Button, Col, Form, Input, Row, theme, Typography} from "antd";
 
 const {Title, Text} = Typography;
 

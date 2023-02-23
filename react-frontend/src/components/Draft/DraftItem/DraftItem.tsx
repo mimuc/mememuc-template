@@ -1,7 +1,7 @@
-import {DraftType, ImageShapeInterface} from "src/types";
-import {useDrafts} from "src/hooks";
 import {Button} from "antd";
 import {DeleteOutlined} from "@ant-design/icons";
+import {useDrafts} from "src/hooks";
+import {DraftType, ImageShapeInterface} from "src/types";
 
 type DraftItemProps = {
     draft: DraftType
@@ -37,11 +37,11 @@ export const DraftItem = ({draft}: DraftItemProps) => {
             }} onClick={handleLoad}>
                 {firstImage &&
                     <img src={firstImage.url} style={{objectFit: 'contain', width: '100%', height: '100%'}}
-                         alt={'TemplateItem Image'}/>}
+                         alt={'Template'}/>}
             </div>
             <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                 <span style={{color: 'darkslategray'}}>
-                    {numberImages} image{numberImages != 1 ? 's' : ''}, {numberTexts} text{numberTexts != 1 ? 's' : ''}
+                    {numberImages} image{numberImages !== 1 ? 's' : ''}, {numberTexts} text{numberTexts !== 1 ? 's' : ''}
                 </span>
                 <Button icon={<DeleteOutlined/>} onClick={handleDelete} danger/>
             </div>

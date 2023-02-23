@@ -1,6 +1,5 @@
-import {Dropdown, MenuProps, message, Modal} from "antd";
+import {Dropdown, MenuProps, message} from "antd";
 import { useCreateMemeModal, useCreateTemplateModal, useDownloadModal, useDrafts} from "src/hooks";
-
 
 const createButtonOptions: MenuProps['items'] = [
     {

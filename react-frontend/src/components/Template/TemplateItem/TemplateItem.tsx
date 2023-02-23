@@ -1,6 +1,6 @@
 import {theme, Typography} from "antd";
-import {ImageShapeInterface, TemplateType as TemplateType, TextShapeInterface} from "src/types";
 import {useEditorState} from "src/states";
+import {ImageShapeInterface, TemplateType, TextShapeInterface} from "src/types";
 
 type TemplateItemProps = {
     template: TemplateType;
@@ -11,6 +11,8 @@ type TemplateItemProps = {
 const {Title} = Typography;
 
 export const TemplateItem = ({template, selected, onSelect}: TemplateItemProps) => {
+    // TODO: add button to open modal containing template statistics
+
     const {token} = theme.useToken();
     const [shapes, setShapes] = useEditorState();
 
@@ -67,11 +69,11 @@ export const TemplateItem = ({template, selected, onSelect}: TemplateItemProps) 
             }} onClick={handleSelect}>
                 {firstImage &&
                     <img src={firstImage.url} style={{objectFit: 'contain', width: '100%', height: '100%'}}
-                         alt={'TemplateItem Image'}/>}
+                         alt={'Template'}/>}
             </div>
             <Title level={5} style={{marginBottom: 0, whiteSpace: 'break-spaces'}}>{template.name}</Title>
             <span style={{color: 'darkslategray'}}>
-                {numberImages} image{numberImages != 1 ? 's' : ''}, {numberTexts} text{numberTexts != 1 ? 's' : ''}
+                {numberImages} image{numberImages !== 1 ? 's' : ''}, {numberTexts} text{numberTexts !== 1 ? 's' : ''}
             </span>
         </div>
     );
