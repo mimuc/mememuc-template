@@ -1,3 +1,6 @@
+import Cookies from 'js-cookie';
+import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
 import {MemeType} from "src/types";
 import {
     Chart as ChartJS,
@@ -8,6 +11,7 @@ import {
     Title,
     Tooltip,
     Legend,
+    ChartData,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -38,31 +42,120 @@ export const options = {
     },
   };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: labels.map(() => 1),
-      borderColor: 'rgb(255, 99, 132)',
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
-    },
-    {
-      label: 'Dataset 2',
-      data: labels.map(() => 1),
-      borderColor: 'rgb(53, 162, 235)',
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    },
-  ],
-};
-
 export const MemeStat = ({meme}: MemeStatProps) => {
+    const [data, setData] = useState<ChartData<"line">>();
+    const componentIsMounted = useRef(true);
+
+    useEffect(() => {
+        // each useEffect can return a cleanup function
+        async function fetchData() {
+            try {
+                const response_views = await axios(`http://localhost:3001/memes/${meme.publicId}/views`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get("token")}`,
+                    }
+                });
+
+                const response_likes = await axios(`http://localhost:3001/memes/${meme.publicId}/likes`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get("token")}`,
+                    }
+                });
+
+                const response_comments = await axios(`http://localhost:3001/memes/${meme.publicId}/comments`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get("token")}`,
+                    }
+                });
+
+                const views = response_views.data;
+                const likes = response_likes.data;
+                const comments = response_comments.data;
+
+                // Aggregate the data from the last daysAmount days
+                const daysAmount = 7;
+                const today = new Date();
+                const days = Array.from({ length: daysAmount }, (_, i) => {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    return { date: dayName, views: 0, likes: 0, comments: 0 };
+                });
+
+                for (const view of views) {
+                    const viewDate = Date.parse(view.createdAt);
+                    const diffTime = Math.abs(today.getTime() - viewDate);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays < 7) {
+                        const day = days[6 - diffDays];
+                        day.views += 1;
+                    }
+                }
+
+                for (const like of likes) {
+                    const viewDate = Date.parse(like.createdAt);
+                    const diffTime = Math.abs(today.getTime() - viewDate);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays < 7) {
+                        const day = days[6 - diffDays];
+                        day.likes += 1;
+                    }
+                }
+
+                for (const comment of comments) {
+                    const viewDate = Date.parse(comment.createdAt);
+                    const diffTime = Math.abs(today.getTime() - viewDate);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays < 7) {
+                        const day = days[6 - diffDays];
+                        day.comments += 1;
+                    }
+                }
+
+                console.log("Days", days);
+
+                const labels = days.map(d => d.date);
+
+                const data = {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Views',
+                            data: days.map(d => d.views),
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        },
+                        {
+                            label: 'Comments',
+                            data: days.map(d => d.comments),
+                            borderColor: 'rgb(53, 162, 235)',
+                            backgroundColor: 'rgba(53, 162, 235, 0.5)',
+                        },
+                        {
+                            label: 'Likes',
+                            data: days.map(d => d.likes),
+                            borderColor: 'rgb(42, 222, 89)',
+                            backgroundColor: 'rgba(42, 222, 89, 0.5)',
+                        }
+                    ]
+                }
+                if (componentIsMounted.current) {
+                    setData(data);
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchData();
+      }, []);
+
     return (
         <div style={{height: 500}}>
-            HAWSE
-            <Line options={options} data={data} />
+            {data && <Line options={options} data={data} />}
         </div>
     )
 }
