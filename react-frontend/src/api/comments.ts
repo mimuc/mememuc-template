@@ -13,14 +13,14 @@ const mapComment = ((data: {content: string, publicId: string, createdAt: string
 });
 
 const forMeme = async (memeId: string) => {
-    return client.get(`http://localhost:3001/memes/${memeId}/comments`, authConfig())
+    return client.get(`/memes/${memeId}/comments`, authConfig())
     .then(res => {
         return res.data.map((d: { content: string; publicId: string; createdAt: string; creatorDisplayName: string; }) => mapComment(d));
     });
 }
 
 const add = async (memeId: string, text: string) => {
-    return client.post(`http://localhost:3001/memes/${memeId}/comments`, {
+    return client.post(`/memes/${memeId}/comments`, {
         content: text,
         memePublicId: memeId
     }, authConfig())
