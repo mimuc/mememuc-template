@@ -1,4 +1,5 @@
 import {CommentType} from "src/types";
+import { authConfig, client } from "./base";
 
 const mock = [
     {
@@ -116,14 +117,39 @@ const mock = [
     }
 ] as CommentType[];
 
-const forMeme = (memeId: string) => {
-    return Promise.resolve<CommentType[]>(mock)
+const mapComment = ((data: {content: string, publicId: string, createdAt: string, creatorDisplayName: string}) => {
+    return {
+        text: data.content,
+        id: data.publicId,
+        createdAt: data.createdAt,
+        user: {
+            name: data.creatorDisplayName
+        }
+    } as CommentType;
+});
+
+const forMeme = async (memeId: string) => {
+    return client.get(`http://localhost:3001/memes/${memeId}/comments`, authConfig())
+    .then(res => {
+        return res.data.map((d: { content: string; publicId: string; createdAt: string; creatorDisplayName: string; }) => mapComment(d));
+    });
 }
 
-const add = (memeId: string, text: string) => {
-    return Promise.resolve<CommentType>({text, createdAt: new Date().toDateString(), id: 'new'})
+const add = async (memeId: string, text: string) => {
+    return client.post(`http://localhost:3001/memes/${memeId}/comments`, {
+        content: text,
+        memePublicId: memeId
+    }, authConfig())
+    .then(res => {
+        return mapComment(res.data);
+    });
 }
 
 export const comments = {
     forMeme, add
 }
+
+/* const forMeme = (memeId: string) => {
+    return client.get(`http://localhost:3001/memes/${memeId}/comments`, authConfig())
+    .then(res => res.data as CommentType);
+} */

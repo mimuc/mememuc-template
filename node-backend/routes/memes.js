@@ -392,8 +392,8 @@ router.post('/:publicId/comments', authenticate(), async function(req, res, next
 
     const comment = new Comment({ username, memePublicId, content, publicId: commentId });
     comment.save()
-    .then(function() {
-        return res.status(201).json('Comment created');
+    .then(async function(doc) {
+        return res.status(201).json({...doc.toObject(), creatorDisplayName: await doc.getCreatorDisplayName()});
     })
     .catch(function(error) {
         return res.status(500).send();
