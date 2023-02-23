@@ -1,7 +1,12 @@
-import {client} from './base';
+import {MemeType, SessionType} from "src/types";
+import {client} from "src/api/base";
 
 const account = () => {
-    return Promise.resolve({})
+    return client.get<SessionType>('/my').then(res => res.data);
 }
 
-export const my = {account}
+const memes = () => {
+    return Promise.resolve<MemeType[]>([])
+}
+
+export const my = {account, memes}
