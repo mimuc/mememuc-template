@@ -39,7 +39,7 @@ router.post('/create', function(req, res, next) {
 
   }
   users.insert(model) // return all user properties, except the basic auth token
-      .then((result) => res.status(200).send("user created"))
+      .then((result) => res.status(200).send(result._id))
       .catch((e) => res.status(500).send())
 });
 

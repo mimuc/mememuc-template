@@ -53,8 +53,9 @@ const Login = ({ onLogin, onSignup, usernames }) => {
               'Content-Type': 'application/json'
             }
           })
-            .then(() => {
+            .then((result) => {
             localStorage.setItem("username",username);
+            localStorage.setItem("userId",result);
             console.log("username created "+username)
             }
             )
