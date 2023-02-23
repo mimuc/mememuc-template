@@ -1,23 +1,38 @@
-import { Link } from 'react-router-dom';
+import {useNavigate, useRouteError} from 'react-router-dom';
+import {Button} from "antd";
 
 export const ErrorPage = () => {
-  const code = 'Unknown';
-  // TODO: get error
-  // TODO: write useful error page
-  // TODO: add back button
-  return (
-    <div className={'flex h-screen'}>
-      <div className={'inline-block mx-auto mt-80'}>
-        <h1 className={'inline-block text-3xl font-bold mb-4'}>{code} Error</h1>
-        <p>An error occurred.</p>
-        <Link
-          to={'/'}
-          className={
-            'underline text-blue-600 hover:text-blue-800 visited:text-purple-600 mt-8 inline-block'
-          }>
-          Start
-        </Link>
-      </div>
-    </div>
-  );
+    const navigate = useNavigate();
+    const error: any = useRouteError();
+    let errorMessage;
+
+    const handleBack = () => {
+        if(window.history.length > 0 && window.history.state) {
+            navigate(-1);
+        } else {
+            navigate('/');
+        }
+    }
+
+    if (error.status == 404) {
+        errorMessage = "This page does not exist.";
+    } else if (error.status == 401) {
+        errorMessage = "You are not authorized to view this page.";
+    } else {
+        errorMessage = "An unknown error occurred.";
+    }
+
+    return (
+        <div style={{display: 'flex', justifyContent: 'center', paddingTop: 200, height: '100vh'}}>
+            <div>
+                <h1>{error.status} Error</h1>
+                <p>{errorMessage}</p>
+                <Button
+                    onClick={handleBack}
+>
+                    Back
+                </Button>
+            </div>
+        </div>
+    );
 };
