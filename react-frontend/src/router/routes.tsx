@@ -1,6 +1,6 @@
 import {Outlet, RouteObject} from "react-router-dom";
 import {BasicLayout, MemeLayout} from "src/layouts";
-import {ApiPage, EditorPage, LoginPage, MemeListPage, ProfilePage, RegisterPage, SingleMemePage, StatisticsPage} from "src/pages";
+import {ApiPage, EditorPage, LoginPage, MemeListPage, ProfilePage, RegisterPage, SingleMemePage} from "src/pages";
 import {ErrorPage} from "./ErrorPage/ErrorPage";
 
 const BasicWrapper = () => {
@@ -57,10 +57,6 @@ export const routes: RouteObject[] = [
                     {
                         path: 'register',
                         element: <RegisterPage/>
-                    },
-                    {
-                        path: 'statistics',
-                        element: <StatisticsPage/>
                     }
                 ]
             }

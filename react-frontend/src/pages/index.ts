@@ -5,4 +5,3 @@ export * from './Meme/SingleMemePage/SingleMemePage';
 export * from './Meme/MemeListPage/MemeListPage';
 export * from './ProfilePage/ProfilePage';
 export * from './RegisterPage/RegisterPage';
-export * from './StatisticsPage/StatisticsPage';

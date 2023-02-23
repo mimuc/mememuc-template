@@ -1298,6 +1298,9 @@ components:
           type: string
           required: true
           unique: true
+        creatorDisplayName:
+          type: string
+          description: The display name of the creator
       required:
         - content
         - username

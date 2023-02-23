@@ -64,8 +64,8 @@ export const Header = ({children}: HeaderProps) => {
                                  style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>Memes</NavLink>
                         <NavLink to={'/profile'}
                                  style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>Profile</NavLink>
-                        <NavLink to={'/statistics'}
-                                 style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>Statistics</NavLink>
+                        <NavLink to={'/api'}
+                                 style={({isActive}) => ({textDecoration: `${isActive ? 'underline' : 'none'}`})}>API</NavLink>
                     </Navigation>
                 </div>
                 <div style={{display: 'inline-flex', alignItems: 'center'}}>
