@@ -1,4 +1,3 @@
-import {useEffect, useState} from "react";
 import {useEffectOnce, useLocalStorage} from "react-use";
 import {useNavigate} from "react-router-dom";
 import uuid from "react-uuid";
@@ -51,7 +50,7 @@ export const useTemplates = () => {
     });
 
     const addTemplate = async (name: string, shapes: ShapeInterface[]) => {
-        await api.templates.add(name, shapes);
+        await api.templates.add(name, shapes, {width: 700, height: 700});
 
         // Replace text with placeholders
         const templateShapes = shapes.map(s => s.type === 'text' ? {...s, text: 'Text Here'} : s);
