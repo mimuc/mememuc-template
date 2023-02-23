@@ -369,30 +369,43 @@ export const useMeme = (id: string) => {
     })
 
     const toggleLike = async () => {
-        if(!meme) return;
+        if (!meme) return;
 
         if (meme.vote === 1) {
-            await api.memes.downvote(meme.publicId)
+            await api.memes.upvoteRemove(meme.publicId)
             const updatedMeme = {...meme, likes: meme.likes - 1, vote: 0};
             setMeme(updatedMeme)
             setMemes(prev => prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
         } else {
             await api.memes.upvote(meme.publicId)
-            const updatedMeme = {...meme, likes: meme.likes + 1, vote: 1};
+            const updatedMeme = {
+                ...meme, likes: meme.likes + 1,
+                dislikes: meme.vote === -1 ? meme.dislikes - 1 : meme.dislikes,
+                vote: 1
+            };
             setMeme(updatedMeme)
             setMemes(prev => prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
         }
     }
 
     const toggleDislike = async () => {
-        if(!meme) return;
+        if (!meme) return;
 
         if (meme.vote === -1) {
-            await api.memes.upvote(meme.publicId)
-            setMemes(prev => prev && prev.map(m => m.publicId === meme.publicId ? {...m, vote: 0} : m))
+            await api.memes.downvoteRemove(meme.publicId)
+            const updatedMeme = {...meme, dislikes: meme.dislikes - 1, vote: 0};
+            setMeme(updatedMeme)
+            setMemes(prev => prev && prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
         } else {
             await api.memes.downvote(meme.publicId)
-            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, vote: -1} : m))
+            const updatedMeme = {
+                ...meme,
+                dislikes: meme.dislikes + 1,
+                likes: meme.vote === 1 ? meme.likes - 1 : meme.likes,
+                vote: -1
+            };
+            setMeme(updatedMeme)
+            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
         }
     }
 
