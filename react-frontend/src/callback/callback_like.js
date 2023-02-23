@@ -1,19 +1,15 @@
-const localserv = "http:/localhost:27017"
+const localserv = "http://localhost:3001"
 
-async function like_post(post_id) {
+//when you like the post, you need to remove the dislike if the user disliked the post 
+
+async function like_post(post_id,user_id,genre) {
     try {
-    
-      const res = await fetch(localserv+"/like/create", {
-      method: 'POST',
+      console.log(`the post ${post_id} is liked by ${user_id}`);
+      const res = await fetch(localserv+`/likes/create?user_id=${user_id}&post_id=${post_id}&genre=${genre}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user_id:"",
-        post_id:"",
-        date:"",
-        genre:""
-      })
+      }
     });
   
     }
@@ -21,3 +17,5 @@ async function like_post(post_id) {
       console.error(error);
     }
   }
+
+  module.exports = {like_post};

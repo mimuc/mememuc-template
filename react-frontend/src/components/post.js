@@ -1,7 +1,11 @@
 // Component for one post - include post id
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Button from "../components/button";
 import Input from "../components/input";
+const localserver = "http://localhost:3001";
+const Like = require ("../callback/callback_like");
+const Comment = require ("../callback/callback_comment");
+
 
 const style = {
     //border: "4px solid #9CC694",
@@ -25,33 +29,128 @@ const stylecom = {
     color: '#565656',
   };
 
-const PostComponent = () => {
+const PostComponent = ( props) => {
     //like button function
     //need to set like usestate from 456 to the number of likes specific to the post ID
-    const [like, setLike] = useState(456),
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [username, setUsername] = useState("test");
+    const isMounted = useRef(false);
+    
+
+    
+    const fetchUsername = async () => {
+        await setIsLoading(true);
+        await fetch(`${localserver}/users` + "?user_id="+props.user_id)
+          .then((response) => {
+            /*if (!response.ok) {
+              throw new Error('Network response was not OK');
+            }*/
+            return response.json();
+          })
+          .then((data) => {
+            if(data.length !==0){
+              setUsername(data.name);
+              
+            setIsLoading(false);
+            
+              }
+            
+          })
+          .catch((error) => console.log(error));
+      };
+    const [like, setLike] = useState(props.likes),
         [isLike, setIsLike] = useState(false),
 
         onLikeButtonClick = () => {
             setLike(like + (isLike ? -1 : 1));
             setIsLike(!isLike);
-            if (isDislike) { setDislike(dislike - 1); setIsDislike(!isDislike) };
+            if(!isLike){
+                console.log(`the post ${props.id} es like par ${props.user_id}`);
+                
+                Like.like_post(props.id,props.user_id,"like")
+            }
+            if (isDislike) { 
+                setDislike(dislike - 1); 
+                setIsDislike(!isDislike) 
+            };
         }
 
+    const getComment = (comment_id) => {
+        
+        
+        return fetch(`${localserver}/comments/id` + "?comment_id="+comment_id)
+        .then(
+        
+        (result) => {
+            
+           
+           
+            if (result){
+            return result.json();
+            }
+        }
+    ).then(data => {
+        console.log("this is the comment you get"+JSON.stringify(data));
+        return data.text;
+    })
+    .catch((error)=> {
+        console.log(error);
+        return error
+    });
+
+
+    }
+    const fetchComments = async (comments) => {
+        
+        const commentIds = comments;
+        comments.forEach(element => {
+            console.log(" comment id in post component" + element)
+        });
+        const allComments = await Promise.all(commentIds.map(async item => {
+            await setIsLoading(true);
+            
+            const mycomment = await getComment(item)
+              .then((data) => {
+                console.log("look at this data"+data);
+                if(data.length !==0){
+                    setComCounter(comCounter + 3);
+                    console.log("data text is equal to"+data);
+                    setListCom([...listCom,data]);
+                  
+                setIsLoading(false);
+                
+                  }
+                
+              })
+              .catch((error) => console.log(error));
+          
+            return mycomment;
+          }))
+
+          return allComments;
+
+    }
     //dislike button function
     //need to set dislike usestate from 12 to the number of dislikes specific to the post ID
-    const [dislike, setDislike] = useState(12),
+    const [dislike, setDislike] = useState(props.dislikes),
         [isDislike, setIsDislike] = useState(false),
 
         onDislikeButtonClick = () => {
             setDislike(dislike + (isDislike ? -1 : 1));
             setIsDislike(!isDislike);
+            if(!isDislike){
+                console.log(`the post ${props.id} es like par ${props.user_id}`);
+                Like.like_post(props.id,props.user_id,"dislike")
+                }
             if (isLike) { setLike(like - 1); setIsLike(!isLike) };
         }
 
     //comment button function - changes the state between true and false when comment button is clicked to trigger expansion of comments section
     // number/list of comments could be set here but functionality not yet implemented
-    const [listCom, setListCom] = useState(["Wow cool meme!", "Love it"]),
+    const [listCom, setListCom] = useState([]),
         [newinpt, setNewinpt] = useState(""),
+        [comCounter, setComCounter] = useState(0),
         [comExp, setComExp] = useState(false),
         onCommentButtonClick = () => {
             setComExp(!comExp);
@@ -59,10 +158,31 @@ const PostComponent = () => {
 
     const handleSubmit=(e)=>{
         e.preventDefault();
-        console.log(newinpt)
-        setListCom((ls)=> [...ls,newinpt])
-        setNewinpt("")
+        
+        Comment.commentPost(props.post_id,props.user_id,newinpt);
+        setListCom((ls)=> [...ls,newinpt]);
+        setNewinpt("");
     }
+
+    useEffect(()=>{
+        if (isMounted.current === false){
+        const effect = async () => {
+        await fetchUsername();
+        if (props.comments != []){
+        await fetchComments(props.comments);
+        }
+        console.log("comments props "+props.comments)
+        
+        //*await fetchComments(props.comments);**/
+        }
+        effect();
+        isMounted.current = true;
+    }else{
+        console.log("component already mounted");
+    }
+    },[]
+    
+    )
 
     //Here is the format of the post component, replace username and description with the corresponding one from the post ID
     return (
@@ -73,8 +193,8 @@ const PostComponent = () => {
                 alignItems: "left",
                 justifyContent: "left",
             }}>
-                Username</div>
-            <div className = "postdescr">This is the description of the meme!</div>
+                {username}</div>
+            <div className = "postdescr">{props.id}</div>
             <br></br>
             <div
             style={{
@@ -82,8 +202,8 @@ const PostComponent = () => {
                 alignItems: "center",
                 justifyContent: "center",
             }}>
-            <div class="square">
-                <p>Meme pic here</p>
+            <div className="square">
+            <img src={`data:image/jpeg;base64,${props.image}`} alt=""/>
             </div>
             </div>
             <br></br>
@@ -158,9 +278,11 @@ const PostComponent = () => {
             
         </div>
     );
-}
+                        }                     
 
-const Post = ({ type, variant, className, id, onClick, size, children }) => {
+const Post = ({ image,type, variant, className, id, onClick, size, children, user_id, comments,likes,dislikes }) => {
+    
+    
     return <PostComponent
         type={type ? type : "post"}
         variant={variant}
@@ -168,6 +290,11 @@ const Post = ({ type, variant, className, id, onClick, size, children }) => {
         id={id}
         onClick={onClick}
         size={size}
+        user_id={user_id}
+        image = {image}
+        comments = {comments}
+        likes = {likes}
+        dislikes = {dislikes}
     >
         {children}
     </PostComponent >
