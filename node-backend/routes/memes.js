@@ -253,8 +253,8 @@ router.post('/', authenticate(), async function(req, res) {
         let inferContentType = false;
         if(!Array.isArray(data.images)) {
             data.images = [{url: data.images}];
-            inferContentType = true;
         }
+        if(data.images.length === 1) inferContentType = true;
         
         const loadedImages = [];
         for (const img of data.images) {
