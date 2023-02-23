@@ -17,9 +17,9 @@ const MyMemeList = () => {
             {
                 myMemesLoadable.value.map((meme) => (
                     <Col span={8}>
-                        <Link to={`/memes/${meme.id}`}>
+                        <Link to={`/memes/${meme.publicId}`}>
                             <Card hoverable title={meme.name}>
-                                <img src={meme.image} alt={'Meme'}
+                                <img src={meme.imageUrl} alt={'Meme'}
                                      style={{width: "100%", height: "100%", objectFit: 'contain'}}/>
                             </Card>
                         </Link>
@@ -39,7 +39,7 @@ export const ProfilePage = () => {
             <Title level={2}>Your Drafts</Title>
             <DraftList/>
             <Title level={2} style={{marginTop: token.marginXXL}}>Your Memes</Title>
-            {!session ? <MyMemeList/> :
+            {session ? <MyMemeList/> :
                 <Alert showIcon message={<>You are not logged in. <Link to={'/login'}>Login</Link></>}/>}
         </>
     )
