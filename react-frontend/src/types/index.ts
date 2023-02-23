@@ -9,7 +9,7 @@ export type MemeType = {
     name: string;
     imageUrl: string;
     likes: number;
-    totalDislikes: number;
+    dislikes: number;
     comments: number;
     createdAt: string;
     vote: number;

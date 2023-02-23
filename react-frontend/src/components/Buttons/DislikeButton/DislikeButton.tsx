@@ -13,7 +13,7 @@ const {Text} = Typography;
 
 export const DislikeButton = ({meme}: DislikeButtonProps) => {
     const [, setMemes] = useMemesState()
-    const totalDislikes = abbreviateNumber(meme.totalDislikes)
+    const totalDislikes = abbreviateNumber(meme.dislikes)
 
     const handleDislikeToggle = async () => {
         if (meme.vote === -1) {

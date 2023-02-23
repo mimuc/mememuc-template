@@ -10,7 +10,7 @@ var router = express.Router();
 const axios = require('axios');
 const archiver = require('archiver');
 const Canvas = require('canvas');
-const {Meme, User, Template, Like, Comment, View} = require('../db/models');
+const {Meme, User, Template, Like, Dislike, Comment, View} = require('../db/models');
 const {authenticate} = require('../db/authentication');
 const {handleMemeFind, handleMemesResponse} = require('../db/memeUtils');
 const {renameDuplicates} = require('../utils/utils');
@@ -477,6 +477,11 @@ router.put('/:publicId/like', authenticate(), async function(req, res, next) {
         return res.status(404).send("Meme not found");
     }
 
+    await Dislike.findOneAndDelete({ username, memePublicId })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+
     const existingLike = await Like.findOne({ username, memePublicId })
     .catch(function(error) {
         return res.status(500).send();
@@ -490,6 +495,48 @@ router.put('/:publicId/like', authenticate(), async function(req, res, next) {
     like.save()
     .then(function() {
         return res.status(201).send('Meme was liked by the user');
+    })
+    .catch(function(error) {
+        return res.status(500).send();
+    });
+});
+
+router.put('/:publicId/dislike', authenticate(), async function(req, res, next) {
+    const username = req.username;
+    const memePublicId = req.params.publicId;
+
+    if(username == undefined) return res.status(401).send();
+
+    // Check visibility permissions of meme
+    req.query = {
+        id: memePublicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
+    await Like.findOneAndDelete({ username, memePublicId })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+
+    const existingDislike = await Dislike.findOne({ username, memePublicId })
+    .catch(function(error) {
+        return res.status(500).send();
+    });
+
+    if (existingDislike) {
+        return res.status(409).send("Meme was already disliked by the user");
+    }
+
+    const dislike = new Dislike({ username, memePublicId });
+    dislike.save()
+    .then(function() {
+        return res.status(201).send('Meme was disliked by the user');
     })
     .catch(function(error) {
         return res.status(500).send();
@@ -510,6 +557,19 @@ router.delete('/:publicId/like', authenticate(), async function(req, res, next) 
     else return res.status(409).send();
 });
 
+router.delete('/:publicId/dislike', authenticate(), async function(req, res, next) {
+    const username = req.username;
+    const memePublicId = req.params.publicId;
+    if(username == undefined) return res.status(401).send();
+    const dislike = await Dislike.findOneAndDelete({ username, memePublicId })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+    
+    if(dislike) return res.status(200).send();
+    else return res.status(409).send();
+});
+
 // Checks whether the authenticated user liked the meme
 router.get('/:publicId/like', authenticate(), async function(req, res, next) {
     const username = req.username;
@@ -518,6 +578,15 @@ router.get('/:publicId/like', authenticate(), async function(req, res, next) {
     const like = await Like.findOne({ username, memePublicId });
     if(like) req.send(200, {"liked": true});
     else req.send(200, {"liked": false});
+});
+
+router.get('/:publicId/dislike', authenticate(), async function(req, res, next) {
+    const username = req.username;
+    const memePublicId = req.params.publicId;
+    if(username == undefined) return res.status(401).send();
+    const dislike = await Dislike.findOne({ username, memePublicId });
+    if(dislike) req.send(200, {"disliked": true});
+    else req.send(200, {"disliked": false});
 });
 
 router.get('/:publicId/likes', authenticate(false), async function(req, res, next) {
@@ -540,6 +609,28 @@ router.get('/:publicId/likes', authenticate(false), async function(req, res, nex
         res.status(500).send();
     }); 
     res.json(likes);
+});
+
+router.get('/:publicId/dislikes', authenticate(false), async function(req, res, next) {
+    const memePublicId = req.params.publicId;
+
+    // Check visibility permissions of meme
+    req.query = {
+        id: memePublicId
+    };
+    const documents = await handleMemeFind(req);
+    if(typeof(documents) === 'number') { // error code returned
+        return res.status(documents).send();
+    }
+    if(documents.length === 0) {
+        return res.status(404).send("Meme not found");
+    }
+
+    const dislikes = await Dislike.find({ memePublicId }, { _id: 0, __v: 0 })
+    .catch(function(error) {
+        res.status(500).send();
+    }); 
+    res.json(dislikes);
 });
 
 router.get('/:publicId/views', authenticate(false), async function(req, res, next) {

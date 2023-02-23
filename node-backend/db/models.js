@@ -13,10 +13,18 @@ const User = mongoose.model('User', new mongoose.Schema({
             async getLikesCount() {
                 return await Like.countDocuments({ username: this.username });
             },
+            async getDislikesCount() {
+                return await Dislike.countDocuments({ username: this.username });
+            },
             async getLikesReceivedCount() {
                 const memes = await Meme.find({ creator: this.username });
                 const memeIds = memes.map(meme => meme.publicId);
                 return await Like.countDocuments({ memePublicId: { $in: memeIds } });
+            },
+            async getDislikesReceivedCount() {
+                const memes = await Meme.find({ creator: this.username });
+                const memeIds = memes.map(meme => meme.publicId);
+                return await Dislike.countDocuments({ memePublicId: { $in: memeIds } });
             },
             async getCommentsCount() {
                 return await Comment.countDocuments({ username: this.username });
@@ -51,6 +59,9 @@ const Meme = mongoose.model('Meme', new mongoose.Schema({
         methods: {
             async getLikesCount() {
                 return await Like.countDocuments({ memePublicId: this.publicId });
+            },
+            async getDislikesCount() {
+                return await Dislike.countDocuments({ memePublicId: this.publicId });
             },
             async getCommentsCount() {
                 return await Comment.countDocuments({ memePublicId: this.publicId });
@@ -129,6 +140,13 @@ const Like = mongoose.model('Like', new mongoose.Schema({
     })
 );
 
+const Dislike = mongoose.model('Dislike', new mongoose.Schema({
+    username: { type: String, required: true },
+    memePublicId: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+    })
+);
+
 const View = mongoose.model('View', new mongoose.Schema({
     username: { type: String, required: true },
     memePublicId: { type: String, required: true },
@@ -158,6 +176,7 @@ module.exports = {
     Meme,
     Template,
     Like,
+    Dislike,
     Comment,
     View
 }

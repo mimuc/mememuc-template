@@ -29,7 +29,7 @@ type MemeStatProps = {
     meme: MemeType
 }
 
-export const options = {
+export const optionsTop = {
     responsive: true,
     plugins: {
       legend: {
@@ -37,13 +37,27 @@ export const options = {
       },
       title: {
         display: true,
-        text: 'Chart.js Line Chart',
+        text: 'Views/Comments',
+      },
+    },
+  };
+
+  export const optionsBottom = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Likes/Dislikes',
       },
     },
   };
 
 export const MemeStat = ({meme}: MemeStatProps) => {
-    const [data, setData] = useState<ChartData<"line">>();
+    const [dataTop, setDataTop] = useState<ChartData<"line">>();
+    const [dataBottom, setDataBottom] = useState<ChartData<"line">>();
     const componentIsMounted = useRef(true);
 
     useEffect(() => {
@@ -64,6 +78,13 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                     }
                 });
 
+                const response_dislikes = await axios(`http://localhost:3001/memes/${meme.publicId}/dislikes`, {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get("token")}`,
+                    }
+                });
+
                 const response_comments = await axios(`http://localhost:3001/memes/${meme.publicId}/comments`, {
                     method: 'GET',
                     headers: {
@@ -73,6 +94,7 @@ export const MemeStat = ({meme}: MemeStatProps) => {
 
                 const views = response_views.data;
                 const likes = response_likes.data;
+                const dislikes = response_likes.data;
                 const comments = response_comments.data;
 
                 // Aggregate the data from the last daysAmount days
@@ -82,7 +104,7 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                     const date = new Date(today);
                     date.setDate(date.getDate() - i);
                     const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-                    return { date: dayName, views: 0, likes: 0, comments: 0 };
+                    return { date: dayName, views: 0, likes: 0, dislikes: 0, comments: 0 };
                 });
 
                 for (const view of views) {
@@ -105,6 +127,16 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                     }
                 }
 
+                for (const dislike of dislikes) {
+                    const viewDate = Date.parse(dislike.createdAt);
+                    const diffTime = Math.abs(today.getTime() - viewDate);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays < 7) {
+                        const day = days[6 - diffDays];
+                        day.dislikes += 1;
+                    }
+                }
+
                 for (const comment of comments) {
                     const viewDate = Date.parse(comment.createdAt);
                     const diffTime = Math.abs(today.getTime() - viewDate);
@@ -119,31 +151,45 @@ export const MemeStat = ({meme}: MemeStatProps) => {
 
                 const labels = days.map(d => d.date);
 
-                const data = {
+                const dataTop = {
                     labels,
                     datasets: [
                         {
                             label: 'Views',
                             data: days.map(d => d.views),
-                            borderColor: 'rgb(255, 99, 132)',
-                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgb(204, 52, 227)',
+                            backgroundColor: 'rgba(204, 52, 227, 0.5)',
                         },
                         {
                             label: 'Comments',
                             data: days.map(d => d.comments),
                             borderColor: 'rgb(53, 162, 235)',
                             backgroundColor: 'rgba(53, 162, 235, 0.5)',
-                        },
+                        }
+                    ]
+                }
+
+                const dataBottom = {
+                    labels,
+                    datasets: [
                         {
                             label: 'Likes',
                             data: days.map(d => d.likes),
                             borderColor: 'rgb(42, 222, 89)',
                             backgroundColor: 'rgba(42, 222, 89, 0.5)',
+                        },
+                        {
+                            label: 'Disikes',
+                            data: days.map(d => d.likes),
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
                         }
                     ]
                 }
+
                 if (componentIsMounted.current) {
-                    setData(data);
+                    setDataTop(dataTop);
+                    setDataBottom(dataBottom);
                 }
 
             } catch (error) {
@@ -155,7 +201,8 @@ export const MemeStat = ({meme}: MemeStatProps) => {
 
     return (
         <div style={{height: 500}}>
-            {data && <Line options={options} data={data} />}
+            {dataTop && <Line options={optionsTop} data={dataTop} />}
+            {dataBottom && <Line options={optionsBottom} data={dataBottom} />}
         </div>
     )
 }

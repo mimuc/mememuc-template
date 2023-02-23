@@ -98,11 +98,21 @@ const getRandomMeme = () => {
 }
 
 const upvote = (memeId: string) => {
-    return Promise.resolve()
+    return Promise.resolve(client.put(`http://localhost:3001/memes/${memeId}/like`, {}, {
+        headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+        }
+    })
+    .then(res => res.data));
 }
 
 const downvote = (memeId: string) => {
-    return Promise.resolve()
+    return Promise.resolve(client.put(`http://localhost:3001/memes/${memeId}/dislike`, {}, {
+        headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+        }
+    })
+    .then(res => res.data));
 }
 
 export const memes = {all, get, getRandomMeme,upvote, downvote};
