@@ -12,8 +12,7 @@ export const ShareButton = ({meme}: ShareButtonProps) => {
     const [, copyToClipboard] = useCopyToClipboard()
 
     const handleShare = () => {
-        // TODO: make sure this works
-        copyToClipboard(window.location.href + '/' + meme.publicId)
+        copyToClipboard(window.location.href + '/' + meme.id)
         messageApi.success('Meme URL copied.')
     }
 
