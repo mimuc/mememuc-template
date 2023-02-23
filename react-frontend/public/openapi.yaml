@@ -79,18 +79,7 @@ paths:
                         - type: string
                         - type: array
                           items:
-                            type: object
-                            properties:
-                              url:
-                                type: string
-                              x:
-                                type: number
-                                description: The x position of the image
-                                default: 0
-                              y:
-                                type: number
-                                description: The y position of the image
-                                default: 0
+                            '#/components/parameters/image'
                     canvas:
                       type: object
                       properties:
@@ -336,6 +325,96 @@ paths:
                 properties:
                   liked:
                     type: boolean
+  /memes/{publicId}/likes:
+    get:
+        summary: Get all likes for the meme with the publicId
+        tags:
+          - Memes
+        parameters:
+          - $ref: "#/components/parameters/publicIdPathParam"
+        responses:
+          '200':
+            description: Returns all likes for the specified meme.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Like"
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+  /memes/{publicId}/dislike:
+    put:
+      summary: Add a dislike to a meme
+      description: Adds a dislike to a meme from the authenticated user.
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      responses:
+        '200':
+          description: OK
+        '409':
+          description: Meme was already disliked by the user
+    delete:
+      summary: Remove a dislike from a meme
+      description: Removes a dislike from a meme by the authenticated user.
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '409':
+          description: Meme was not disliked by the user
+    get:
+      summary: Check if the authenticated user disliked a meme
+      description: Returns a boolean indicating whether the authenticated user disliked the meme.
+      tags:
+        - Memes
+      parameters:
+        - $ref: "#/components/parameters/publicIdPathParam"
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  disliked:
+                    type: boolean
+  /memes/{publicId}/dislikes:
+    get:
+        summary: Get all dislikes for the meme with the publicId
+        tags:
+          - Memes
+        parameters:
+          - $ref: "#/components/parameters/publicIdPathParam"
+        responses:
+          '200':
+            description: Returns all dislikes for the specified meme.
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Like"
+          '400':
+            $ref: '#/components/responses/BadRequest'
+          '404':
+            $ref: '#/components/responses/NotFound'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
   /memes/{publicId}/comments:
     post:
       summary: Post a comment for the meme with the publicId
@@ -423,28 +502,6 @@ paths:
           description: Comment deleted
         '404':
           description: Comment not found
-  /memes/{publicId}/likes:
-    get:
-        summary: Get all likes for the meme with the publicId
-        tags:
-          - Memes
-        parameters:
-          - $ref: "#/components/parameters/publicIdPathParam"
-        responses:
-          '200':
-            description: Returns all likes for the specified meme.
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/Like"
-          '400':
-            $ref: '#/components/responses/BadRequest'
-          '404':
-            $ref: '#/components/responses/NotFound'
-          '500':
-            $ref: '#/components/responses/InternalServerError'
   /memes/{publicId}/views:
     get:
         summary: Get all views for the meme with the publicId
@@ -967,6 +1024,20 @@ components:
         textColor:
           type: string
           default: white
+    image:
+      type: object
+      properties:
+        url: string
+        description: The image url
+      x:
+        type: number
+        description: The x position of the image on the canvas
+      y:
+        type: number
+        description: The y position of the image on the canvas
+      contentType:
+        type: string
+        description: The content type of the saved image, otherwise inferred from the url
     publicIdPathParam:
       in: path
       name: publicId
@@ -1051,12 +1122,21 @@ components:
         likes:
           type: number
           description: The total number of likes the meme received
+        dislikes:
+          type: number
+          description: The total number of dislikes the meme received
         comments:
           type: number
           description: The total number of comments the meme received
         views:
           type: number
           description: Unique views the meme received
+        vote:
+          type: number
+          description: Indicator for whether the authenticated user liked the meme (1 - liked, -1 - disliked, 0 - neither, or unknown)
+        creatorDisplayName:
+          type: string
+          description: The display name of the creator
       required:
         - name
         - creator
@@ -1082,6 +1162,9 @@ components:
         likes:
           type: number
           description: The total number of likes the user created
+        doslikes:
+          type: number
+          description: The total number of dislikes the user created
         comments:
           type: number
           description: The total number of comments the user created
@@ -1091,6 +1174,9 @@ components:
         likesReceived:
           type: number
           description: The total number of likes the user received
+        dislikesReceived:
+          type: number
+          description: The total number of dislikes the user received
         commentsReceived:
           type: number
           description: The total number of comments the user received
@@ -1114,18 +1200,21 @@ components:
           enum: [private, unlisted, public]
           default: 'public'
         image:
-          type: string
-          format: binary
-          required: true
-          description: The image buffer (can not be retrieved directly)
+          type: array
+          items:
+            '#/components/parameters/image'
+        canvas:
+          type: object
+          properties:
+            width:
+              type: number
+            height:
+              type: number
         publicId:
           type: string
           required: true
           unique: true
-          description: The unique ID of the meme
-        contentType:
-          type: string
-          default: 'image/png'
+          description: The unique ID of the template
         createdAt:
           type: string
           format: date-time
@@ -1136,9 +1225,6 @@ components:
               anyOf:
                 - type: string
                 - $ref: '#/components/parameters/text'
-        url:
-          type: string
-          description: The resource URL of the image
       required:
         - name
         - image
