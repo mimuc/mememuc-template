@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {useAsync, useLocalStorage, useUnmount} from "react-use";
+import {useAsync, useEffectOnce, useLocalStorage, useUnmount} from "react-use";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Webcam from "react-webcam";
 import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Space} from "antd";
@@ -347,4 +347,54 @@ export const useAuth = () => {
     }
 
     return {session, login, logout};
+}
+
+export const useMeme = (id: string) => {
+    const [memes, setMemes] = useMemesState();
+    const [meme, setMeme] = useState<MemeType | null>(null);
+
+    useEffectOnce(() => {
+        const query = memes?.find((m: MemeType) => m.publicId === id);
+
+        if (query) {
+            setMeme(query);
+        } else {
+            api.memes.get(id).then((data) => {
+                setMemes([data, ...memes]);
+                setMeme(data);
+            }).catch(() => {
+                throw new Response("Meme not found", {status: 404});
+            });
+        }
+    })
+
+    const toggleLike = async () => {
+        if(!meme) return;
+
+        if (meme.vote === 1) {
+            await api.memes.downvote(meme.publicId)
+            const updatedMeme = {...meme, likes: meme.likes - 1, vote: 0};
+            setMeme(updatedMeme)
+            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
+        } else {
+            await api.memes.upvote(meme.publicId)
+            const updatedMeme = {...meme, likes: meme.likes + 1, vote: 1};
+            setMeme(updatedMeme)
+            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
+        }
+    }
+
+    const toggleDislike = async () => {
+        if(!meme) return;
+
+        if (meme.vote === -1) {
+            await api.memes.upvote(meme.publicId)
+            setMemes(prev => prev && prev.map(m => m.publicId === meme.publicId ? {...m, vote: 0} : m))
+        } else {
+            await api.memes.downvote(meme.publicId)
+            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, vote: -1} : m))
+        }
+    }
+
+    return {meme, toggleLike, toggleDislike};
 }

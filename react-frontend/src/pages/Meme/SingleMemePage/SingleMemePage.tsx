@@ -13,7 +13,7 @@ import {
 import {Comments, DislikeButton, DownloadButton, LikeButton, MemeStat, ShareButton} from "src/components";
 import {api} from "src/api";
 import {useMemesState} from "src/states";
-import {useAutoplay} from "src/hooks";
+import {useAutoplay, useMeme} from "src/hooks";
 import {getTimeSince} from "src/utils";
 import {MemeType} from "src/types";
 
@@ -36,7 +36,9 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
 
     useEffect(() => {
         if (isLast) {
-            // TODO: try to extend array
+            api.memes.list(memes.length).then(memes => {
+                setMemes(prev => [...prev, ...memes]);
+            }).catch(console.error)
         }
     }, [isLast, setMemes]);
 
@@ -54,7 +56,6 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
         navigate('../' + meme.publicId);
     };
 
-    // TODO: add loading indicator for autoplay
     return (
         <div style={{marginBottom: 20}}>
             <Button.Group size={'small'}
@@ -77,15 +78,12 @@ export const SingleMemePage = () => {
     const navigate = useNavigate()
     const [view, setView] = useState<'meme' | 'stats'>("meme")
 
-    const [memes,] = useMemesState()
-    // TODO: if meme not in memes => try to load meme and append at front to memes
-    const meme: MemeType | undefined = memes && memes.find((m: MemeType) => m.publicId === params.memeId);
+    const {meme} = useMeme(params.memeId as string)
 
     // Handlers
     const handleClose = () => navigate(`/memes`);
 
-    //  TODO: handle error if meme not found (useApi should return error and data etc or redirect on not found by axios)
-    if (meme === undefined) return null;
+    if (meme === null) return null;
 
     const createdAt = getTimeSince(new Date(meme.createdAt));
 
@@ -123,8 +121,7 @@ export const SingleMemePage = () => {
                     </div>
                     <div style={{marginTop: 20}}>
                         <div>
-                            {/*TODO: how to break text without maxWidth? -> wordWrap: 'white-space'*/}
-                            <Title level={4} style={{display: 'inline-block', maxWidth: 500}}>Mein
+                            <Title level={4} style={{display: 'inline-block', maxWidth: 500, whiteSpace: 'break-spaces'}}>Mein
                                 {meme.name}
                             </Title>
                         </div>
