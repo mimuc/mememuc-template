@@ -249,8 +249,11 @@ router.post('/', authenticate(), async function(req, res) {
         const data = Object.assign(data_default, data_template, template);
         if(data.images == undefined) continue;
 
+        let contentType = 'image/png';
+        let inferContentType = false;
         if(!Array.isArray(data.images)) {
             data.images = [{url: data.images}];
+            inferContentType = true;
         }
         
         const loadedImages = [];
@@ -260,12 +263,14 @@ router.post('/', authenticate(), async function(req, res) {
             const canvas_img = new Image();
             if(img.url.startsWith('data:image/')) { // image.url is base64
                 canvas_img.src = img.url;
+                if(inferContentType) contentType = base64ImageString.split(';')[0].split(':')[1];
             }
             else { // image.url is an actual url
                 try {
                     const response = await axios.get(img.url, {responseType: 'arraybuffer'});
                     const imageUrl =  `data:${response.headers['content-type']};base64,${Buffer.from(response.data, 'binary').toString('base64')}`;
-                    canvas_img.src = imageUrl;  
+                    canvas_img.src = imageUrl;
+                    if(inferContentType) contentType = response.headers['content-type'];
                 } catch (error) {
                     console.error(error);
                     return res.status(400).send("The image could not be loaded: " + img.url);
@@ -290,6 +295,7 @@ router.post('/', authenticate(), async function(req, res) {
         const img = await generateMemeCanvas({config, data});
         newMeme.img = img;
         newMeme.name = data.memeName;
+        newMeme.contentType = contentType;
         createdMemes.push(newMeme);
     }
     
@@ -299,7 +305,7 @@ router.post('/', authenticate(), async function(req, res) {
         // Always return as image or zip, as no url was created
         if(createdMemes.length === 1) {
             // Return a single image
-            res.set('Content-Type', 'image/png');
+            res.set('Content-Type', createdMemes[0].contentType);
             res.send(createdMemes[0].img);
             return;
         }
@@ -311,7 +317,7 @@ router.post('/', authenticate(), async function(req, res) {
             const names = renameDuplicates(createdMemes.map(m => m.name));
 
             for(let i = 0; i < createdMemes.length; i++) {
-                const extension = 'image/png'.split('/')[1];
+                const extension = createdMemes[i].contentType.split('/')[1];
                 archive.append(createdMemes[i].img, { name: names[i] + "." + extension});
             }
             archive.finalize();
@@ -327,7 +333,8 @@ router.post('/', authenticate(), async function(req, res) {
             visibility: config.store, 
             creator: username, 
             name: m.name,
-            usedTemplate: m.usedTemplate
+            usedTemplate: m.usedTemplate,
+            contentType: m.contentType
         }});
 
         let publicIdSet = new Set();

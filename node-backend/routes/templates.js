@@ -95,7 +95,7 @@ router.post('/', authenticate(), async function(req, res) {
 
     if(img.url.startsWith('data:image/')) { // image.url is base64
       const base64Data = img.url.split(',')[1];
-      contentType = base64ImageString.split(';')[0].split(':')[1];
+      contentType = img.url.split(';')[0].split(':')[1];
       imageBuffer = Buffer.from(base64Data, 'base64');
     }
     else { // image.url is an actual url
