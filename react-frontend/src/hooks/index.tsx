@@ -329,14 +329,8 @@ export const useCreateMemeModal = () => {
     });
 }
 
-export const useSession = () => {
-    const [session,] = useLocalStorage<SessionType | null>('session', null);
-
-    return session;
-}
-
 export const useAuth = () => {
-    const [, setSession] = useLocalStorage<SessionType | null>('session', null);
+    const [session, setSession] = useLocalStorage<SessionType | null>('session', null);
 
     const login = (token: string, expiryTime: string) => {
         Cookies.remove('token');
@@ -352,5 +346,5 @@ export const useAuth = () => {
         Cookies.remove('token');
     }
 
-    return {login, logout};
+    return {session, login, logout};
 }

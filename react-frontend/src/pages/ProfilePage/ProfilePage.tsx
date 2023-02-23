@@ -3,7 +3,7 @@ import {DraftList} from "src/components";
 import {Link} from "react-router-dom";
 import {useAsync} from "react-use";
 import {api} from "src/api";
-import {useSession} from "src/hooks";
+import {useAuth} from "src/hooks";
 
 const {Title} = Typography;
 
@@ -32,7 +32,7 @@ const MyMemeList = () => {
 
 export const ProfilePage = () => {
     const {token} = theme.useToken();
-    const session = useSession();
+    const {session} = useAuth();
 
     return (
         <>
