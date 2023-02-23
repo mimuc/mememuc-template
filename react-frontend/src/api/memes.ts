@@ -1,7 +1,5 @@
-import {MemeType} from "src/types";
-import Cookies from 'js-cookie';
 import {authConfig, client} from "./base";
-import {AxiosRequestConfig} from "axios";
+import {MemeType} from "src/types";
 
 export const list = async (offset: number = 0, limit: number = 10) => {
     // TODO: use this instead of all
@@ -9,12 +7,7 @@ export const list = async (offset: number = 0, limit: number = 10) => {
 }
 
 export const all = () => {
-    // return client.get('/templates');
-    return Promise.resolve(client.get('http://localhost:3001/memes', {
-        headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-        }
-    })
+    return Promise.resolve(client.get('http://localhost:3001/memes', authConfig())
     .then(res => res.data));
 }
 
@@ -40,7 +33,7 @@ export const add = async (store: "unlisted" | "private" | "public", memeName: st
 
 const get = async (memeId: string) => {
     return client.get(`http://localhost:3001/memes/${memeId}`, authConfig())
-        .then(res => res.data);
+        .then(res => res.data as MemeType);
 }
 
 
@@ -50,38 +43,22 @@ const getRandomMeme = () => {
 }
 
 const upvote = (memeId: string) => {
-    return Promise.resolve(client.put(`http://localhost:3001/memes/${memeId}/like`, {}, {
-        headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-        }
-    })
+    return Promise.resolve(client.put(`http://localhost:3001/memes/${memeId}/like`, {}, authConfig())
     .then(res => res.data));
 }
 
 const upvoteRemove = (memeId: string) => {
-    return Promise.resolve(client.delete(`http://localhost:3001/memes/${memeId}/like`, {
-        headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-        }
-    })
-    .then(res => res.data));
+    return client.delete(`http://localhost:3001/memes/${memeId}/like`, authConfig())
+    .then(res => res.data);
 }
 
 const downvote = (memeId: string) => {
-    return Promise.resolve(client.put(`http://localhost:3001/memes/${memeId}/dislike`, {}, {
-        headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-        }
-    })
-    .then(res => res.data));
+    return client.put(`http://localhost:3001/memes/${memeId}/dislike`, {}, authConfig())
+    .then(res => res.data);
 }
 
 const downvoteRemove = (memeId: string) => {
-    return Promise.resolve(client.delete(`http://localhost:3001/memes/${memeId}/dislike`, {
-        headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-        }
-    })
+    return Promise.resolve(client.delete(`http://localhost:3001/memes/${memeId}/dislike`, authConfig())
     .then(res => res.data));
 }
 
