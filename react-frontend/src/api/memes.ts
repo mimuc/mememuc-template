@@ -18,6 +18,7 @@ export const add = async (store: "unlisted" | "private" | "public", memeName: st
             return: 'json'
         },
         templates: {
+            /* name: templateName, */ // TODO:
             memeName,
             images: image,
             canvas: {
