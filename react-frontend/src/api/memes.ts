@@ -4,8 +4,17 @@ import {FilterType, MemeType} from "src/types";
 export const list = async (offset: number = 0, limit: number = 10, sort: 'latest' | 'popular' = 'latest', filter: FilterType = {creationDate: null}, search: string | null = null) => {
     // TODO: use this instead of all
     // TODO: convert filter Date.parse()
-    return Promise.resolve(client.get('/memes', authConfig())
-        .then(res => res.data));
+    let ahhh: any = sort;
+    if(ahhh === 'latest') ahhh = 'newest';
+    const queryList = [];
+    queryList.push(`limit=${limit}`, `sort=${ahhh}`, `skip=${offset}`);
+    if(filter?.creationDate) queryList.push(`after=${+filter.creationDate.valueOf()}`);
+    if(search) queryList.push(`name=${search}`);
+
+    const query = `?${queryList.join('&')}`;
+
+    return client.get(`/memes${query}`, authConfig())
+    .then(res => res.data as MemeType[]);
 }
 
 export const add = async (store: "unlisted" | "private" | "public", memeName: string, image: string, width: number, height: number) => {

@@ -130,7 +130,7 @@ export const SingleMemePage = () => {
                     </div>
                     <div style={{marginTop: 20}}>
                         <div>
-                            <Title level={4} style={{display: 'inline-block', maxWidth: 500, whiteSpace: 'break-spaces'}}>Mein
+                            <Title level={4} style={{display: 'inline-block', maxWidth: 500, whiteSpace: 'break-spaces'}}>
                                 {meme.name}
                             </Title>
                         </div>

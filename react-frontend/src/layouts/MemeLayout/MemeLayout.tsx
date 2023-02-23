@@ -5,7 +5,7 @@ import styled from "styled-components";
 import {api} from "src/api";
 import {useFilterState, useMemesState, useSearchState, useSortState} from "src/states";
 import {Header} from "src/components";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 type MemeLayoutProps = {
     children: ReactNode;
@@ -23,12 +23,12 @@ const Filter = () => {
         if (filter.creationDate) {
             setFilter(prev => ({...prev, creationDate: null}));
         } else {
-            const oneYearAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 1))
+            const oneYearAgo = dayjs(new Date(new Date().setFullYear(new Date().getFullYear() - 1)))
             setFilter(prev => ({...prev, creationDate: oneYearAgo}));
         }
     }
 
-    const handleDateChange = (date: Date) => {
+    const handleDateChange = (date: Dayjs) => {
         setFilter(prev => ({...prev, creationDate: date}));
     }
 

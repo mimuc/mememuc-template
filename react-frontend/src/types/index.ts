@@ -1,3 +1,5 @@
+import { Dayjs } from "dayjs"
+
 export type TemplateType = {
     id: string
     name: string,
@@ -21,7 +23,7 @@ export type MemeType = {
 }
 
 export type FilterType = {
-    creationDate: Date | null
+    creationDate: Dayjs | null
 }
 
 export type CommentType = {

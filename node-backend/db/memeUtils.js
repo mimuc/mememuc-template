@@ -18,6 +18,10 @@ async function handleMemeFind(req) {
     };
     const query = Object.assign({}, query_default, req.query);
 
+    query.limit = +query.limit;
+    query.skip = +query.skip;
+    query.after = +query.after;
+
     if(typeof query.limit != 'number') query.limit = query_default.limit;
     if(typeof query.skip != 'number') query.skip = query_default.skip;
 

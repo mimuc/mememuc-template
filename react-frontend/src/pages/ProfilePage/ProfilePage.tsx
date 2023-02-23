@@ -18,7 +18,7 @@ const MyMemeList = () => {
                 myMemesLoadable.value.map((meme) => (
                     <Col key={meme.publicId} span={8}>
                         <Link to={`/memes/${meme.publicId}`}>
-                            <Card hoverable title={meme.name}>
+                            <Card hoverable title={meme.name} style={{width: "400px", height: "400px"}}>
                                 <img src={meme.imageUrl} alt={'Meme'}
                                      style={{width: "100%", height: "100%", objectFit: 'contain'}}/>
                             </Card>
