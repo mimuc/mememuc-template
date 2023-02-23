@@ -1,10 +1,13 @@
 import {useNavigate} from "react-router-dom";
-import {Button, Card, Typography} from "antd";
+import {Button, Card, Spin, Typography} from "antd";
 import {CommentOutlined} from "@ant-design/icons";
 import {DislikeButton, DownloadButton, LikeButton, ShareButton} from "src/components";
-import {useMemesState} from "src/states";
+import {useFilterState, useMemesState, useSearchState, useSortState} from "src/states";
 import {MemeType} from "src/types";
 import {abbreviateNumber, getTimeSince} from "src/utils";
+import InfiniteScroll from "react-infinite-scroll-component";
+import {api} from "src/api";
+import {useState} from "react";
 
 type ItemProps = {
     meme: MemeType;
@@ -54,18 +57,39 @@ const MemeItem = ({meme}: ItemProps) => {
                     }
                 />
             </div>
-            </Card>
+        </Card>
     );
 }
 
 export const MemeListPage = () => {
-    const [memes,] = useMemesState() as [MemeType[], any];
+    const [memes, setMemes] = useMemesState();
+    const [hasMore, setHasMore] = useState(true);
+    const [sort,] = useSortState();
+    const [search,] = useSearchState();
+    const [filter,] = useFilterState();
+
+    const handleNext = async () => {
+        const newMemes = await api.memes.list(memes.length, 10, sort, filter, search);
+        if (newMemes.length === 0) {
+            setHasMore(false);
+        }
+        setMemes(prev => [...prev, ...newMemes]);
+        return memes
+    }
 
     return (
-        <>
-            <div>
-                {memes.map(item => <MemeItem key={item.publicId} meme={item}/>)}
-            </div>
-        </>
+        <InfiniteScroll
+            dataLength={memes.length} //This is important field to render the next data
+            next={handleNext}
+            hasMore={hasMore}
+            loader={<Spin />}
+            endMessage={
+                <p style={{textAlign: 'center'}}>
+                    <b>Yay! You have seen it all</b>
+                </p>
+            }
+        >
+            {memes.map(item => <MemeItem key={item.publicId} meme={item}/>)}
+        </InfiniteScroll>
     )
 }
