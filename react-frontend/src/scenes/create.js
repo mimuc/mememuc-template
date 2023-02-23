@@ -12,17 +12,8 @@ export default function Create(props) {
 
   // Get all memes from the used API
   useEffect(() => {
-    getAllMemes().then(memes => {
-      const resizedMemes = memes.data.memes.map(meme => {
-        if (meme.height > 2000) {
-          const ratio = 2000 / meme.height;
-          return { ...meme, width: meme.width * ratio, height: meme.height * ratio };
-        }
-        return meme;
-      });
-      setData(resizedMemes);
-    });
-  }, []);
+    getAllMemes().then(memes => setData(memes.data.memes));
+}, [])
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -71,9 +62,10 @@ export default function Create(props) {
       <div>
         <form onSubmit={handleCreate}>
           <input type="file" accept="image/*" onChange={handleImageUpload} />
+          <Button type="submit" variant="primary" disabled={!image}>Create</Button>
           <input type="text" placeholder="Take your Picture" value={imageUrl} onChange={handleImageUrlChange} />
-          <Button type="submit" variant="primary" disabled={!image && !imageUrl}>Create</Button>
           <Button onClick={handleCameraClick}>Take your Picture</Button>
+          <Button type="submit" variant="primary" disabled={!imageUrl}>Create</Button>
         </form>
       </div>
       <div className="grid-container">

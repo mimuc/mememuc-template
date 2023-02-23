@@ -8,8 +8,9 @@ export default function Meme (props) {
   const navigate = useNavigate();
 
   const memeStyle = {
-    width: '100%',
-    height: '100%',
+    width: 'auto',
+    height: '80%',
+    maxHeight: '900px',
     objectFit: 'contain',
   };
 
@@ -22,4 +23,3 @@ export default function Meme (props) {
     </Card>
   );
 }
-
