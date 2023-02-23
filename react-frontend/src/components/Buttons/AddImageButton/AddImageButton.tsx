@@ -1,7 +1,7 @@
 import uuid from "react-uuid";
 import {Dropdown, MenuProps, Upload} from "antd";
 import {useEditorState} from "src/states";
-import {useImgflipInputModal, useUrlInputModal, useWebcamInputModal} from "src/hooks";
+import {useImgflipInputModal, useScreenshot, useUrlInputModal, useWebcamInputModal} from "src/hooks";
 import {getMeta} from "src/utils";
 import {ImageShapeInterface} from "src/types";
 
@@ -26,6 +26,7 @@ const imageButtonOptions: MenuProps['items'] = [
 
 export const AddImageButton = () => {
     const [, setShapes] = useEditorState();
+    const takeScreenshot = useScreenshot();
     const openUrlInput = useUrlInputModal();
     const openWebcamInput = useWebcamInputModal();
     const openImgflipInput = useImgflipInputModal();
@@ -51,58 +52,27 @@ export const AddImageButton = () => {
         } as ImageShapeInterface]);
     }
     const handleAddImage = async (event: any) => {
-            const key = event?.key;
+        const key = event?.key;
 
-            if (key === 'url') {
-                const imageUrl = await openUrlInput();
-                if (imageUrl) createImageElement(imageUrl);
-            } else if (key === 'camera') {
-                const imageUrl = await openWebcamInput();
-                if (imageUrl) createImageElement(imageUrl);
-            } else if (key === 'screenshot') {
-                // TODO: Screenshot does not capture the entire screen
-                // TODO: Move to hook
-                const stream = await navigator.mediaDevices.getDisplayMedia();
-                const track = stream.getTracks()[0];
-                const imageCapture = new ImageCapture(track);
-                const data = await imageCapture.grabFrame().then((bitmap) => {
-                    var MAX_WIDTH = 300;
-                    var MAX_HEIGHT = 300;
-
-                    var width = bitmap.width;
-                    var height = bitmap.height;
-
-                    // Change the resizing logic
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height = height * (MAX_WIDTH / width);
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width = width * (MAX_HEIGHT / height);
-                            height = MAX_HEIGHT;
-                        }
-                    }
-
-                    let canvas = document.createElement('canvas');
-                    let context = canvas.getContext('2d') as CanvasRenderingContext2D;
-                    context.drawImage(bitmap, 0, 0, width, height)
-                    return canvas.toDataURL();
-                });
-                track.stop()
-                createImageElement(data)
-            } else if (key === 'imgflip') {
-                const imageUrl = await openImgflipInput();
-                if (imageUrl) createImageElement(imageUrl);
-            } else {
-                // Upload image from disk
-                const imageUrl = URL.createObjectURL(event);
-                createImageElement(imageUrl);
-                return false;
-            }
+        if (key === 'url') {
+            const imageUrl = await openUrlInput();
+            if (imageUrl) await createImageElement(imageUrl);
+        } else if (key === 'camera') {
+            const imageUrl = await openWebcamInput();
+            if (imageUrl) await createImageElement(imageUrl);
+        } else if (key === 'screenshot') {
+            const screenshotUrl = await takeScreenshot();
+            if (screenshotUrl) await createImageElement(screenshotUrl)
+        } else if (key === 'imgflip') {
+            const imageUrl = await openImgflipInput();
+            if (imageUrl) await createImageElement(imageUrl);
+        } else {
+            // Upload image from disk
+            const imageUrl = URL.createObjectURL(event);
+            await createImageElement(imageUrl);
+            return false;
         }
-    ;
+    };
 
     return (
         <div style={{display: 'inline-block'}}>

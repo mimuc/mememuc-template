@@ -1,3 +1,5 @@
+import { TinyColor } from '@ctrl/tinycolor'
+
 /**
  * Converts big numbers to human-readable format, e.g. 1.100 -> '1.1k'
  * https://stackoverflow.com/questions/9461621/format-a-number-as-2-5k-if-a-thousand-or-more-otherwise-900
@@ -85,5 +87,19 @@ export function downloadURI(uri: string, name: string) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+
+/**
+ * Return text color based on background color for better contrast
+ * https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
+ * @param color
+ */
+export function getTextColor(color: string) {
+    if(new TinyColor(color).getLuminance() > 0.179) { // 0.179 -> Mark Ransom answer
+        return 'black'
+    } else {
+        return 'white'
+    }
 }
 

@@ -12,6 +12,7 @@ import styled from "styled-components";
 import {TwitterPicker} from "react-color";
 import {useEditorState, useSelectedShapeIdState} from "src/states";
 import {ImageShapeInterface, ShapeInterface, TextShapeInterface} from "src/types";
+import {getTextColor} from "src/utils";
 
 type ContextMenuProps = {
     id: string | null;
@@ -38,6 +39,10 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
     const [shape, setShape] = useState<ShapeInterface | null>(null);
     const [showColorPicker, toggleColorPicker] = useToggle(false);
 
+    // Type mappings
+    const imageShape = shape?.type === 'image' && shape as ImageShapeInterface;
+    const textShape = shape?.type === 'text' && shape as TextShapeInterface;
+
     // Handlers
     const handleChangeFontSize = (value: number) => {
         setShapes(prev => prev.map((shape) => {
@@ -52,7 +57,16 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
     }
 
     const handleToggleBold = () => {
-        // TODO: toggle bold
+        setShapes(prev => prev.map((shape) => {
+                if (shape.id === id) {
+                    return {
+                        ...shape,
+                        fontStyle: textShape && textShape?.fontStyle === 'bold' ? 'normal' : 'bold'
+                    }
+                }
+                return shape;
+            }
+        ));
     }
 
     const handleColorSelection = (color: any) => {
@@ -80,9 +94,6 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
 
     if (!id) return <Alert message={'No shape selected'} type={'info'} showIcon
                            style={{height: 32, width: 230, paddingBlock: 4}}/>
-
-    const imageShape = shape?.type === 'image' && shape as ImageShapeInterface;
-    const textShape = shape?.type === 'text' && shape as TextShapeInterface;
 
     return (
         <>
@@ -119,7 +130,6 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
                             min={5}
                             max={100}
                         />
-                        {/*TODO: set black or white as font color based on color */}
                         <Button
                             icon={<BoldOutlined/>}
                             style={{marginLeft: token.marginXS}}
@@ -127,7 +137,7 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
                             onClick={handleToggleBold}
                         />
                         <Button
-                            icon={<FontColorsOutlined/>}
+                            icon={<FontColorsOutlined style={{color: getTextColor(textShape.fill || 'black')}}/>}
                             style={{backgroundColor: textShape.fill, marginLeft: token.marginXS}}
                             onClick={toggleColorPicker}
                         />
