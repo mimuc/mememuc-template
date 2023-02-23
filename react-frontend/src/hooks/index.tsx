@@ -314,7 +314,6 @@ export const useCreateMemeModal = () => {
                 if (name === '') throw new Error('Name is required');
 
                 // TODO: publish meme on server (consider publish type)
-                // TODO: and if logged in attribute to user
                 const url = stageRef.current.toDataURL();
                 const newMeme = {} as MemeType;
 
@@ -339,8 +338,12 @@ export const useSession = () => {
 export const useAuth = () => {
     const [, setSession] = useLocalStorage<SessionType | null>('session', null);
 
-    const login = (token: string | object) => {
-        Cookies.set('token', token);
+    const login = (token: string, expiryTime: string) => {
+        Cookies.remove('token');
+        Cookies.set('token', token, {
+            expires: Date.parse(expiryTime),
+            sameSite: 'lax'
+        });
         api.my.account().then((data) => setSession(data));
     }
 

@@ -1,25 +1,22 @@
-import Cookies from 'js-cookie';
 import {Link, useNavigate } from "react-router-dom";
 import {Button, Col, Form, Input, message, Row, theme, Typography} from "antd";
 import {api} from "src/api";
+import {useAuth} from "src/hooks";
 
 const {Title, Text} = Typography;
 
 export const LoginPage = () => {
     const { token } = theme.useToken();
     const navigate = useNavigate();
+    const {login} = useAuth();
     const [messageApi, contextHolder] = message.useMessage();
 
     const handleFinish = async (values: any) => {
         try {
             const data = await api.auth.login(values.username, values.password);
 
-            // Set token cookie
-            Cookies.remove('token');
-            Cookies.set('token', data.token, {
-                expires: Date.parse(data.expiryTime),
-                sameSite: 'lax'
-            });
+            // Login
+            login(data.token, data.expiryTime);
 
             // Navigate to previous page or home
             if(window.history.length > 0 && window.history.state) navigate(-1);
