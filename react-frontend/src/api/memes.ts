@@ -64,6 +64,15 @@ const upvote = (memeId: string) => {
     .then(res => res.data));
 }
 
+const upvoteRemove = (memeId: string) => {
+    return Promise.resolve(client.delete(`http://localhost:3001/memes/${memeId}/like`, {
+        headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+        }
+    })
+    .then(res => res.data));
+}
+
 const downvote = (memeId: string) => {
     return Promise.resolve(client.put(`http://localhost:3001/memes/${memeId}/dislike`, {}, {
         headers: {
@@ -73,4 +82,13 @@ const downvote = (memeId: string) => {
     .then(res => res.data));
 }
 
-export const memes = {all, get, getRandomMeme, upvote, downvote};
+const downvoteRemove = (memeId: string) => {
+    return Promise.resolve(client.delete(`http://localhost:3001/memes/${memeId}/dislike`, {
+        headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+        }
+    })
+    .then(res => res.data));
+}
+
+export const memes = {all, get, getRandomMeme, upvote, upvoteRemove, downvote, downvoteRemove};

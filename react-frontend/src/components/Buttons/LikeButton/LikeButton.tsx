@@ -17,11 +17,11 @@ export const LikeButton = ({meme}: LikeButtonProps) => {
 
     const handleLikeToggle = async () => {
         if (meme.vote === 1) {
-            await api.memes.downvote(meme.publicId)
+            await api.memes.upvoteRemove(meme.publicId)
             setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, likes: m.likes - 1, vote: 0} : m))
         } else {
             await api.memes.upvote(meme.publicId)
-            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, likes: m.likes + 1, vote: 1} : m))
+            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, likes: m.likes + 1, dislikes: m.vote === -1 ? m.dislikes - 1 : m.dislikes , vote: 1} : m))
         }
     }
 
