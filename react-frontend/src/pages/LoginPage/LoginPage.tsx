@@ -50,11 +50,6 @@ export const LoginPage = () => {
                                 or <Link to={'/register'}>Register</Link>
                             </Text>
                         </Form.Item>
-                        {error && (
-                            <Text type="danger" style={{ display: 'block', textAlign: 'center' }}>
-                                {error}
-                            </Text>
-                        )}
                     </Form>
                 </Col>
             </Row>
