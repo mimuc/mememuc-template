@@ -44,8 +44,8 @@ const MemeItem = ({meme}: ItemProps) => {
                     description={
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <span>by {
-                                meme?.creator?.displayName
-                                    ? meme.creator.displayName
+                                meme?.creatorDisplayName
+                                    ? meme.creatorDisplayName
                                     : 'Unknown'
                             }
                             </span>

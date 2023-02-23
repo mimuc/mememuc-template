@@ -17,10 +17,7 @@ export type MemeType = {
     comments: number;
     createdAt: string;
     vote: number;
-    creator?: {
-        id: string;
-        displayName: string;
-    }
+    creatorDisplayName: string
 }
 
 export type CommentType = {
