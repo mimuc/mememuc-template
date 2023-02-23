@@ -34,7 +34,7 @@ export type UserType = {
 }
 
 export type SessionType = {
-    id: string
+    username: string
 }
 
 
@@ -52,7 +52,7 @@ export interface TextShapeInterface extends ShapeInterface {
     fontSize?: number
     fill?: string
     fontStyle?: 'bold' | 'normal'
-};
+}
 
 export interface ImageShapeInterface extends ShapeInterface {
     url: string
