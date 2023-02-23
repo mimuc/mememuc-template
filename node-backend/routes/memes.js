@@ -655,6 +655,18 @@ router.get('/:publicId/views', authenticate(false), async function(req, res, nex
     res.json(views);
 });
 
+router.put('/:publicId/views', authenticate(), async function(req, res, next) {
+    if(req.get('Origin') !== `http://${process.env.FE_DOMAIN}`) {
+        console.log(req.get('Origin'))
+        res.status(403).send();
+    }
+    const memePublicId = req.params.publicId;
+    const username = req.username;
+    addView(memePublicId, username);
+
+    res.send();
+});
+
 router.get('/:publicId', authenticate(false), async function(req, res, next) {
     req.query = {
         id: req.params.publicId
