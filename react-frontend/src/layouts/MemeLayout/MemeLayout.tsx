@@ -27,7 +27,7 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
         }
     }, [memesLoadable, setMemes]);
 
-    if (memesLoadable.loading) return null;
+    if (!memesLoadable.value) return null;
 
     // TODO: apply sorter 'popular' | 'latest'
     // TODO: add filter
