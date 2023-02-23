@@ -1129,6 +1129,9 @@ components:
         contentType:
           type: string
           default: 'image/png'
+        usedTemplate:
+          type: String
+          description: The name of the template the meme used (if it used any)
         createdAt:
           type: string
           format: date-time
