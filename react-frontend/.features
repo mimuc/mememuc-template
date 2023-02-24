@@ -66,10 +66,11 @@
 - [x] Details graph in single view for template
 
 ## Accessibility
-- [ ] ScreenReader implementation
+- [x] ScreenReader implementation
+- [x] Read title, captions, name of the user
 - [ ] Use a third party API like google Lens to get a description for any image.
-- [ ] Read title, captions, name of the user
-- [ ] Voice control press button, select and dictate text fields, ect.
+- [ ] Voice control press button, select
+- [x] dictate text fields, ect.
 
 ## TemplateItem
 - [ ] GIF with static caption
