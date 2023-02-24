@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Text from "../components/text";
-import Button from 'react-bootstrap/Button';
 import { getAllMemes } from '../api/memes';
+import Button from "../components/button";
 
 // Editor component to create new memes
 export default function Editor() {
