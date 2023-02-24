@@ -150,7 +150,7 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                         },
                         {
                             label: 'Disikes',
-                            data: days.map(d => d.likes),
+                            data: days.map(d => d.dislikes),
                             borderColor: 'rgb(255, 99, 132)',
                             backgroundColor: 'rgba(255, 99, 132, 0.5)',
                         }

@@ -608,8 +608,8 @@ router.get('/:publicId/like', authenticate(), async function(req, res, next) {
     const memePublicId = req.params.publicId;
     if(username == undefined) return res.status(401).send();
     const like = await Like.findOne({ username, memePublicId });
-    if(like) req.send(200, {"liked": true});
-    else req.send(200, {"liked": false});
+    if(like) res.send({"liked": true});
+    else res.send({"liked": false});
 });
 
 router.get('/:publicId/dislike', authenticate(), async function(req, res, next) {
@@ -617,8 +617,8 @@ router.get('/:publicId/dislike', authenticate(), async function(req, res, next) 
     const memePublicId = req.params.publicId;
     if(username == undefined) return res.status(401).send();
     const dislike = await Dislike.findOne({ username, memePublicId });
-    if(dislike) req.send(200, {"disliked": true});
-    else req.send(200, {"disliked": false});
+    if(dislike) res.send({"disliked": true});
+    else res.send({"disliked": false});
 });
 
 router.get('/:publicId/likes', authenticate(false), async function(req, res, next) {
