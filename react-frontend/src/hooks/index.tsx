@@ -10,7 +10,7 @@ import {
     LinkOutlined,
     PictureOutlined
 } from "@ant-design/icons";
-import {useEditorState, useMemesState, useSessionState, useStageRef} from "src/states";
+import {useEditorState, useMemesState, useSelectedShapeIdState, useSessionState, useStageRef} from "src/states";
 import {downloadURI, isImgUrl} from "src/utils";
 import {MemeType, SessionType} from "src/types";
 import Cookies from "js-cookie";
@@ -213,6 +213,7 @@ export const useDownloadModal = () => {
    // const [fileSize, setFileSize] = useState<number>(1000);
     const [form] = Form.useForm();
     const [memes] = useMemesState();
+    const [selectedShapeId, setSelectedShapeId] = useSelectedShapeIdState();
 
     // If no id is provided, download the current meme from the editor
     return (id?: string) => new Promise<string | undefined>(resolve => {
@@ -243,28 +244,31 @@ export const useDownloadModal = () => {
                 form
                     .validateFields()
                     .then(async values => {
-                        let url = '';
+                        setSelectedShapeId(null);
+                        setTimeout(async () => {
+                            let url = '';
 
-                        if (!id) {
-                            url = stageRef.current.toDataURL();
-                        } else {
-                            const meme = memes.find(m => m.publicId === id);
-                            if(meme) {
-                                url = await fetch(meme.imageUrl)
-                                .then(res => res.blob())
-                                .then(blob => URL.createObjectURL(blob));
+                            if (!id) {
+                                url = stageRef.current.toDataURL();
+                            } else {
+                                const meme = memes.find(m => m.publicId === id);
+                                if(meme) {
+                                    url = await fetch(meme.imageUrl)
+                                    .then(res => res.blob())
+                                    .then(blob => URL.createObjectURL(blob));
+                                }
+                                else {
+                                    // TODO: ERROR
+                                    return;
+                                }
                             }
-                            else {
-                                // TODO: ERROR
-                                return;
-                            }
-                        }
 
-                        downloadURI(url, 'meme', (values.fileformat ?? 'png'), values.filesize ?? 1000);
-                        URL.revokeObjectURL(url);
-                        resolve(undefined);
+                            downloadURI(url, 'meme', (values.fileformat ?? 'png'), values.filesize ?? 1000);
+                            URL.revokeObjectURL(url);
+                            resolve(undefined);
+
+                        }, 1000);
                     })
-                
             }
         })
     });
@@ -311,6 +315,7 @@ export const useCreateTemplateModal = (onTemplateCreate: (values: any) => void) 
 
 export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {
     const [form] = Form.useForm();
+    const [selectedShapeId, setSelectedShapeId] = useSelectedShapeIdState();
 
     return () => new Promise<string | undefined>(resolve => {
         Modal.info({
@@ -344,7 +349,8 @@ export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {
                     .validateFields()
                     .then(async (values) => {
                         form.resetFields();
-                        onMemeCreate(values);
+                        setSelectedShapeId(null);
+                        setTimeout(async () => onMemeCreate(values), 1000);
                     })
                     .catch((info) => {
                         // TODO: Warn, instead of closing dialogue
