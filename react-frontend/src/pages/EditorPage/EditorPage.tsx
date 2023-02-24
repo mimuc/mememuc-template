@@ -13,8 +13,6 @@ export const EditorPage = () => {
 
     const onMemeCreation = (values: any) => {
         const url = values.stageRef.current.toDataURL();
-        console.log("Values", values)
-        console.log("Template", template)
 
         api.memes.add(values.visibility, values.name, url, values.canvasSize.width, values.canvasSize.height, template)
         .then(newMeme => {
