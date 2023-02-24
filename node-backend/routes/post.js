@@ -26,7 +26,7 @@ router.get('/get40', (req, res) => {
     const db = req.db;
     const counter = req.query.counter;
     const posts = db.collection('posts');
-    posts.find({ view: "normal" }, { skip: parseInt(counter), limit: 20 })
+    posts.find({}, { skip: parseInt(counter), limit: 20 })
     .then(async result => {
       // go find the right meme data in the meme collection
      
@@ -107,17 +107,24 @@ router.get('/:post_id', (req, res) => {
     router.post('/create', function(req, res, next) {
         const db = req.db;
         const collection = db.get('posts');
+        const memeCollection = db.get('meme');
         const data = req.body;
-    
+        const imageData = data.image;
         //add a document
+        memeCollection.insert({
+            image:imageData,
+            type:"meme"
+        }).then ((res)=> {
         collection.insert({ 
             
-            
+            meme_id: res._id.toString(),
             user_id:data.user_id,
             n_likes: 0,
-            date:data.date,
-            comments:data.comments,
-            likes:[{}]
+            n_dislikes:0,
+            comments:[],
+            likes:[],
+            dislikes:[],
+            view:"normal"
         })
         
         .catch (err => {
@@ -125,7 +132,10 @@ router.get('/:post_id', (req, res) => {
             console.log(err);
             res.status(500).send('Error inserting post');
            
-    });
+            })
+        })
+    
+    ;
     res.status(200).send('post created');
     });
 

@@ -56,14 +56,15 @@ const Login = ({ onLogin, onSignup, usernames }) => {
             .then((result) => {
             localStorage.setItem("username",username);
             localStorage.setItem("userId",result);
-            console.log("username created "+username)
+            console.log("username created "+username);
+            navigate("/discover");
             }
             )
             .catch(error => setErrorMessage("signup didnt work, please retry"));
           }
         /*onSignup(username);
         onLogin(username);*/
-        navigate("/discover");
+        
       
     };
   
