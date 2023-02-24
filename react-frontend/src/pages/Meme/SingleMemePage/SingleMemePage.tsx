@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {Button, Image, Modal, Segmented, Typography} from "antd";
+import {Button, Image, Modal, Segmented, theme, Typography} from "antd";
 import {
     LeftOutlined,
     PauseOutlined,
@@ -77,8 +77,8 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
     )
 }
 
-// TODO: make components resize themselves
 export const SingleMemePage = () => {
+    const {token} = theme.useToken();
     const params = useParams();
     const navigate = useNavigate()
     const [view, setView] = useState<'meme' | 'stats'>("meme")
@@ -88,8 +88,8 @@ export const SingleMemePage = () => {
     // Handlers
     const handleClose = () => navigate(`/memes`);
 
-    useEffect( () => {
-        if(meme) api.memes.addView(meme.publicId);
+    useEffect(() => {
+        if (meme) api.memes.addView(meme.publicId);
     }, [meme?.publicId]);
 
     if (meme === null) return null;
@@ -99,9 +99,9 @@ export const SingleMemePage = () => {
     return (
         <Modal open onCancel={handleClose} footer={null} width={1100}>
             <ModalHeader meme={meme}/>
-            <div style={{display: 'flex', justifyContent: 'space-between'}}>
+            <div style={{display: 'flex', height: "100%"}}>
                 {/* Add meme stat view */}
-                <div>
+                <div style={{display: 'flex', flexDirection: 'column', width: 600, marginRight: token.marginXXL}}>
                     <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                         {/* Toggle for stats <-> meme */}
                         <div>
@@ -122,15 +122,16 @@ export const SingleMemePage = () => {
                         <div style={{color: '#00000073'}}>
                             {createdAt}
                         </div>
-
                     </div>
-                    <div style={{marginTop: 20}}>
-                        {view === 'meme' && <Image src={meme.imageUrl} preview={false} style={{borderRadius: 5}}/>}
+                    <div style={{display: 'flex', flex: 1, marginTop: 20}}>
+                        {view === 'meme' &&
+                            <Image src={meme.imageUrl} preview={false} style={{borderRadius: 5, maxHeight: 400}}/>}
                         {view === 'stats' && <MemeStat meme={meme}/>}
                     </div>
                     <div style={{marginTop: 20}}>
                         <div>
-                            <Title level={4} style={{display: 'inline-block', maxWidth: 500, whiteSpace: 'break-spaces'}}>
+                            <Title level={4}
+                                   style={{display: 'inline-block', maxWidth: 500, whiteSpace: 'break-spaces'}}>
                                 {meme.name}
                             </Title>
                         </div>

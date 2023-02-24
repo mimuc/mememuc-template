@@ -14,10 +14,8 @@ type CommentsProps = {
 
 const {Text} = Typography;
 
-// TODO: height needs to adjust to image plus title
 const CommentsList = styled.div`
-  height: 600px;
-  overflow-y: auto;
+  height: 520px;
 `;
 
 const Comment = ({comment}: { comment: CommentType }) => {
@@ -49,7 +47,6 @@ const Comment = ({comment}: { comment: CommentType }) => {
 
 export const Comments = ({meme}: CommentsProps) => {
     // States
-    // TODO: sort comments by date new ones first
     const [comments, setComments] = useState<CommentType[]>([]);
 
     // Handlers
@@ -57,7 +54,7 @@ export const Comments = ({meme}: CommentsProps) => {
         if (!text) return;
 
         const newComment = await api.comments.add(meme.publicId, text);
-        setComments(prev => [newComment, ...prev]);
+        setComments(prev => [...prev, newComment]);
     }
 
     useEffectOnce(() => {
@@ -70,7 +67,6 @@ export const Comments = ({meme}: CommentsProps) => {
                 <Input.Group compact>
                     <Form.Item name={'text'}>
                         <Input autoComplete={'off'} style={{
-                            // TODO: make width responsive
                             width: 340,
                             borderTopRightRadius: 0,
                             borderBottomRightRadius: 0,
@@ -91,7 +87,7 @@ export const Comments = ({meme}: CommentsProps) => {
             </Form>
             <CommentsList>
                 {comments.length > 0 ?
-                    comments.map(c => <Comment key={c.id} comment={c}/>)
+                    comments.slice().reverse().map(c => <Comment key={c.id} comment={c}/>)
                     : <Text style={{display: 'inline-block', color: 'gray', marginTop: 20}}>No comments yet.</Text>}
             </CommentsList>
         </div>

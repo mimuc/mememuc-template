@@ -1,6 +1,7 @@
+import {useState, useEffect, useRef} from "react";
 import Cookies from 'js-cookie';
 import axios from "axios";
-import React, { useState, useEffect, useRef } from "react";
+import {Line} from 'react-chartjs-2';
 import {MemeType} from "src/types";
 import {
     Chart as ChartJS,
@@ -13,7 +14,6 @@ import {
     Legend,
     ChartData,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
     CategoryScale,
@@ -32,28 +32,28 @@ type MemeStatProps = {
 export const optionsTop = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Views/Comments',
-      },
+        legend: {
+            position: 'top' as const,
+        },
+        title: {
+            display: true,
+            text: 'Views/Comments',
+        },
     },
-  };
+};
 
-  export const optionsBottom = {
+export const optionsBottom = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Likes/Dislikes',
-      },
+        legend: {
+            position: 'top' as const,
+        },
+        title: {
+            display: true,
+            text: 'Likes/Dislikes',
+        },
     },
-  };
+};
 
 export const MemeStat = ({meme}: MemeStatProps) => {
     const [dataTop, setDataTop] = useState<ChartData<"line">>();
@@ -100,11 +100,11 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                 // Aggregate the data from the last daysAmount days
                 const daysAmount = 7;
                 const today = new Date();
-                const days = Array.from({ length: daysAmount }, (_, i) => {
+                const days = Array.from({length: daysAmount}, (_, i) => {
                     const date = new Date(today);
                     date.setDate(date.getDate() - i);
-                    const dayName = date.toLocaleDateString('en-UK', { weekday: 'short' });
-                    return { date: dayName, views: 0, likes: 0, dislikes: 0, comments: 0 };
+                    const dayName = date.toLocaleDateString('en-UK', {weekday: 'short'});
+                    return {date: dayName, views: 0, likes: 0, dislikes: 0, comments: 0};
                 });
                 days.reverse();
 
@@ -147,7 +147,7 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                         day.comments += 1;
                     }
                 }
-              
+
                 const labels = days.map(d => d.date);
 
                 const dataTop = {
@@ -195,13 +195,21 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                 console.error(error);
             }
         }
+
         fetchData();
-      }, []);
+    }, []);
 
     return (
-        <div style={{height: 500}}>
-            {dataTop && <Line options={optionsTop} data={dataTop} />}
-            {dataBottom && <Line options={optionsBottom} data={dataBottom} />}
+        <div style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        }}>
+            <div style={{width: 400}}>
+                {dataTop && <Line options={optionsTop} data={dataTop}/>}
+                {dataBottom && <Line options={optionsBottom} data={dataBottom}/>}
+            </div>
         </div>
     )
 }
