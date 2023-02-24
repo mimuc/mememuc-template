@@ -7,6 +7,7 @@ import randomColor from "randomcolor";
 import {api} from "src/api";
 import {getTimeSince} from "src/utils";
 import {CommentType, MemeType} from "src/types";
+import {useMemesState} from "src/states";
 
 type CommentsProps = {
     meme: MemeType
@@ -47,6 +48,7 @@ const Comment = ({comment}: { comment: CommentType }) => {
 
 export const Comments = ({meme}: CommentsProps) => {
     // States
+    const [, setMemes] = useMemesState();
     const [comments, setComments] = useState<CommentType[]>([]);
 
     // Handlers
@@ -54,6 +56,7 @@ export const Comments = ({meme}: CommentsProps) => {
         if (!text) return;
 
         const newComment = await api.comments.add(meme.publicId, text);
+        setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, comments: m.comments + 1} : m));
         setComments(prev => [...prev, newComment]);
     }
 
@@ -62,7 +65,7 @@ export const Comments = ({meme}: CommentsProps) => {
     })
 
     return (
-        <div style={{width: 400}}>
+        <div style={{width: "400px !important", minWidth: '400px !important'}}>
             <Form name={'comment'} onFinish={handlePostComment} validateTrigger={'onSubmit'} style={{height: 40}}>
                 <Input.Group compact>
                     <Form.Item name={'text'}>

@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {useEffect, useMemo, useState} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import {Button, Image, Modal, Segmented, theme, Typography} from "antd";
 import {
     LeftOutlined,
@@ -13,7 +13,7 @@ import {
 import {Comments, DislikeButton, DownloadButton, LikeButton, MemeStat, ShareButton} from "src/components";
 import {api} from "src/api";
 import {useFilterState, useMemesState, useSearchState, useSortState} from "src/states";
-import {useAutoplay, useMeme} from "src/hooks";
+import {useAutoplay} from "src/hooks";
 import {getTimeSince} from "src/utils";
 import {MemeType} from "src/types";
 
@@ -83,7 +83,10 @@ export const SingleMemePage = () => {
     const navigate = useNavigate();
     const [view, setView] = useState<'meme' | 'stats'>("meme")
 
-    const {meme} = useMeme(params.memeId as string)
+    const [memes] = useMemesState();
+    const meme = useMemo(() => {
+        return memes.find(m => m.publicId === params.memeId);
+    }, [memes, params.memeId]);
 
     // Handlers
     const handleClose = () => navigate(`/memes`);
@@ -92,12 +95,12 @@ export const SingleMemePage = () => {
         if (meme) api.memes.addView(meme.publicId);
     }, [meme?.publicId]);
 
-    if (meme === null) return null;
+    if (!meme) return null;
 
     const createdAt = getTimeSince(new Date(meme.createdAt));
 
     return (
-        <Modal open onCancel={handleClose} footer={null} width={1100}>
+        <Modal open onCancel={handleClose} footer={null} width={1100} style={{minWidth: 1100}}>
             <ModalHeader meme={meme}/>
             <div style={{display: 'flex', height: "100%"}}>
                 {/* Add meme stat view */}
