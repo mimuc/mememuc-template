@@ -52,12 +52,12 @@ export const CanvasEditor = () => {
                                  style={{width: 70, marginInline: token.marginXS}}
                                  onChange={setHeight as any}/>
                 </Col>
-                <Col offset={1} span={4} style={{display: 'flex', alignItems: 'center'}}>
+                <Col offset={1} span={5} style={{display: 'flex', alignItems: 'center'}}>
                     <AddImageButton/>
                     <AddTextButton/>
                     <ClearButton/>
                 </Col>
-                <Col offset={1} span={4} style={{display: 'flex', alignItems: 'center'}}>
+                <Col offset={1} span={5} style={{display: 'flex', alignItems: 'center'}}>
                     <ContextMenu id={selectedShapeId}/>
                 </Col>
                 <Col offset={1} span={4}>
