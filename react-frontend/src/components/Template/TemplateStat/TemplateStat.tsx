@@ -1,6 +1,4 @@
-import Cookies from 'js-cookie';
-import axios from "axios";
-import React, { useState, useEffect, useRef } from "react";
+import {useState, useEffect, useRef} from "react";
 import {TemplateType} from "src/types";
 import {
     Chart as ChartJS,
@@ -13,7 +11,8 @@ import {
     Legend,
     ChartData, ChartOptions,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import {Line} from 'react-chartjs-2';
+import {authConfig, client} from "src/api/base";
 
 ChartJS.register(
     CategoryScale,
@@ -29,18 +28,18 @@ type TemplateStatProps = {
     template: TemplateType
 }
 
-export const options = {
+export const options: ChartOptions<'line'> = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: false,
-        text: '',
-      },
+        legend: {
+            position: 'top' as const,
+        },
+        title: {
+            display: false,
+            text: '',
+        },
     },
-  };
+};
 
 export const TemplateStat = ({template}: TemplateStatProps) => {
     const [data, setData] = useState<ChartData<"line">>();
@@ -50,23 +49,16 @@ export const TemplateStat = ({template}: TemplateStatProps) => {
         // each useEffect can return a cleanup function
         async function fetchData() {
             try {
-                const response_usage = await axios(`http://localhost:3001/templates/${template.id}/memes`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${Cookies.get("token")}`,
-                    }
-                });
-
-                const usages = response_usage.data;
+                const usages = await client.get(`/templates/${template.id}/memes`, authConfig()).then(res => res.data);
 
                 // Aggregate the data from the last daysAmount days
                 const daysAmount = 7;
                 const today = new Date();
-                const days = Array.from({ length: daysAmount }, (_, i) => {
+                const days = Array.from({length: daysAmount}, (_, i) => {
                     const date = new Date(today);
                     date.setDate(date.getDate() - i);
-                    const dayName = date.toLocaleDateString('en-UK', { weekday: 'short' });
-                    return { date: dayName, usage: 0 };
+                    const dayName = date.toLocaleDateString('en-UK', {weekday: 'short'});
+                    return {date: dayName, usage: 0};
                 });
                 days.reverse();
 
@@ -102,12 +94,13 @@ export const TemplateStat = ({template}: TemplateStatProps) => {
                 console.error(error);
             }
         }
+
         fetchData();
-      }, []);
+    }, []);
 
     return (
         <div style={{height: 250}}>
-            {data && <Line options={options as ChartOptions<'line'>} data={data} />}
+            {data && <Line options={options} data={data}/>}
         </div>
     )
 }

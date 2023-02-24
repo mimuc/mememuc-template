@@ -1,6 +1,4 @@
 import {useState, useEffect, useRef} from "react";
-import Cookies from 'js-cookie';
-import axios from "axios";
 import {Line} from 'react-chartjs-2';
 import {MemeType} from "src/types";
 import {
@@ -12,8 +10,9 @@ import {
     Title,
     Tooltip,
     Legend,
-    ChartData,
+    ChartData, ChartOptions,
 } from 'chart.js';
+import {authConfig, client} from "src/api/base";
 
 ChartJS.register(
     CategoryScale,
@@ -29,7 +28,7 @@ type MemeStatProps = {
     meme: MemeType
 }
 
-export const optionsTop = {
+export const optionsTop: ChartOptions<"line"> = {
     responsive: true,
     plugins: {
         legend: {
@@ -42,7 +41,7 @@ export const optionsTop = {
     },
 };
 
-export const optionsBottom = {
+export const optionsBottom: ChartOptions<"line"> = {
     responsive: true,
     plugins: {
         legend: {
@@ -64,38 +63,10 @@ export const MemeStat = ({meme}: MemeStatProps) => {
         // each useEffect can return a cleanup function
         async function fetchData() {
             try {
-                const response_views = await axios(`http://localhost:3001/memes/${meme.publicId}/views`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${Cookies.get("token")}`,
-                    }
-                });
-
-                const response_likes = await axios(`http://localhost:3001/memes/${meme.publicId}/likes`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${Cookies.get("token")}`,
-                    }
-                });
-
-                const response_dislikes = await axios(`http://localhost:3001/memes/${meme.publicId}/dislikes`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${Cookies.get("token")}`,
-                    }
-                });
-
-                const response_comments = await axios(`http://localhost:3001/memes/${meme.publicId}/comments`, {
-                    method: 'GET',
-                    headers: {
-                        Authorization: `Bearer ${Cookies.get("token")}`,
-                    }
-                });
-
-                const views = response_views.data;
-                const likes = response_likes.data;
-                const dislikes = response_dislikes.data;
-                const comments = response_comments.data;
+                const views = await client.get(`/memes/${meme.publicId}/views`, authConfig()).then(r => r.data);
+                const likes = await client.get(`/memes/${meme.publicId}/likes`, authConfig()).then(r => r.data);
+                const dislikes = await client.get(`/memes/${meme.publicId}/dislikes`, authConfig()).then(r => r.data);
+                const comments = await client.get(`/memes/${meme.publicId}/comments`, authConfig()).then(r => r.data);
 
                 // Aggregate the data from the last daysAmount days
                 const daysAmount = 7;
@@ -187,8 +158,8 @@ export const MemeStat = ({meme}: MemeStatProps) => {
                 }
 
                 if (componentIsMounted.current) {
-                    setDataTop(dataTop);
-                    setDataBottom(dataBottom);
+                    setDataTop(dataTop as ChartData<"line">);
+                    setDataBottom(dataBottom as ChartData<"line">);
                 }
 
             } catch (error) {
