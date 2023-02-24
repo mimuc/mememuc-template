@@ -1,5 +1,5 @@
 import {createGlobalState} from "react-use";
-import {FilterType, MemeType} from 'src/types';
+import {FilterType, MemeType, SessionType} from 'src/types';
 
 export * from './editor-states';
 
@@ -11,3 +11,7 @@ export const useFilterState = createGlobalState<FilterType>({
 export const useSortState = createGlobalState<'newest' | 'oldest'>('newest');
 
 export const useSearchState = createGlobalState<string | null>(null)
+
+export const useSessionState = createGlobalState<SessionType | null>(null);
+
+export const useCanvasState = createGlobalState<{ width: number; height: number }>({width: 700, height: 700})
