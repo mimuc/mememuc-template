@@ -17,3 +17,6 @@ export const useSessionState = createGlobalState<SessionType | null>(null);
 export const useCanvasSizeState = createGlobalState<{ width: number; height: number }>({width: 700, height: 700})
 
 export const useTemplatesState = createGlobalState<TemplateType[]>([]);
+
+// Hopefully a fix for a weird bug
+export const useImageUrlState = createGlobalState<string | null>(null);

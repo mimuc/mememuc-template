@@ -57,7 +57,8 @@ export const getTimeSince = (date: Date) => {
  * https://www.zhenghao.io/posts/verify-image-url
  * @param url
  */
-export function isImgUrl(url: string) {
+export function isImgUrl(url: string | null) {
+    if(!url) return false;
     return /\.(jpg|jpeg|png|webp|avif|gif)$/.test(url)
 }
 
@@ -80,13 +81,12 @@ export function getMeta(url: string) {
  * https://stackoverflow.com/a/15832662/512042
  * @param uri
  * @param name
+ * @param fileType: 'png' | 'jpg'
+ * @param maxSizeInKBytes: max size in kilobytes
  */
 export async function downloadURI(uri: string, name: string, fileType: 'png' | 'jpg', maxSizeInKBytes: number) {
     const response = await fetch(uri);
     const imageData = await response.blob();
-
-    // Image compression
-    let compressedDataUrl = uri;
 
     const options = {
         maxSizeMB: maxSizeInKBytes / 1000,
@@ -97,7 +97,7 @@ export async function downloadURI(uri: string, name: string, fileType: 'png' | '
     }
 
     const compressedImage = await imageCompression(imageData as File, options);
-    compressedDataUrl = URL.createObjectURL(compressedImage);
+    let compressedDataUrl = URL.createObjectURL(compressedImage);
 
     const link = document.createElement('a');
     link.download = `${name}.${fileType}`;

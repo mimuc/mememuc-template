@@ -10,8 +10,15 @@ import {
     LinkOutlined,
     PictureOutlined
 } from "@ant-design/icons";
-import {useEditorState, useMemesState, useSelectedShapeIdState, useSessionState, useStageRef} from "src/states";
-import {downloadURI, isImgUrl} from "src/utils";
+import {
+    useEditorState,
+    useImageUrlState,
+    useMemesState,
+    useSelectedShapeIdState,
+    useSessionState,
+    useStageRef
+} from "src/states";
+import {downloadURI} from "src/utils";
 import {MemeType, SessionType} from "src/types";
 import Cookies from "js-cookie";
 import {api} from "src/api";
@@ -93,9 +100,9 @@ export const useImgflipInputModal = () => {
 }
 
 export const useUrlInputModal = () => {
-    const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
+   const [, setImageUrl] = useImageUrlState();
 
-    return () => new Promise<string | undefined>(resolve =>
+    return () => new Promise<null>(resolve =>
         Modal.info({
             closable: true,
             icon: <LinkOutlined/>,
@@ -104,9 +111,7 @@ export const useUrlInputModal = () => {
                 setImageUrl(e.target.value)
             }}/>,
             onOk: () => {
-                const url = imageUrl && imageUrl.trim();
-                if (url && isImgUrl(url)) resolve(url);
-                else resolve(undefined);
+                resolve(null)
             }
         })
     );
