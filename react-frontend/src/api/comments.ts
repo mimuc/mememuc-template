@@ -1,7 +1,7 @@
 import {CommentType} from "src/types";
-import { authConfig, client } from "./base";
+import {authConfig, client} from "./base";
 
-const mapComment = ((data: {content: string, publicId: string, createdAt: string, creatorDisplayName: string}) => {
+const mapComment = ((data: { content: string, publicId: string, createdAt: string, creatorDisplayName: string }) => {
     return {
         text: data.content,
         id: data.publicId,
@@ -14,9 +14,8 @@ const mapComment = ((data: {content: string, publicId: string, createdAt: string
 
 const forMeme = async (memeId: string) => {
     return client.get(`/memes/${memeId}/comments`, authConfig())
-    .then(res => {
-        return res.data.map((d: { content: string; publicId: string; createdAt: string; creatorDisplayName: string; }) => mapComment(d));
-    });
+        .then(res => res.data as any[])
+        .then(data => data.map((d: { content: string; publicId: string; createdAt: string; creatorDisplayName: string; }) => mapComment(d)));
 }
 
 const add = async (memeId: string, text: string) => {
@@ -24,9 +23,9 @@ const add = async (memeId: string, text: string) => {
         content: text,
         memePublicId: memeId
     }, authConfig())
-    .then(res => {
-        return mapComment(res.data);
-    });
+        .then(res => {
+            return mapComment(res.data);
+        });
 }
 
 export const comments = {
