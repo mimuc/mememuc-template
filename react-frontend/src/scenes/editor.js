@@ -10,12 +10,14 @@ export default function Editor() {
   const [data, setData] = useState([]);
   const [templateIndex, setTemplateIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
-  
+  const [text, setText] = useState([]);
+
   const location = useLocation();
 
   useEffect(() => {
     const url = decodeURIComponent(new URLSearchParams(location.search).get("url"));
     setImageUrl(url);
+    setText([]);
   }, [location]);
 
   // Get all memes from the used API
@@ -24,13 +26,12 @@ export default function Editor() {
   }, [])
 
   const handleTemplateChange = (increment) => {
-  const currentIndex = data.findIndex((meme) => meme.url === imageUrl);
-  const newIndex = (currentIndex + data.length + increment) % data.length;
-  setTemplateIndex(newIndex);
-  setCounter(0);
-  setImageUrl(data[newIndex].url);
-}
-
+    const currentIndex = data.findIndex((meme) => meme.url === imageUrl);
+    const newIndex = (currentIndex + data.length + increment) % data.length;
+    setTemplateIndex(newIndex);
+    setCounter(0);
+    setImageUrl(data[newIndex].url);
+  }
 
   const handlePreviousTemplate = () => {
     handleTemplateChange(-1);
@@ -40,17 +41,33 @@ export default function Editor() {
     handleTemplateChange(1);
   }
 
+  const handleClear = () => {
+    setCounter(0);
+    setText([]);
+  }
+
+  const handleAddText = () => {
+    setCounter(counter + 1);
+    setText([...text, ""]);
+  }
+
+  const handleTextChange = (index, newText) => {
+    const newTextArray = [...text];
+    newTextArray[index] = newText;
+    setText(newTextArray);
+  }
+
   return (
     <>
       <h1>Editor</h1>
       <div className="meme mt-5 mb-5">
         <img src={imageUrl} alt="Meme" style={{ width: "25%", height: "25%"}} />
-        {Array(counter).fill(0).map(e => <Text key={e} />)}
+        {text.map((t, index) => <Text key={index} value={t} onChange={(newText) => handleTextChange(index, newText)} />)}
       </div>
-      <Button onClick={() => setCounter(counter + 1)}>Add Text</Button>
+      <Button onClick={handleAddText}>Add Text</Button>
       <Button onClick={handlePreviousTemplate}>Previous Template</Button>
       <Button onClick={handleNextTemplate}>Next Template</Button>
-      <Button onClick={() => {setCounter(0);}}>Clear</Button>
+      <Button onClick={handleClear}>Clear</Button>
     </>
   );
 };
