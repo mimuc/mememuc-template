@@ -14,4 +14,4 @@ export const useSearchState = createGlobalState<string | null>(null)
 
 export const useSessionState = createGlobalState<SessionType | null>(null);
 
-export const useCanvasState = createGlobalState<{ width: number; height: number }>({width: 700, height: 700})
+export const useCanvasSizeState = createGlobalState<{ width: number; height: number }>({width: 700, height: 700})
