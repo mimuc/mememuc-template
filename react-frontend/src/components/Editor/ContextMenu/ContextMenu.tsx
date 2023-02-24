@@ -113,7 +113,7 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
                         x
                         <InputNumber min={100} max={1000} value={shape?.height}
                                      style={{width: 70, marginInline: token.marginXS}}
-                                     disabled/>
+                        />
                     </>
                 )
             }
