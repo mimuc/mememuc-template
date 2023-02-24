@@ -8,7 +8,7 @@ import {ShapeProps} from "./props";
 export const ImageShape = ({id, selected, onSelect}: ShapeProps) => {
     // State
     const {shape, updateShape} = useShape<ImageShapeInterface>(id);
-    const [image] = useImage(shape.url);
+    const [image] = useImage((shape as ImageShapeInterface).url);
 
     // References
     const shapeRef = useRef(null);

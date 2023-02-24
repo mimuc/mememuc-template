@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {useToggle} from "react-use";
-import {Alert, Button, InputNumber, theme} from "antd";
+import {Alert, Button, Input, InputNumber, theme} from "antd";
 import {
     BoldOutlined,
     CloseCircleOutlined,
@@ -13,6 +13,7 @@ import {TwitterPicker} from "react-color";
 import {useEditorState, useSelectedShapeIdState} from "src/states";
 import {ImageShapeInterface, ShapeInterface, TextShapeInterface} from "src/types";
 import {getTextColor} from "src/utils";
+import {useShape} from "src/hooks";
 
 type ContextMenuProps = {
     id: string | null;
@@ -34,9 +35,8 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
     const {token} = theme.useToken();
 
     // States
-    const [shapes, setShapes] = useEditorState();
+    const {shape, updateShape, deleteShape} = useShape<ShapeInterface>(id);
     const [, setSelectedShapeId] = useSelectedShapeIdState();
-    const [shape, setShape] = useState<ShapeInterface | null>(null);
     const [showColorPicker, toggleColorPicker] = useToggle(false);
 
     // Type mappings
@@ -44,62 +44,35 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
     const textShape = shape?.type === 'text' && shape as TextShapeInterface;
 
     // Handlers
-    const handleChangeFontSize = (value: number) => {
-        setShapes(prev => prev.map((shape) => {
-            if (shape.id === id) {
-                return {
-                    ...shape,
-                    fontSize: value
-                }
-            }
-            return shape;
-        }));
+    const handleFontSizeChange = (value: number) => {
+        updateShape({fontSize: value} as Partial<TextShapeInterface>);
     }
 
-    const handleToggleBold = () => {
-        setShapes(prev => prev.map((shape) => {
-                if (shape.id === id) {
-                    return {
-                        ...shape,
-                        fontStyle: textShape && textShape?.fontStyle === 'bold' ? 'normal' : 'bold'
-                    }
-                }
-                return shape;
-            }
-        ));
+    const handleTextChange = (e: any) => {
+        updateShape({text: e.target.value} as Partial<TextShapeInterface>);
+    }
+
+    const handleBoldToggle = () => {
+        updateShape({fontStyle: textShape && textShape?.fontStyle === 'bold' ? 'normal' : 'bold'} as Partial<TextShapeInterface>);
     }
 
     const handleColorSelection = (color: any) => {
-        setShapes(prev => prev.map((shape) => {
-            if (shape.id === id) {
-                return {
-                    ...shape,
-                    fill: color.hex
-                }
-            }
-            return shape;
-        }));
+        updateShape({fill: color.hex} as Partial<TextShapeInterface>)
     }
 
     const handleDelete = () => {
         setSelectedShapeId(null);
-        setShapes(prev => prev.filter((shape) => shape.id !== id));
+        deleteShape()
     };
 
-    // Effects
-    useEffect(() => {
-        const selectedShape = shapes.find((shape) => shape.id === id);
-        setShape(selectedShape || null);
-    }, [id, shapes]);
-
     if (!id) return <Alert message={'No shape selected'} type={'info'} showIcon
-                           style={{height: 32, width: 230, paddingBlock: 4}}/>
+                           style={{width: 380, paddingBlock: 4}}/>
 
     return (
         <>
             <Button
                 icon={<DeleteOutlined/>}
-                style={{color: token.colorError}}
+                danger
                 onClick={handleDelete}
             />
 
@@ -125,16 +98,18 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
                             addonBefore={<FontSizeOutlined style={{fontSize: 12}}/>}
                             style={{width: 90, marginLeft: token.marginXS}}
                             value={textShape.fontSize}
-                            onChange={handleChangeFontSize as any}
+                            onChange={handleFontSizeChange as any}
                             controls={false}
                             min={5}
                             max={100}
                         />
+                        <Input value={textShape.text} onChange={handleTextChange}
+                               style={{marginLeft: token.marginXS, width: 150}}/>
                         <Button
                             icon={<BoldOutlined/>}
                             style={{marginLeft: token.marginXS}}
                             type={textShape.fontStyle === 'bold' ? 'primary' : 'default'}
-                            onClick={handleToggleBold}
+                            onClick={handleBoldToggle}
                         />
                         <div style={{display: 'inline-block', position: 'relative', marginLeft: token.marginXS}}>
                             <Button

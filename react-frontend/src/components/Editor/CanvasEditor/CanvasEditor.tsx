@@ -1,7 +1,7 @@
 import {useRef} from "react";
 import {Layer, Stage} from 'react-konva';
 import {useEffectOnce} from "react-use";
-import {Col, InputNumber, Row, Space, theme} from "antd";
+import {Col, Divider, InputNumber, Row, Space, theme} from "antd";
 import {useCanvasSizeState, useEditorState, useSelectedShapeIdState, useStageRef} from "src/states";
 import {AddImageButton, AddTextButton, ClearButton, CreateButton} from 'src/components/Buttons';
 import {ImageShape, TextShape} from "../Shape";
@@ -42,26 +42,32 @@ export const CanvasEditor = () => {
     return (
         <Space direction={'vertical'} size={'large'} style={{width: '100%'}}>
             <Row>
-                <Col span={7} style={{display: 'flex', alignItems: 'center'}}>
-                    Canvas Size (w x h):
-                    <InputNumber min={100} max={1000} value={canvasSize.width}
-                                 style={{width: 70, marginInline: token.marginXS}}
-                                 onChange={setWidth as any}/>
-                    x
-                    <InputNumber min={100} max={1000} value={canvasSize.height}
-                                 style={{width: 70, marginInline: token.marginXS}}
-                                 onChange={setHeight as any}/>
-                </Col>
-                <Col offset={1} span={5} style={{display: 'flex', alignItems: 'center'}}>
-                    <AddImageButton/>
-                    <AddTextButton/>
-                    <ClearButton/>
-                </Col>
-                <Col offset={1} span={5} style={{display: 'flex', alignItems: 'center'}}>
-                    <ContextMenu id={selectedShapeId}/>
-                </Col>
-                <Col offset={1} span={4}>
-                    <CreateButton/>
+                <Col span={24}>
+                    <div style={{display: 'inline-flex', alignItems: 'center'}}>
+                        Canvas Size (w x h):
+                        <InputNumber min={100} max={1000} value={canvasSize.width}
+                                     style={{width: 70, marginInline: token.marginXS}}
+                                     onChange={setWidth as any}/>
+                        x
+                        <InputNumber min={100} max={1000} value={canvasSize.height}
+                                     style={{width: 70, marginLeft: token.marginXS}}
+                                     onChange={setHeight as any}/>
+                    </div>
+                    <Divider type={'vertical'} style={{height: '100%', marginInline: token.marginMD}}/>
+                    <div style={{display: 'inline-flex', alignItems: 'center'}}>
+                        <AddImageButton/>
+                        <AddTextButton/>
+                        <ClearButton/>
+                    </div>
+                    <Divider type={'vertical'} style={{height: '100%', marginInline: token.marginMD}}/>
+
+                    <div style={{display: 'inline-flex', alignItems: 'center'}}>
+                        <ContextMenu id={selectedShapeId}/>
+                    </div>
+                    <Divider type={'vertical'} style={{height: '100%', marginInline: token.marginMD}}/>
+                    <div style={{display: 'inline-flex', alignItems: 'center'}}>
+                        <CreateButton/>
+                    </div>
                 </Col>
             </Row>
             <Row>

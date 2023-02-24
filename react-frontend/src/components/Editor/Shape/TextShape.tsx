@@ -45,18 +45,10 @@ export const TextShape = ({id, selected, onSelect}: TextShapeProps) => {
 
     if (!shape) return null;
 
+    console.log('TextShape', shape);
+
     return (
         <>
-
-            <Text
-                {...shape}
-                ref={shapeRef}
-                draggable
-                onClick={handleSelect}
-                onTap={handleSelect}
-                onDragEnd={handleDragEnd}
-                onTransform={handleTransform}
-            />
             {selected && (
                 <>
                     <Transformer
@@ -68,6 +60,15 @@ export const TextShape = ({id, selected, onSelect}: TextShapeProps) => {
 
                 </>
             )}
+            <Text
+                {...shape}
+                ref={shapeRef}
+                draggable
+                onClick={handleSelect}
+                onTap={handleSelect}
+                onDragEnd={handleDragEnd}
+                onTransform={handleTransform}
+            />
         </>
     );
 }
