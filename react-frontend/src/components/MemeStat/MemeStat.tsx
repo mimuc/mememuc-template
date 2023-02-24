@@ -168,7 +168,7 @@ export const MemeStat = ({meme}: MemeStatProps) => {
         }
 
         fetchData();
-    }, []);
+    }, [meme]);
 
     return (
         <div style={{
