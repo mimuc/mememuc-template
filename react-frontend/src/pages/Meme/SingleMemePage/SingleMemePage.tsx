@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import {Button, Image, Modal, Segmented, theme, Typography} from "antd";
 import {
@@ -13,7 +13,7 @@ import {
 import {Comments, DislikeButton, DownloadButton, LikeButton, MemeStat, ShareButton} from "src/components";
 import {api} from "src/api";
 import {useFilterState, useMemesState, useSearchState, useSortState} from "src/states";
-import {useAutoplay} from "src/hooks";
+import {useAutoplay, useMeme} from "src/hooks";
 import {getTimeSince} from "src/utils";
 import {MemeType} from "src/types";
 
@@ -83,10 +83,7 @@ export const SingleMemePage = () => {
     const navigate = useNavigate();
     const [view, setView] = useState<'meme' | 'stats'>("meme")
 
-    const [memes] = useMemesState();
-    const meme = useMemo(() => {
-        return memes.find(m => m.publicId === params.memeId);
-    }, [memes, params.memeId]);
+    const {meme} = useMeme(params.memeId as string);
 
     // Handlers
     const handleClose = () => navigate(`/memes`);

@@ -3,7 +3,6 @@ import {Button, Card, Spin, Typography} from "antd";
 import {CommentOutlined} from "@ant-design/icons";
 import {DislikeButton, DownloadButton, LikeButton, ShareButton} from "src/components";
 import {useFilterState, useMemesState, useSearchState, useSortState} from "src/states";
-import {MemeType} from "src/types";
 import {abbreviateNumber, getTimeSince} from "src/utils";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {api} from "src/api";
@@ -76,7 +75,8 @@ export const MemeListPage = () => {
         if (newMemes.length === 0) {
             setHasMore(false);
         }
-        setMemes(prev => [...prev, ...newMemes]);
+        const currentMemeIds = memes.map(m => m.publicId);
+        setMemes(prev => [...prev, ...newMemes.filter(meme => !currentMemeIds.includes(meme.publicId))]);
         return memes
     }
 

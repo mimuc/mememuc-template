@@ -2,7 +2,7 @@ import {useEffect, useMemo, useRef, useState} from "react";
 import {useAsync, useEffectOnce, useLocalStorage, useUnmount} from "react-use";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Webcam from "react-webcam";
-import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Form} from "antd";
+import {Card, Col, Input, Modal, Radio, Row, Select, Form} from "antd";
 import {
     AppstoreOutlined,
     CameraOutlined,
@@ -207,13 +207,10 @@ export const useScreenshot = () => {
 }
 
 export const useDownloadModal = () => {
-    const [shapes,] = useEditorState();
     const [stageRef,] = useStageRef();
-    //const [fileFormat, setFileFormat] = useState<string>('png');
-   // const [fileSize, setFileSize] = useState<number>(1000);
     const [form] = Form.useForm();
     const [memes] = useMemesState();
-    const [selectedShapeId, setSelectedShapeId] = useSelectedShapeIdState();
+    const [, setSelectedShapeId] = useSelectedShapeIdState();
 
     // If no id is provided, download the current meme from the editor
     return (id?: string) => new Promise<string | undefined>(resolve => {
@@ -303,10 +300,12 @@ export const useCreateTemplateModal = (onTemplateCreate: (values: any) => void) 
                     .then(async (values) => {
                         form.resetFields();
                         onTemplateCreate(values);
+                        resolve();
                     })
                     .catch((info) => {
                         // TODO: Warn, instead of closing dialogue
                         console.log('Validate Failed:', info);
+                        resolve();
                     });
             }
         });
@@ -315,7 +314,7 @@ export const useCreateTemplateModal = (onTemplateCreate: (values: any) => void) 
 
 export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {
     const [form] = Form.useForm();
-    const [selectedShapeId, setSelectedShapeId] = useSelectedShapeIdState();
+    const [, setSelectedShapeId] = useSelectedShapeIdState();
 
     return () => new Promise<string | undefined>(resolve => {
         Modal.info({
@@ -351,10 +350,12 @@ export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {
                         form.resetFields();
                         setSelectedShapeId(null);
                         setTimeout(async () => onMemeCreate(values), 1000);
+                        resolve()
                     })
                     .catch((info) => {
                         // TODO: Warn, instead of closing dialogue
                         console.log('Validate Failed:', info);
+                        resolve()
                     });
             }
         });
@@ -397,7 +398,7 @@ export const useMeme = (id: string) => {
 
     const meme: MemeType | null = useMemo(() => memes?.find((m: MemeType) => m.publicId === id) || null, [memes, id]);
 
-    useEffectOnce(() => {
+    useEffect(() => {
         const query = memes?.find((m: MemeType) => m.publicId === id);
 
         if (!query) {
@@ -407,7 +408,7 @@ export const useMeme = (id: string) => {
                 throw new Response("Meme not found", {status: 404});
             });
         }
-    })
+    }, [id, memes, setMemes])
 
     const toggleLike = async () => {
         if (!meme) return;
