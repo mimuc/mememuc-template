@@ -68,8 +68,8 @@ const downvote = (memeId: string) => {
 }
 
 const downvoteRemove = (memeId: string) => {
-    return Promise.resolve(client.delete(`/memes/${memeId}/dislike`, authConfig())
-        .then(res => res.data));
+    return client.delete(`/memes/${memeId}/dislike`, authConfig())
+        .then(res => res.data);
 }
 
 const addView = (memeId: string) => {
