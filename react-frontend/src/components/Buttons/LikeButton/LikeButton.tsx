@@ -1,4 +1,3 @@
-import {MemeType} from "src/types";
 import {Button, Typography} from "antd";
 import {LikeFilled, LikeOutlined} from "@ant-design/icons";
 import {abbreviateNumber} from "src/utils";

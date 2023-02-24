@@ -1,19 +1,13 @@
 import {Button, Typography} from "antd";
 import {DislikeFilled, DislikeOutlined} from "@ant-design/icons";
 import {abbreviateNumber} from "src/utils";
-import {MemeType} from "src/types";
 import {useAuth, useMeme} from "src/hooks";
-import {useEffect} from "react";
 
 const {Text} = Typography;
 
 export const DislikeButton = ({id}: { id: string }) => {
     const {session} = useAuth();
     const {meme, toggleDislike} = useMeme(id)
-
-    useEffect(() => {
-        console.log('updated meme in dislike button', meme)
-    }, [meme])
 
     if (!meme) return null;
 

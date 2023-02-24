@@ -140,8 +140,8 @@ export const SingleMemePage = () => {
                             justifyContent: 'space-between',
                             marginBlock: 10,
                         }}>
-                            <LikeButton meme={meme}/>
-                            <DislikeButton meme={meme}/>
+                            <LikeButton id={meme.publicId}/>
+                            <DislikeButton id={meme.publicId}/>
                             <DownloadButton meme={meme}/>
                             <ShareButton meme={meme}/>
                         </div>

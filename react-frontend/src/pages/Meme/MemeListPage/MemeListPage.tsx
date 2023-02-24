@@ -8,22 +8,25 @@ import {abbreviateNumber, getTimeSince} from "src/utils";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {api} from "src/api";
 import {useState} from "react";
+import {useMeme} from "src/hooks";
 
-type ItemProps = {
-    meme: MemeType;
-}
 
 const {Text} = Typography;
 
-const MemeItem = ({meme}: ItemProps) => {
+const MemeItem = ({id}: { id: string }) => {
     const navigate = useNavigate();
+
+    const {meme} = useMeme(id);
+
+    // Nav events
+    const navigateToMeme = () => meme && navigate(meme.publicId);
+
+    if (!meme) return null;
 
     // Conversion
     const totalComments = abbreviateNumber(meme.comments)
     const createdAt = getTimeSince(new Date(meme.createdAt));
 
-    // Nav events
-    const navigateToMeme = () => navigate(meme.publicId);
 
     return (
         <Card
@@ -31,8 +34,8 @@ const MemeItem = ({meme}: ItemProps) => {
             cover={<img src={meme.imageUrl} onClick={navigateToMeme} alt={meme.name}/>}
             hoverable
             actions={[
-                <LikeButton meme={meme}/>,
-                <DislikeButton meme={meme}/>,
+                <LikeButton id={meme.publicId}/>,
+                <DislikeButton id={meme.publicId}/>,
                 <Button type={'ghost'} onClick={navigateToMeme}>
                     <CommentOutlined key={'comment'}/>
                     <Text>{totalComments}</Text>
@@ -82,14 +85,14 @@ export const MemeListPage = () => {
             dataLength={memes.length} //This is important field to render the next data
             next={handleNext}
             hasMore={hasMore}
-            loader={<Spin />}
+            loader={<Spin/>}
             endMessage={
                 <p style={{textAlign: 'center'}}>
                     <b>Yay! You have seen it all</b>
                 </p>
             }
         >
-            {memes.map(item => <MemeItem key={item.publicId} meme={item}/>)}
+            {memes.map(item => <MemeItem key={item.publicId} id={item.publicId}/>)}
         </InfiniteScroll>
     )
 }

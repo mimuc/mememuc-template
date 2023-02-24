@@ -1,8 +1,8 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {useAsync, useEffectOnce, useLocalStorage, useUnmount} from "react-use";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Webcam from "react-webcam";
-import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Space, Form} from "antd";
+import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Form} from "antd";
 import {
     AppstoreOutlined,
     CameraOutlined,
@@ -282,7 +282,7 @@ export const useCreateTemplateModal = () => {
     });
 }
 
-export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {    
+export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {
     const [form] = Form.useForm();
 
     return () => new Promise<string | undefined>(resolve => {
@@ -290,39 +290,39 @@ export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {
             closable: true,
             title: 'Create meme',
             icon: <PictureOutlined/>,
-            content: 
-            <Form
-                form={form}
-                layout="vertical"
-                name="form_in_modal"
-                initialValues={{visibility: 'public'}}
-            >
-                <Form.Item
-                    name="name"
-                    label="Meme name (required)"
-                    rules={[{ required: true, message: 'Please input the name of the meme!'}]}
+            content:
+                <Form
+                    form={form}
+                    layout="vertical"
+                    name="form_in_modal"
+                    initialValues={{visibility: 'public'}}
                 >
-                    <Input />
-                </Form.Item>
-                <Form.Item name="visibility" className="collection-create-form_last-form-item">
-                    <Radio.Group>
-                        <Radio value="public">Public</Radio>
-                        <Radio value="unlisted">Unlisted</Radio>
-                        <Radio value="private">Private</Radio>
-                    </Radio.Group>
-                </Form.Item>
-            </Form>,
+                    <Form.Item
+                        name="name"
+                        label="Meme name (required)"
+                        rules={[{required: true, message: 'Please input the name of the meme!'}]}
+                    >
+                        <Input/>
+                    </Form.Item>
+                    <Form.Item name="visibility" className="collection-create-form_last-form-item">
+                        <Radio.Group>
+                            <Radio value="public">Public</Radio>
+                            <Radio value="unlisted">Unlisted</Radio>
+                            <Radio value="private">Private</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+                </Form>,
             onOk: async () => {
                 form
-                .validateFields()
-                .then(async (values) => {
-                    form.resetFields();
-                    onMemeCreate(values);
-                })
-                .catch((info) => {
-                    // TODO: Warn, instead of closing dialogue
-                    console.log('Validate Failed:', info);
-                });
+                    .validateFields()
+                    .then(async (values) => {
+                        form.resetFields();
+                        onMemeCreate(values);
+                    })
+                    .catch((info) => {
+                        // TODO: Warn, instead of closing dialogue
+                        console.log('Validate Failed:', info);
+                    });
             }
         });
     });
@@ -361,17 +361,15 @@ export const useAuth = () => {
 
 export const useMeme = (id: string) => {
     const [memes, setMemes] = useMemesState();
-    const [meme, setMeme] = useState<MemeType | null>(null);
+
+    const meme: MemeType | null = useMemo(() => memes?.find((m: MemeType) => m.publicId === id) || null, [memes]);
 
     useEffectOnce(() => {
         const query = memes?.find((m: MemeType) => m.publicId === id);
 
-        if (query) {
-            setMeme(query);
-        } else {
+        if (!query) {
             api.memes.get(id).then((data) => {
                 setMemes([data, ...memes]);
-                setMeme(data);
             }).catch(() => {
                 throw new Response("Meme not found", {status: 404});
             });
@@ -381,43 +379,43 @@ export const useMeme = (id: string) => {
     const toggleLike = async () => {
         if (!meme) return;
 
-        if (meme.vote === 1) {
+        let updatedMeme = {};
+
+        if (meme.vote == 1) {
             await api.memes.upvoteRemove(meme.publicId)
-            const updatedMeme = {...meme, likes: meme.likes - 1, vote: 0};
-            setMeme(updatedMeme)
-            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
+            updatedMeme = {likes: meme.likes - 1, vote: 0};
         } else {
             await api.memes.upvote(meme.publicId)
-            const updatedMeme = {
-                ...meme, likes: meme.likes + 1,
+            updatedMeme = {
+                likes: meme.likes + 1,
                 dislikes: meme.vote === -1 ? meme.dislikes - 1 : meme.dislikes,
                 vote: 1
             };
-            setMeme(updatedMeme)
-            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
         }
+
+        setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, ...updatedMeme} : m))
     }
 
     const toggleDislike = async () => {
         if (!meme) return;
 
+        let updatedMeme = {};
+
         if (meme.vote === -1) {
             await api.memes.downvoteRemove(meme.publicId)
-            const updatedMeme = {...meme, dislikes: meme.dislikes - 1, vote: 0};
-            setMeme(updatedMeme)
-            setMemes(prev => prev && prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
+            updatedMeme = {dislikes: meme.dislikes - 1, vote: 0};
+
         } else {
             await api.memes.downvote(meme.publicId)
-            const updatedMeme = {
-                ...meme,
+            updatedMeme = {
                 dislikes: meme.dislikes + 1,
                 likes: meme.vote === 1 ? meme.likes - 1 : meme.likes,
                 vote: -1
             };
-            setMeme(updatedMeme)
-            setMemes(prev => prev.map(m => m.publicId === meme.publicId ? updatedMeme : m))
         }
+
+        setMemes(prev => prev.map(m => m.publicId === meme.publicId ? {...m, ...updatedMeme} : m))
     }
 
-    return {meme, toggleLike, toggleDislike};
+    return {meme, toggleLike, toggleDislike} as const;
 }
