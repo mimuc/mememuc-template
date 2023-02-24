@@ -11,7 +11,7 @@ import {
     LinkOutlined,
     PictureOutlined
 } from "@ant-design/icons";
-import {useEditorState, useMemesState, useStageRef} from "src/states";
+import {useEditorState, useMemesState, useSessionState, useStageRef} from "src/states";
 import {downloadURI, isImgUrl} from "src/utils";
 import {MemeType, SessionType} from "src/types";
 import {useTemplates} from "./state-hooks";
@@ -330,15 +330,26 @@ export const useCreateMemeModal = () => {
 }
 
 export const useAuth = () => {
-    const [session, setSession] = useLocalStorage<SessionType | null>('session', null);
+    const [persistentSession, setPersistentSession] = useLocalStorage<SessionType | null>('session', null);
+    const [session, setSession] = useSessionState();
 
-    const login = (token: string, expiryTime: string) => {
+    useEffectOnce(() => {
+       setSession(persistentSession as SessionType)
+    });
+
+    useEffect(() => {
+        setPersistentSession(session);
+    }, [session]);
+
+    const login = async (token: string, expiryTime: string) => {
         Cookies.remove('token');
         Cookies.set('token', token, {
             expires: Date.parse(expiryTime),
             sameSite: 'lax'
         });
-        api.my.account().then((data) => setSession(data));
+        await api.my.account().then((data) => {
+            setSession(data as SessionType);
+        });
     }
 
     const logout = () => {

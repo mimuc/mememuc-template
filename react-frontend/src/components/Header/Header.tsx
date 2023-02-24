@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import {ReactNode, useEffect} from "react";
 import {useNetworkState} from "react-use";
 import {Link, NavLink} from "react-router-dom";
 import {Alert, Button, Layout, theme, Typography} from "antd";
@@ -6,6 +6,7 @@ import {LoginOutlined, LogoutOutlined} from "@ant-design/icons";
 import styled from "styled-components";
 import {config} from "src/config";
 import {useAuth} from "src/hooks";
+import {useSessionState} from "src/states";
 
 type HeaderProps = {
     children?: ReactNode
@@ -46,7 +47,12 @@ const NetworkStatus = () => {
 
 export const Header = ({children}: HeaderProps) => {
     const {token} = theme.useToken();
-    const {session, logout} = useAuth();
+    const {logout} = useAuth();
+    const [session] = useSessionState();
+
+    useEffect(() => {
+        console.log("session", session);
+    }, [session]);
 
     return (
         <LayoutHeader style={{backgroundColor: token.colorBgContainer}}>
