@@ -214,6 +214,7 @@ export const useDownloadModal = () => {
     //const [fileFormat, setFileFormat] = useState<string>('png');
    // const [fileSize, setFileSize] = useState<number>(1000);
     const [form] = Form.useForm();
+    const [memes] = useMemesState();
 
     // If no id is provided, download the current meme from the editor
     return (id?: string) => new Promise<string | undefined>(resolve => {
@@ -243,13 +244,22 @@ export const useDownloadModal = () => {
             onOk: async () => {
                 form
                     .validateFields()
-                    .then(values => {
+                    .then(async values => {
                         let url = '';
 
                         if (!id) {
                             url = stageRef.current.toDataURL();
                         } else {
-                            //  TODO: fetch meme url if id is given
+                            const meme = memes.find(m => m.publicId === id);
+                            if(meme) {
+                                url = await fetch(meme.imageUrl)
+                                .then(res => res.blob())
+                                .then(blob => URL.createObjectURL(blob));
+                            }
+                            else {
+                                // TODO: ERROR
+                                return;
+                            }
                         }
 
                         downloadURI(url, 'meme', (values.fileformat ?? 'png'), values.filesize ?? 1000);
