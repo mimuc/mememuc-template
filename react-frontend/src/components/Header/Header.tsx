@@ -1,4 +1,4 @@
-import {ReactNode, useEffect} from "react";
+import {ReactNode} from "react";
 import {useNetworkState} from "react-use";
 import {Link, NavLink} from "react-router-dom";
 import {Alert, Button, Layout, theme, Typography} from "antd";
@@ -49,10 +49,6 @@ export const Header = ({children}: HeaderProps) => {
     const {token} = theme.useToken();
     const {logout} = useAuth();
     const [session] = useSessionState();
-
-    useEffect(() => {
-        console.log("session", session);
-    }, [session]);
 
     return (
         <LayoutHeader style={{backgroundColor: token.colorBgContainer}}>
