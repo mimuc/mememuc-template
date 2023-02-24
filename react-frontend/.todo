@@ -1,12 +1,9 @@
-- [ ] Simple OAuth2 Login/Logout
-- [ ] Can only upvote if logged in
-- [ ] Add logo
-- [ ] Test API page '/api'
-- [ ] Test links from /memes to /meme/:memeId
-- [ ] Add note that code was inspired/used from react-konva docs
-- [ ] Check all functionalities and code
-- [ ] Add commentss
-- [ ] In modals should we aling icon wiht stuff below?
-- [ ] Make responsive?s
-- [ ] Which text format are supported by the API?
 - [ ] Modal onOk does not work because it has not access to state after rendering
+- [ ] Add note that code was inspired/used from react-konva docs
+
+## Tests
+- [ ] Check all functionalities and code
+- [ ] API page '/api'
+- [ ] Links from /memes to /memes/:memeId
+- [ ] Share button
+- [ ] Offline modus

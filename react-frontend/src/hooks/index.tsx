@@ -7,14 +7,12 @@ import {
     AppstoreOutlined,
     CameraOutlined,
     DownloadOutlined,
-    FormOutlined,
     LinkOutlined,
     PictureOutlined
 } from "@ant-design/icons";
 import {useEditorState, useMemesState, useSessionState, useStageRef} from "src/states";
 import {downloadURI, isImgUrl} from "src/utils";
 import {MemeType, SessionType} from "src/types";
-import {useTemplates} from "./state-hooks";
 import Cookies from "js-cookie";
 import {api} from "src/api";
 
@@ -391,7 +389,7 @@ export const useAuth = () => {
 export const useMeme = (id: string) => {
     const [memes, setMemes] = useMemesState();
 
-    const meme: MemeType | null = useMemo(() => memes?.find((m: MemeType) => m.publicId === id) || null, [memes]);
+    const meme: MemeType | null = useMemo(() => memes?.find((m: MemeType) => m.publicId === id) || null, [memes, id]);
 
     useEffectOnce(() => {
         const query = memes?.find((m: MemeType) => m.publicId === id);
