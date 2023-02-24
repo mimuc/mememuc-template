@@ -1,6 +1,9 @@
-import {theme, Typography} from "antd";
-import {useEditorState} from "src/states";
+import {Button, Modal, theme, Typography} from "antd";
+import {useCanvasSizeState, useEditorState} from "src/states";
 import {ImageShapeInterface, TemplateType, TextShapeInterface} from "src/types";
+import {useToggle} from "react-use";
+import {LineChartOutlined} from "@ant-design/icons";
+import {TemplateStat} from "src/components/Template/TemplateStat/TemplateStat";
 
 type TemplateItemProps = {
     template: TemplateType;
@@ -11,13 +14,15 @@ type TemplateItemProps = {
 const {Title} = Typography;
 
 export const TemplateItem = ({template, selected, onSelect}: TemplateItemProps) => {
-    // TODO: add button to open modal containing template statistics
-
     const {token} = theme.useToken();
+    const [, setCanvasSize] = useCanvasSizeState();
     const [shapes, setShapes] = useEditorState();
+    const [open, toggleModal] = useToggle(false);
 
     const handleSelect = () => {
         onSelect(template.id);
+
+        if (template.canvasSize) setCanvasSize(template.canvasSize);
 
         const oldTexts = shapes.filter(s => s.type === 'text') as TextShapeInterface[] || [];
         const newShapes = template.shapes.map(s => {
@@ -33,9 +38,6 @@ export const TemplateItem = ({template, selected, onSelect}: TemplateItemProps) 
         if (oldTexts.length > 0) {
             newShapes.push(...oldTexts);
         }
-
-        console.log("new shapes:", newShapes);
-        console.log("old shapes:", shapes);
 
         // Sort shapes so that images are in the background, i.e. rendered first
         newShapes.sort((a, b) => {
@@ -72,9 +74,15 @@ export const TemplateItem = ({template, selected, onSelect}: TemplateItemProps) 
                          alt={'Template'}/>}
             </div>
             <Title level={5} style={{marginBottom: 0, whiteSpace: 'break-spaces'}}>{template.name}</Title>
-            <span style={{color: 'darkslategray'}}>
-                {numberImages} image{numberImages !== 1 ? 's' : ''}, {numberTexts} text{numberTexts !== 1 ? 's' : ''}
-            </span>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+                <Button icon={<LineChartOutlined/>} onClick={toggleModal} style={{marginRight: token.marginSM}}/>
+                <span style={{color: 'darkslategray'}}>
+                    {numberImages} image{numberImages !== 1 ? 's' : ''}, {numberTexts} text{numberTexts !== 1 ? 's' : ''}
+                </span>
+            </div>
+            <Modal open={open} onCancel={toggleModal} footer={null} title={'Template Statistics'}>
+                <TemplateStat template={template}/>
+            </Modal>
         </div>
     );
 }

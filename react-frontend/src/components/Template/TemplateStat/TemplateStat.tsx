@@ -11,7 +11,7 @@ import {
     Title,
     Tooltip,
     Legend,
-    ChartData,
+    ChartData, ChartOptions,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 
@@ -95,7 +95,7 @@ export const TemplateStat = ({template}: TemplateStatProps) => {
                 }
 
                 if (componentIsMounted.current) {
-                    setData(data);
+                    setData(data as ChartData<"line">);
                 }
 
             } catch (error) {
@@ -106,8 +106,8 @@ export const TemplateStat = ({template}: TemplateStatProps) => {
       }, []);
 
     return (
-        <div style={{height: 500}}>
-            {data && <Line options={options} data={data} />}
+        <div style={{height: 250}}>
+            {data && <Line options={options as ChartOptions<'line'>} data={data} />}
         </div>
     )
 }
