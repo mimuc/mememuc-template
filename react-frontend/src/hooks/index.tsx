@@ -147,20 +147,24 @@ export const useWebcamInputModal = () => {
     );
 }
 
-export const useShape = <T, >(id: string) => {
+export const useShape = <T, >(id: string | null) => {
     const [shapes, setShapes] = useEditorState();
-    const [shape, setShape] = useState<T>(shapes.find(s => s.id === id) as T);
+    const [shape, setShape] = useState<T | null>(shapes.find(s => s.id === id) as T || null);
 
     const updateShape = (values: Partial<Omit<T, 'id'>>) => {
         setShapes(prev => prev.map(s => s.id === id ? {...s, ...values} : s));
+        setShape(prev => prev ? {...prev, ...values} : null);
     }
 
     const deleteShape = () => {
+        setShape(null);
         setShapes(shapes.filter(s => s.id !== id));
     }
 
     useEffect(() => {
-        setShape(shapes.find(s => s.id === id) as T);
+        if (id) {
+            setShape(shapes.find(s => s.id === id) as T);
+        }
     }, [id, shapes]);
 
     return {shape, updateShape, deleteShape};
@@ -334,7 +338,7 @@ export const useAuth = () => {
     const [session, setSession] = useSessionState();
 
     useEffectOnce(() => {
-       setSession(persistentSession as SessionType)
+        setSession(persistentSession as SessionType)
     });
 
     useEffect(() => {
