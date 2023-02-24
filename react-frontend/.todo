@@ -1,9 +1,0 @@
-- [ ] Modal onOk does not work because it has not access to state after rendering
-- [ ] Add note that code was inspired/used from react-konva docs
-
-## Tests
-- [ ] Check all functionalities and code
-- [ ] API page '/api'
-- [ ] Links from /memes to /memes/:memeId
-- [ ] Share button
-- [ ] Offline modus
