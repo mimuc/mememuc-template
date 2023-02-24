@@ -1,0 +1,128 @@
+* {
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+}
+
+.container {
+    margin: 1rem;
+    text-align:center;
+}
+
+.nav{
+    background-color:#EBFBDB;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    color:#40A62F;
+    display:flex;
+    font-weight: 500;
+    justify-content: space-between;
+    align-items:stretch;
+    gap: 1rem;
+    padding: 0 2rem;
+}
+
+.site-title{
+    font-size: 1.2rem;
+    font-weight: 700;
+
+}
+
+.nav ul{
+    padding: 0;
+    margin:0;
+    list-style:none;
+    display:flex;
+    gap: 1rem;
+}
+
+.nav a{
+    color:inherit;
+    text-decoration:none;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: .35rem;
+}
+
+.nav li.active{
+    background-color: #55B045;
+    color: white;
+}
+
+.nav li:hover{
+    background-color: #81CC74;
+    color: white;
+}
+
+.square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30%;
+    aspect-ratio: 1;
+    background-color: rgb(148, 148, 148);
+  }
+
+.postbox{
+    background-color: #d4d4d4;
+    border: "3px #40A62F";
+    margin: 20;
+    padding: 20;
+}
+
+.username{
+    color:#40A62F;
+    display:flex;
+    font-weight: 500;
+    justify-content: space-between;
+    align-items:stretch;
+    font-style: italic;
+}
+
+.postdescr{
+    color:#2c2c2c;
+    display:flex;
+    font-weight: 400;
+    justify-content: space-between;
+    align-items:stretch;
+    font-style: italic;
+}
+
+.backgroundimg{
+    background-image: url("https://media.istockphoto.com/id/483771322/vector/green-polka-dots-vector-background-vector.jpg?b=1&s=170667a&w=0&k=20&c=t5WU9o3bg4Uooojwd5t03YmuV6zgC8jLuJ77OVfP3Fo=");
+}
+
+.background{
+    background-color: #8FBC8F;
+    height: 100%;
+}
+
+/*Change this in the end according to height after posts are placed inside the infinite scroll*/
+.scrolldiv{
+    height: calc(100vh - 450px);
+    overflow-y: scroll;
+}
+
+.grid-item {
+    max-height: 200px;
+  }  
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* specify 5 columns with equal width */
+    grid-auto-rows: 150px;
+    grid-gap: 5px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+  
+  
+  .meme {
+    width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
