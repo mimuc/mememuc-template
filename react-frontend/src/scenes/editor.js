@@ -1,25 +1,56 @@
-import React, { useState, createRef } from "react";
-import { useSearchParams } from "react-router-dom";
-import { exportComponentAsJPEG } from 'react-component-export-image';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Text from "../components/text";
 import Button from 'react-bootstrap/Button';
+import { getAllMemes } from '../api/memes';
 
-//Editor where we can create new memes (TODO: Improve the style of the memes to make it more adaptable and flexible based on the source-image)
-export default function Editor () {
-    const [parameters] = useSearchParams();
-    const [counter, setCounter] = useState(0);
-    const inputText = () =>{ setCounter(counter + 1)};
-    const memeRef = createRef();
+// Editor component to create new memes
+export default function Editor() {
+  const [counter, setCounter] = useState(0);
+  const [data, setData] = useState([]);
+  const [templateIndex, setTemplateIndex] = useState(0);
+  const [imageUrl, setImageUrl] = useState("");
+  
+  const location = useLocation();
 
-    return ( 
-        <>
-            <h1> Editor </h1>
-            <div style = {{width: " 250px", height: " 250px", border: '1px solid'}} ref = {memeRef} className = "meme mt-5 mb-5">
-                <img src={parameters.get("url")} width = "250px"/>
-                { Array(counter).fill(0).map(e => <Text />) }
-            </div>
-            <Button onClick={inputText}> Add Text </Button> 
-            <Button variant="success" onClick={(e) => exportComponentAsJPEG(memeRef)}> Save </Button>     
-        </>
-    );  
+  useEffect(() => {
+    const url = decodeURIComponent(new URLSearchParams(location.search).get("url"));
+    setImageUrl(url);
+  }, [location]);
+
+  // Get all memes from the used API
+  useEffect(() => {
+    getAllMemes().then(memes => setData(memes.data.memes));
+  }, [])
+
+  const handleTemplateChange = (increment) => {
+  const currentIndex = data.findIndex((meme) => meme.url === imageUrl);
+  const newIndex = (currentIndex + data.length + increment) % data.length;
+  setTemplateIndex(newIndex);
+  setCounter(0);
+  setImageUrl(data[newIndex].url);
+}
+
+
+  const handlePreviousTemplate = () => {
+    handleTemplateChange(-1);
+  }
+
+  const handleNextTemplate = () => {
+    handleTemplateChange(1);
+  }
+
+  return (
+    <>
+      <h1>Editor</h1>
+      <div className="meme mt-5 mb-5">
+        <img src={imageUrl} alt="Meme" style={{ width: "25%", height: "25%"}} />
+        {Array(counter).fill(0).map(e => <Text key={e} />)}
+      </div>
+      <Button onClick={() => setCounter(counter + 1)}>Add Text</Button>
+      <Button onClick={handlePreviousTemplate}>Previous Template</Button>
+      <Button onClick={handleNextTemplate}>Next Template</Button>
+      <Button onClick={() => {setCounter(0);}}>Clear</Button>
+    </>
+  );
 };

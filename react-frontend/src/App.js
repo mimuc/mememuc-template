@@ -9,10 +9,6 @@ import {Route, Routes} from "react-router-dom";
 import React, {useState } from "react";
 
 const localserv = "http:/localhost:27017"
-
-
-
-
   
 
 function App() {
