@@ -66,7 +66,7 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
     };
 
     const handleVoiceInput = (value: string) => {
-        updateShape({text: textShape ? textShape.text + value : value} as Partial<TextShapeInterface>);
+        updateShape({text: value} as Partial<TextShapeInterface>);
     }
 
     if (!id) return <Alert message={'No shape selected'} type={'info'} showIcon
