@@ -1,23 +1,9 @@
 import {Dropdown, MenuProps, message} from "antd";
-import { useCreateMemeModal, useCreateTemplateModal, useDownloadModal, useDrafts} from "src/hooks";
-
-const createButtonOptions: MenuProps['items'] = [
-    {
-        label: 'Save as template',
-        key: 'template'
-    },
-    {
-        label: 'Save as draft',
-        key: 'draft'
-    },
-    {
-        label: 'Download only',
-        key: 'download'
-    }
-];
+import {useAuth, useCreateMemeModal, useCreateTemplateModal, useDownloadModal, useDrafts} from "src/hooks";
 
 export const CreateButton = () => {
     const [messageApi, contextHolder] = message.useMessage({maxCount: 3});
+    const {session} = useAuth();
     const openDownloadModal = useDownloadModal();
     const openCreateTemplateModal = useCreateTemplateModal();
     const openCreateMemeModal = useCreateMemeModal();
@@ -37,6 +23,22 @@ export const CreateButton = () => {
             await openCreateMemeModal();
         }
     }
+
+    const createButtonOptions: MenuProps['items'] = [
+        {
+            label: 'Save as template',
+            key: 'template',
+            disabled: !session
+        },
+        {
+            label: 'Save as draft',
+            key: 'draft'
+        },
+        {
+            label: 'Download only',
+            key: 'download',
+        }
+    ];
 
     return (
         <>
