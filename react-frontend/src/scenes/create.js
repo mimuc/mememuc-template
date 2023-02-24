@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Meme from "../components/meme";
 import { getAllMemes } from '../api/memes';
 import { useNavigate } from "react-router-dom";
-import Button from 'react-bootstrap/Button';
+import Button from "../components/button";
 
 export default function Create(props) {
   const [data, setData] = useState([]);

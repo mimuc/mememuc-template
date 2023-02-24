@@ -50,10 +50,11 @@ const ButtonComponent = styled.button`
         : props.variant === "disliked" 
         ? "#DE2828"
         : props.variant === "primary" 
-        ? "#0d6efd" 
+        ? "#D5E6FF" 
         : props.variant === "secondary" 
         ? "#6c757d"
         :"f8f9fa"};
+
     color: ${(props) => 
         props.variant === "light" 
               ? "#6F6F6F" 
