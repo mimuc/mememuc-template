@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createRef} from "react";
 import { useLocation } from "react-router-dom";
 import Text from "../components/text";
 import { getAllMemes } from '../api/memes';
 import Button from "../components/button";
+import { exportComponentAsJPEG } from 'react-component-export-image';
 
 // Editor component to create new memes
 export default function Editor() {
@@ -11,7 +12,7 @@ export default function Editor() {
   const [templateIndex, setTemplateIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
   const [text, setText] = useState([]);
-
+  const memeRef = createRef();
   const location = useLocation();
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function Editor() {
     getAllMemes().then(memes => setData(memes.data.memes));
   }, [])
 
-  const handleTemplateChange = (increment) => {
+  const templateSwitch = (increment) => {
     const currentIndex = data.findIndex((meme) => meme.url === imageUrl);
     const newIndex = (currentIndex + data.length + increment) % data.length;
     setTemplateIndex(newIndex);
@@ -33,25 +34,25 @@ export default function Editor() {
     setImageUrl(data[newIndex].url);
   }
 
-  const handlePreviousTemplate = () => {
-    handleTemplateChange(-1);
+  const backButton = () => {
+    templateSwitch(-1);
   }
 
-  const handleNextTemplate = () => {
-    handleTemplateChange(1);
+  const nextButton = () => {
+    templateSwitch(1);
   }
 
-  const handleClear = () => {
+  const clearButton = () => {
     setCounter(0);
     setText([]);
   }
 
-  const handleAddText = () => {
+  const manageAddText = () => {
     setCounter(counter + 1);
     setText([...text, ""]);
   }
 
-  const handleTextChange = (index, newText) => {
+  const textChange = (index, newText) => {
     const newTextArray = [...text];
     newTextArray[index] = newText;
     setText(newTextArray);
@@ -62,12 +63,13 @@ export default function Editor() {
       <h1>Editor</h1>
       <div className="meme mt-5 mb-5">
         <img src={imageUrl} alt="Meme" style={{ width: "25%", height: "25%"}} />
-        {text.map((t, index) => <Text key={index} value={t} onChange={(newText) => handleTextChange(index, newText)} />)}
+        {text.map((t, index) => <Text key={index} value={t} onChange={(newText) => textChange(index, newText)} />)}
       </div>
-      <Button onClick={handleAddText}>Add Text</Button>
-      <Button onClick={handlePreviousTemplate}>Previous Template</Button>
-      <Button onClick={handleNextTemplate}>Next Template</Button>
-      <Button onClick={handleClear}>Clear</Button>
+      <Button onClick={manageAddText}>Add Text</Button>
+      <Button onClick={backButton}>Back</Button>
+      <Button onClick={nextButton}>Next </Button>
+      <Button onClick={clearButton}>Clear</Button>
+      <Button variant="success" onClick={(e) => exportComponentAsJPEG(memeRef)}> Save </Button>  
     </>
   );
 };
