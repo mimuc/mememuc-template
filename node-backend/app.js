@@ -72,7 +72,7 @@ app.use(function(req, res, next) {
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
-  console.log(err.status);
+  console.log("error status"+err.status);
   res.locals.message = err.message;
   console.log("in the error handler");
   console.log(err.message);

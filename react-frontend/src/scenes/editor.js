@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import Text from "../components/text";
 import { getAllMemes } from '../api/memes';
 import Button from "../components/button";
+import html2canvas from 'html2canvas';
+const localserver = "http://localhost:3001";
 
 // Editor component to create new memes
 export default function Editor() {
@@ -56,6 +58,21 @@ export default function Editor() {
     newTextArray[index] = newText;
     setText(newTextArray);
   }
+
+    const createPost = async (data) => {
+        await fetch(localserver+`/posts/create`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body:{
+                user_id:localStorage.get("userId"),
+                image: data
+            }
+          })
+          .then ( res => res.json())
+
+    }
 
   return (
     <>
