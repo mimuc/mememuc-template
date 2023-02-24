@@ -6,7 +6,6 @@ export const client = axios.create({
     baseURL: config.BASE_URL
 })
 
-// TODO: how to set this config as default after login?
 export const authConfig = () => {
     const token = Cookies.get("token");
     if (!token) {

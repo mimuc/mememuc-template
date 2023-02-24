@@ -20,7 +20,6 @@ const CommentsList = styled.div`
   overflow-y: auto;
 `;
 
-// TODO: add pagination
 const Comment = ({comment}: { comment: CommentType }) => {
     const nameColor = useMemo(() => randomColor({luminosity: 'dark'}), [])
 
