@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {Button, Image, Modal, Segmented, theme, Typography} from "antd";
 import {
     LeftOutlined,
@@ -80,7 +80,7 @@ const ModalHeader = ({meme}: { meme: MemeType }) => {
 export const SingleMemePage = () => {
     const {token} = theme.useToken();
     const params = useParams();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [view, setView] = useState<'meme' | 'stats'>("meme")
 
     const {meme} = useMeme(params.memeId as string)
