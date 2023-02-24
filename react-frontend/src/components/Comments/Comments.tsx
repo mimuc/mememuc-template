@@ -1,4 +1,4 @@
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useEffectOnce} from "react-use";
 import {Button, Form, Input, Typography} from "antd";
 import {SendOutlined} from "@ant-design/icons";
@@ -60,9 +60,9 @@ export const Comments = ({meme}: CommentsProps) => {
         setComments(prev => [...prev, newComment]);
     }
 
-    useEffectOnce(() => {
+    useEffect(() => {
         api.comments.forMeme(meme.publicId).then(data => setComments(data));
-    })
+    }, [meme])
 
     return (
         <div style={{width: "400px !important", minWidth: '400px !important'}}>
