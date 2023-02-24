@@ -1,11 +1,16 @@
-import {ReactNode, useEffect} from "react";
+import React, {ReactNode, useEffect, useState} from "react";
 import {Button, Checkbox, DatePicker, Input, Layout, Popconfirm, Segmented, theme} from "antd";
-import {DownOutlined, FilterFilled, FilterOutlined, UpOutlined} from "@ant-design/icons";
+import {
+    DownOutlined,
+    FilterFilled,
+    FilterOutlined,
+    UpOutlined
+} from "@ant-design/icons";
 import styled from "styled-components";
 import {api} from "src/api";
 import {useFilterState, useMemesState, useSearchState, useSortState} from "src/states";
-import {Header} from "src/components";
-import dayjs, { Dayjs } from "dayjs";
+import {Header, VoiceInputButton} from "src/components";
+import dayjs, {Dayjs} from "dayjs";
 
 type MemeLayoutProps = {
     children: ReactNode;
@@ -50,8 +55,9 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
     const {token} = theme.useToken();
     const [, setMemes] = useMemesState();
     const [sort, setSort] = useSortState();
-    const [search, setSearch] = useSearchState();
     const [filter,] = useFilterState();
+    const [search, setSearch] = useSearchState();
+    const [searchValue, setSearchValue] = useState<string>('');
 
     useEffect(() => {
         api.memes.list(0, 10, sort, filter, search).then(setMemes);
@@ -61,8 +67,12 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
         setSort(value);
     }
 
-    const handleSearch = (value: string | null) => {
-        setSearch(value === '' ? null : value);
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(e.target.value);
+    }
+
+    const onEnter = () => {
+        setSearch(searchValue === '' ? null : searchValue);
     }
 
     return (
@@ -72,8 +82,11 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
                     style={{width: 400, marginRight: token.marginXS}}
                     enterButton
                     allowClear
-                    onSearch={handleSearch}
+                    value={searchValue}
+                    onChange={handleInput}
+                    onSearch={onEnter}
                     placeholder="Search by user"
+                    suffix={<VoiceInputButton onTranscript={setSearchValue}/>}
                 />
                 <Popconfirm
                     title="Filters"
@@ -90,12 +103,12 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
                             {
                                 value: 'newest',
                                 label: 'Newest',
-                                icon: <DownOutlined />
+                                icon: <DownOutlined/>
                             },
                             {
                                 value: 'oldest',
                                 label: 'Oldest',
-                                icon: <UpOutlined />
+                                icon: <UpOutlined/>
                             },
                         ]}
                         onChange={handleSortChange as any}

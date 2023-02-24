@@ -1,4 +1,3 @@
-import {useEffect, useState} from "react";
 import {useToggle} from "react-use";
 import {Alert, Button, Input, InputNumber, theme} from "antd";
 import {
@@ -10,10 +9,11 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 import {TwitterPicker} from "react-color";
-import {useEditorState, useSelectedShapeIdState} from "src/states";
+import {useSelectedShapeIdState} from "src/states";
 import {ImageShapeInterface, ShapeInterface, TextShapeInterface} from "src/types";
 import {getTextColor} from "src/utils";
 import {useShape} from "src/hooks";
+import {VoiceInputButton} from "src/components";
 
 type ContextMenuProps = {
     id: string | null;
@@ -65,6 +65,10 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
         deleteShape()
     };
 
+    const handleVoiceInput = (value: string) => {
+        updateShape({text: textShape ? textShape.text + value : value} as Partial<TextShapeInterface>);
+    }
+
     if (!id) return <Alert message={'No shape selected'} type={'info'} showIcon
                            style={{width: 380, paddingBlock: 4}}/>
 
@@ -103,8 +107,12 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
                             min={5}
                             max={100}
                         />
-                        <Input value={textShape.text} onChange={handleTextChange}
-                               style={{marginLeft: token.marginXS, width: 150}}/>
+                        <Input
+                            value={textShape.text}
+                            onChange={handleTextChange}
+                            style={{marginLeft: token.marginXS, width: 150}}
+                            suffix={<VoiceInputButton onTranscript={handleVoiceInput}/>}
+                        />
                         <Button
                             icon={<BoldOutlined/>}
                             style={{marginLeft: token.marginXS}}

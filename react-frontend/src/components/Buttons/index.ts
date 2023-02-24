@@ -6,3 +6,4 @@ export * from './DislikeButton/DislikeButton';
 export * from './DownloadButton/DownloadButton';
 export * from './LikeButton/LikeButton';
 export * from './ShareButton/ShareButton';
+export * from './VoiceInputButton/VoiceInputButton';
