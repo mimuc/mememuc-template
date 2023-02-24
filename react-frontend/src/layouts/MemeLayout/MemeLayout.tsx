@@ -85,7 +85,7 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
                     value={searchValue}
                     onChange={handleInput}
                     onSearch={onEnter}
-                    placeholder="Search by user"
+                    placeholder="Search by title"
                     suffix={<VoiceInputButton onTranscript={setSearchValue}/>}
                 />
                 <Popconfirm
