@@ -2,11 +2,11 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 
-// // This will create a new instance of "MongoMemoryServer" and automatically start it
-// const mongod = await MongoMemoryServer.create({instance:{port:65535}});
-//
-// const uri = mongod.getUri();
-// console.log(uri)
+// This will create a new instance of "MongoMemoryServer" and automatically start it
+const mongod = await MongoMemoryServer.create({instance:{port:65535}});
 
-const uri = 'mongodb://0.0.0.0:65535/';
+const uri = mongod.getUri();
+console.log(uri)
+
+// const uri = 'mongodb://0.0.0.0:65535/';
 await mongoose.connect(uri, {});
