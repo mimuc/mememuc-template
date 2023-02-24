@@ -6,6 +6,8 @@ import {useCanvasSizeState, useEditorState, useSelectedShapeIdState, useStageRef
 import {AddImageButton, AddTextButton, ClearButton, CreateButton} from 'src/components/Buttons';
 import {ImageShape, TextShape} from "../Shape";
 import {ContextMenu} from "../ContextMenu/ContextMenu";
+import {api} from "src/api";
+import {useNavigate} from "react-router-dom";
 
 export const CanvasEditor = () => {
     const {token} = theme.useToken();
@@ -16,6 +18,7 @@ export const CanvasEditor = () => {
 
 
     const stageRef = useRef<any>(null);
+    const navigate = useNavigate();
 
     const checkDeselect = (e: any) => {
         // Deselect when clicked on empty area
@@ -37,6 +40,17 @@ export const CanvasEditor = () => {
     useEffectOnce(() => {
         setStageRef(stageRef);
     });
+
+    const onMemeCreate = (values: any) => {
+        console.log('Values', values);
+        const url = stageRef.current.toDataURL();
+
+        api.memes.add(values.visibility, values.name, url, canvasSize.width, canvasSize.height)
+        .then(newMeme => {
+            console.log("newMeme", newMeme)
+            navigate(`/memes/${newMeme.publicId}`);
+        });
+    };
 
 
     return (
@@ -66,7 +80,7 @@ export const CanvasEditor = () => {
                     </div>
                     <Divider type={'vertical'} style={{height: '100%', marginInline: token.marginMD}}/>
                     <div style={{display: 'inline-flex', alignItems: 'center'}}>
-                        <CreateButton/>
+                        <CreateButton onMemeCreate={onMemeCreate}/>
                     </div>
                 </Col>
             </Row>

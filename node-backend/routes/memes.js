@@ -263,7 +263,7 @@ router.post('/', authenticate(), async function(req, res) {
             const canvas_img = new Image();
             if(img.url.startsWith('data:image/')) { // image.url is base64
                 canvas_img.src = img.url;
-                if(inferContentType) contentType = base64ImageString.split(';')[0].split(':')[1];
+                if(inferContentType) contentType = img.url.split(';')[0].split(':')[1];
             }
             else { // image.url is an actual url
                 try {

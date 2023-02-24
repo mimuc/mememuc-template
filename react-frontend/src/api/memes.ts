@@ -29,9 +29,9 @@ export const add = async (store: "unlisted" | "private" | "public", memeName: st
             }
         }
     }
-
+    console.log("Performing post with", data)
     return client.post(`/memes`, data, authConfig())
-        .then(res => res.data);
+        .then(res => res.data[0] as MemeType);
 }
 
 const get = async (memeId: string) => {
@@ -76,4 +76,4 @@ const addView = (memeId: string) => {
     client.put(`/memes/${memeId}/views`, {}, authConfig());
 }
 
-export const memes = {list, get, getRandomMeme, upvote, upvoteRemove, downvote, downvoteRemove, addView};
+export const memes = {list, add, get, getRandomMeme, upvote, upvoteRemove, downvote, downvoteRemove, addView};

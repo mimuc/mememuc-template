@@ -1,12 +1,12 @@
 import {Dropdown, MenuProps, message} from "antd";
 import {useAuth, useCreateMemeModal, useCreateTemplateModal, useDownloadModal, useDrafts} from "src/hooks";
 
-export const CreateButton = () => {
+export const CreateButton: React.FC<{onMemeCreate: (values: any) => void}> = ({onMemeCreate}) => {
     const [messageApi, contextHolder] = message.useMessage({maxCount: 3});
     const {session} = useAuth();
     const openDownloadModal = useDownloadModal();
     const openCreateTemplateModal = useCreateTemplateModal();
-    const openCreateMemeModal = useCreateMemeModal();
+    const openCreateMemeModal = useCreateMemeModal(onMemeCreate);
     const {addDraft} = useDrafts();
     const handleCreate = async (event: any) => {
         const key = event?.key;

@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from "react";
 import {useAsync, useEffectOnce, useLocalStorage, useUnmount} from "react-use";
 import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import Webcam from "react-webcam";
-import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Space} from "antd";
+import {Card, Col, Input, InputNumber, Modal, Radio, Row, Select, Space, Form} from "antd";
 import {
     AppstoreOutlined,
     CameraOutlined,
@@ -282,52 +282,123 @@ export const useCreateTemplateModal = () => {
     });
 }
 
-export const useCreateMemeModal = () => {
-    const [stageRef,] = useStageRef();
+export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {
+    /* const [stageRef,] = useStageRef();
     const [name, setName] = useState<string>('');
     const [publishType, setPublishType] = useState<string>('public');
-    const navigate = useNavigate();
+    const navigate = useNavigate(); */
 
-    const handleNameChange = (e: any) => {
+    /* const handleNameChange = (e: any) => {
         setName(e.target.value);
     }
 
     const handlePublishTypeChange = (e: any) => {
         setPublishType(e.target.value);
-    }
+    } */
+
+    /* const [open, setOpen] = useState(false);
+
+    const onCreate = (values: any) => {
+        console.log('Values', values);
+        setOpen(false);
+    } */
+    
+    const [form] = Form.useForm();
+
+    /* const [open, setOpen] = useState(false);*/
+
+    const [stageRef,] = useStageRef();
+
+    /* return (
+        <Modal
+            title = "Create meme"
+            okText="Create"
+            onOk={() => {
+                form
+                    .validateFields()
+                    .then((values) => {
+                        form.resetFields();
+                        onCreate(values);
+                    })
+                    .catch((info) => {
+                        console.warn('Validate Failed:', info);
+                    })
+            }}
+        >
+            <Form
+                form={form}
+                layout="vertical"
+                name="form_in_modal"
+                initialValues={{visibility: 'public'}}
+            >
+                <Form.Item
+                    name="name"
+                    label="Meme name (required)"
+                    rules={[{ required: true, message: 'Please input the name of the meme!'}]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item name="visibility" className="collection-create-form_last-form-item">
+                    <Radio.Group>
+                        <Radio value="public">Public</Radio>
+                        <Radio value="unlisted">Unlisted</Radio>
+                        <Radio value="private">Private</Radio>
+                    </Radio.Group>
+                </Form.Item>
+            </Form>
+        </Modal>
+    ) */
 
     return () => new Promise<string | undefined>(resolve => {
         Modal.info({
             closable: true,
             title: 'Create meme',
             icon: <PictureOutlined/>,
-            content: <Space style={{width: '100%'}} size={'large'} direction={'vertical'}>
-                <Input placeholder={'Meme name (required)'} onChange={handleNameChange} required/>
-                <Radio.Group
-                    options={[{label: 'Public', value: 'public'}, {
-                        label: 'Private',
-                        value: 'private'
-                    }, {label: 'Unlisted', value: 'unlisted'}]}
-                    onChange={handlePublishTypeChange}
-                    value={publishType}
-                    optionType="button"
-                    buttonStyle="solid"
-                />
-            </Space>,
+            content: 
+            <Form
+                form={form}
+                layout="vertical"
+                name="form_in_modal"
+                initialValues={{visibility: 'public'}}
+            >
+                <Form.Item
+                    name="name"
+                    label="Meme name (required)"
+                    rules={[{ required: true, message: 'Please input the name of the meme!'}]}
+                >
+                    <Input />
+                </Form.Item>
+                <Form.Item name="visibility" className="collection-create-form_last-form-item">
+                    <Radio.Group>
+                        <Radio value="public">Public</Radio>
+                        <Radio value="unlisted">Unlisted</Radio>
+                        <Radio value="private">Private</Radio>
+                    </Radio.Group>
+                </Form.Item>
+            </Form>,
             onOk: async () => {
-                if (name === '') throw new Error('Name is required');
+                form
+                .validateFields()
+                .then(async (values) => {
+                    form.resetFields();
+                    onMemeCreate(values);
+                })
+                .catch((info) => {
+                    console.log('Validate Failed:', info);
+                });
+                /* if (name === '') throw new Error('Name is required');
 
                 // TODO: publish meme on server (consider publish type)
                 const url = stageRef.current.toDataURL();
                 const newMeme = {} as MemeType;
 
-                navigate(`/memes/${newMeme.publicId}`);
+               
 
                 // Reset
                 setName('');
                 setPublishType('public');
 
-                resolve(undefined);
+                resolve(undefined); */
             }
         });
     });
