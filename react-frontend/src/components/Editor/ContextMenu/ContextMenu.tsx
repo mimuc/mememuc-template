@@ -136,16 +136,17 @@ export const ContextMenu = ({id}: ContextMenuProps) => {
                             type={textShape.fontStyle === 'bold' ? 'primary' : 'default'}
                             onClick={handleToggleBold}
                         />
-                        <Button
-                            icon={<FontColorsOutlined style={{color: getTextColor(textShape.fill || 'black')}}/>}
-                            style={{backgroundColor: textShape.fill, marginLeft: token.marginXS}}
-                            onClick={toggleColorPicker}
-                        />
-                        {/*TODO: fix that this is moved when the display resizes*/}
-                        {showColorPicker && <div style={{position: 'absolute', bottom: -175, left: 174, zIndex: 1000}}>
-                            <TwitterPicker width={'170px'} onChangeComplete={handleColorSelection}/>
-                            <CloseIcon onClick={toggleColorPicker}/>
-                        </div>}
+                        <div style={{display: 'inline-block', position: 'relative', marginLeft: token.marginXS}}>
+                            <Button
+                                icon={<FontColorsOutlined style={{color: getTextColor(textShape.fill || 'black')}}/>}
+                                style={{backgroundColor: textShape.fill}}
+                                onClick={toggleColorPicker}
+                            />
+                            {showColorPicker && <div style={{position: 'absolute', top: 45, left: -5, zIndex: 1000}}>
+                                <TwitterPicker width={'170px'} onChangeComplete={handleColorSelection}/>
+                                <CloseIcon onClick={toggleColorPicker}/>
+                            </div>}
+                        </div>
                     </>
                 )
             }
