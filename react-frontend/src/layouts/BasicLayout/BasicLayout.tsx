@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {Layout} from "antd";
+import {Col, Layout, Row} from "antd";
 import styled from "styled-components";
 import {Header} from "src/components";
 
@@ -9,7 +9,7 @@ type AppLayoutProps = {
 
 const Content = styled(Layout.Content)`
   margin-top: 100px;
-  padding-inline: 100px !important;
+  padding-inline: 0 !important;
 `;
 
 export const BasicLayout = ({children}: AppLayoutProps) => {
@@ -17,7 +17,11 @@ export const BasicLayout = ({children}: AppLayoutProps) => {
         <Layout>
             <Header/>
             <Content>
-                {children}
+                <Row>
+                    <Col offset={1} span={22}>
+                        {children}
+                    </Col>
+                </Row>
             </Content>
         </Layout>
     );
