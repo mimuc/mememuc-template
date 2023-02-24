@@ -41,7 +41,7 @@ const mapTemplate = async (rawTemplate: { publicId: string, name: string, texts:
         id: rawTemplate.publicId,
         name: rawTemplate.name,
         shapes: [...imageShapes, ...textShapes],
-        canvas: rawTemplate.canvas
+        canvasSize: rawTemplate.canvas
     };
 };
 
