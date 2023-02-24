@@ -300,12 +300,12 @@ export const useCreateTemplateModal = (onTemplateCreate: (values: any) => void) 
                     .then(async (values) => {
                         form.resetFields();
                         onTemplateCreate(values);
-                        resolve();
+                        resolve(undefined);
                     })
                     .catch((info) => {
                         // TODO: Warn, instead of closing dialogue
                         console.log('Validate Failed:', info);
-                        resolve();
+                        resolve(undefined);
                     });
             }
         });
@@ -350,12 +350,12 @@ export const useCreateMemeModal = (onMemeCreate: (values: any) => void) => {
                         form.resetFields();
                         setSelectedShapeId(null);
                         setTimeout(async () => onMemeCreate(values), 1000);
-                        resolve()
+                        resolve(undefined)
                     })
                     .catch((info) => {
                         // TODO: Warn, instead of closing dialogue
                         console.log('Validate Failed:', info);
-                        resolve()
+                        resolve(undefined)
                     });
             }
         });
