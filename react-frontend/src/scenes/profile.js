@@ -1,128 +1,111 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Button from "../components/button";
-import Input from "../components/input";
+import Post from "../components/post";
+import getPosts from "../callback/callback_post";
+const localserver = "http://localhost:3001";
 
 const style = {
     border:"3px solid green",
     margin: 20,
     padding: 20,
+    height: "100%",
+    backgroundColor: 'white',
     whiteSpace: "pre-line",
 }
 
 
 const Profile =() =>{
-    // Should we create a post component so everything doesn't change at once?
-    //like button function
-    //need to set usestate of 'like' to the # of the specific post
-    const [like, setLike] = useState(456),
-    [isLike, setIsLike] = useState(false),
-    
-    // function for when the like button is clicked
-    onLikeButtonClick = () => {
-        setLike(like + (isLike ? -1 : 1));
-        setIsLike (!isLike);
-        if (isDislike){setDislike (dislike - 1); setIsDislike(!isDislike)};
-    }
-
-    const [dislike, setDislike] = useState(12),
-    [isDislike, setIsDislike] = useState(false),
-    
-    onDislikeButtonClick = () => {
-        setDislike(dislike + (isDislike ? -1 : 1));
-        setIsDislike (!isDislike);
-        if (isLike){setLike (like - 1); setIsLike(!isLike)};
-    }
-    
-    const [comExp, setComExp] = useState(false),
-    onCommentButtonClick = () => {
-        setComExp (!comExp);
-    }
-    
     //Add in the data source from the posts here
-    const [dataSource, setDataSource] = useState(Array.from({length:10}))
-    const [hasMore, setHasMore] = useState(true)
-    const fetchMoreData = () =>{
-        // checking the length of the data, if it is more than all of the data then set has more to false
-        if(dataSource.length <100){
-        //MAKING API CALL
-        setTimeout(()=> {
-            setDataSource(dataSource.concat(Array.from({length:10})))
-        },1000);
-        }else{
-            setHasMore(false);
-        }
+    const isMounted = useRef(false);
+
+    const [posts, setPosts] = useState([]);
+    const [hasMore, setHasMore] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [counter, setCounter] = useState(0);
+
+    const fetchData = async () => {
+      console.log("Fetching more data...");
+      await setIsLoading(true);
+      //console.log("counter"+counter);
+      await fetch(`${localserver}/posts/gethistory` + "?userId="+localStorage.get("userId"))
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not OK');
+          }
+          //console.log("the response is "+response.json());
+          return response.json();
+        })
+        .then( (data) => {
+          
+            
+            data.forEach(element => {
+              console.log(JSON.stringify(element._id));
+            });
+          
+          
+          if(data.length !==0){
+            console.log("the data length indiscover is :"+data.length);
+            setCounter(counter + data.length);
+            console.log("counter legnth is "+counter);
+            setPosts(precedent => [...precedent,...data]);
+           setIsLoading(false);
+         
+            }else{
+                setHasMore(false);
+            }
+          
+        })
+        .catch((error) => console.log(error));
+    };
+
+    
+
+    useEffect(() => {
+      if (isMounted.current == false){
+      console.log("welcome to discover!");
+      console.log("ismounted:" +isMounted.current);
+      console.log("welcome to useeffect");
+        
+      
+      fetchData();
+      isMounted.current = true;
+      }else{
+        
+        console.log("discover already mounted");
+      }
+      return ;
+
     }
-    return <><h1>Wow look at these memes :o</h1><InfiniteScroll 
-        dataLength={dataSource.length} 
-        next={fetchMoreData} 
+      , []);
+
+      
+    
+    
+    return (<>
+    <p>Wow look at these memes :o</p>
+    
+    
+    {
+    <InfiniteScroll 
+        dataLength={posts.length} 
+        next={fetchData} 
         hasMore={hasMore}
         loader={<p>Fetching more memes...</p>}
         endMessage={<p>That's all there is to discover! Go make your own meme now :p</p>}>
 
-        {dataSource.map((item,index)=>{
+         
+        {posts.map((item,index)=>{
+            
             return( 
-            <div style={style}>
+            <Post key={item._id} likes= {item.n_likes} dislikes = {item.n_dislikes} image={item.image} id={item._id} comments={item.comments} user_id={item.user_id}>
                 This is post #{index+1} inside the infinite scroll
-                
-                <div class = 'parent'
-                style= {{
-                    display: "flex",
-                    justifyContent: "right",
-                    gap: "30px",
-                }}>
-                <div class ='child'
-                style= {{
-                    display: "inline-block",
-                    gap: "15px",
-                }}>
-                <Button 
-                    variant = {isLike? "liked":"like"}
-                    onClick = {onLikeButtonClick}
-                    >
-                        ▲ {like}
-                    </Button>
-                <Button                    
-                    variant = {isDislike? "disliked":"dislike"}
-                    onClick = {onDislikeButtonClick}
-                    >
-                        ▼ {dislike}
-                    </Button>
-                </div>
-                <div class = 'child'
-                style= {{
-                    display: "inline-block",
-                    alignItems: "right",
-                    justifyContent: "right",
-                    gap: "10px",
-                }}>
-                <Button
-                //if(comExp)  
-                // bool for whether comment button is changed, if yes, expand just like for likes and dislikes
-                    variant ={comExp? "dark":"light"}
-                    onClick = {onCommentButtonClick}
-                    >
-                        Comments
-                 </Button>  
-                </div>
-                </div>
-                <div style= {{
-                    display: "flex",
-                    justifyContent: "left",
-                    gap: "20px",
-                }}>
-                
-                {comExp? 
-                <Input
-                placeholder="Type your comment here..."/>
-                :""}
-                
-                </div>            
-            </div>
+            </Post>
             );
         })}
 
-    </InfiniteScroll></>
+    </InfiniteScroll>
+      }
+    </>)
 }
 
 export default Profile;

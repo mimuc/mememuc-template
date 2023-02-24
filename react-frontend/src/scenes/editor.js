@@ -58,6 +58,21 @@ export default function Editor() {
     setText(newTextArray);
   }
 
+    const createPost = async (data) => {
+        await fetch(localserver+`/posts/create`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body:{
+                user_id:localStorage.get("userId"),
+                image: data
+            }
+          })
+          .then ( res => res.json())
+
+    }
+
   return (
     <>
       <h1>Editor</h1>

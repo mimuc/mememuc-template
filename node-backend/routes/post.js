@@ -26,7 +26,7 @@ router.get('/get40', (req, res) => {
     const db = req.db;
     const counter = req.query.counter;
     const posts = db.collection('posts');
-    posts.find({ view: "normal" }, { skip: parseInt(counter), limit: 20 })
+    posts.find({}, { skip: parseInt(counter), limit: 20 })
     .then(async result => {
       // go find the right meme data in the meme collection
      
@@ -56,12 +56,36 @@ router.get('/get40', (req, res) => {
 });    
 
 
+
+/* GET all the posts that the user created */
+router.get('/gethistory', (req, res) => {
+    const db = req.db;
+    const images = db.collection('posts');
+    const user_id = req.query.userId;
+    console.log("user id is ");
+    images.find({ user_id:user_id }).then (post => {
+        
+        if (!post) {
+            res.status(404).send('Image not found');
+            return;
+        }
+
+        res.status(202).json(post);
+
+
+        }).catch(err =>{
+            console.log(err);
+            res.status(500).send('Error getting history');
+
+        });
+});
+
 // get a post by id 
 router.get('/:post_id', (req, res) => {
     const db = req.db;
     const posts = db.collection('posts');
     
-    posts.findOne({ _id: new ObjectId(req.params.post_id) })
+    posts.findOne({ _id: new ObjectID(req.params.post_id) })
     .then(post => {
         if (!post) {
             res.status(404).send('Post not found');
@@ -83,17 +107,24 @@ router.get('/:post_id', (req, res) => {
     router.post('/create', function(req, res, next) {
         const db = req.db;
         const collection = db.get('posts');
+        const memeCollection = db.get('meme');
         const data = req.body;
-    
+        const imageData = data.image;
         //add a document
+        memeCollection.insert({
+            image:imageData,
+            type:"meme"
+        }).then ((res)=> {
         collection.insert({ 
             
-            
+            meme_id: res._id.toString(),
             user_id:data.user_id,
             n_likes: 0,
-            date:data.date,
-            comments:data.comments,
-            likes:[{}]
+            n_dislikes:0,
+            comments:[],
+            likes:[],
+            dislikes:[],
+            view:"normal"
         })
         
         .catch (err => {
@@ -101,33 +132,15 @@ router.get('/:post_id', (req, res) => {
             console.log(err);
             res.status(500).send('Error inserting post');
            
-    });
+            })
+        })
+    
+    ;
     res.status(200).send('post created');
     });
 
 
 
-/* GET all the posts that the user created */
-router.get('/gethistory/:user_id', (req, res) => {
-    const db = req.db;
-    const images = db.collection('posts');
-
-    images.findOne({ _id: new ObjectId(req.params.user_id) }).then (post => {
-        
-        if (!post) {
-            res.status(404).send('Image not found');
-            return;
-        }
-
-        res.status(202).json(post);
-
-
-        }).catch(err =>{
-            console.log(err);
-            res.status(500).send('Error getting history');
-
-        });
-});
 
 
 /*
@@ -152,7 +165,7 @@ router.get('/getcomments', (req, res) => {
     const comments =[];
     
     const counter = req.query.counter;
-    images.find({ _id: new ObjectId(req.query.post_id) }, { comments: { $slice: [counter, -1] } }).then (post => {
+    images.find({ _id: new ObjectID(req.query.post_id) }, { comments: { $slice: [counter, -1] } }).then (post => {
         
         if (!post) {
             res.status(404).send('Image not found');
