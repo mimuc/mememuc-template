@@ -13,7 +13,7 @@ export const list = async (offset: number = 0, limit: number = 10, sort: 'newest
         .then(res => res.data as MemeType[]);
 }
 
-export const add = async (store: "unlisted" | "private" | "public", memeName: string, image: string, width: number, height: number) => {
+export const add = async (store: "unlisted" | "private" | "public", memeName: string, image: string, width: number, height: number, template: string) => {
     const data = {
         config: {
             store,
@@ -21,6 +21,7 @@ export const add = async (store: "unlisted" | "private" | "public", memeName: st
         },
         templates: {
             /* name: templateName, */ // TODO:
+            name: template,
             memeName,
             images: image,
             canvas: {

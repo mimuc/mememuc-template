@@ -1,11 +1,17 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Alert, Empty} from "antd";
 import {useTemplates} from "src/hooks";
 import {TemplateItem} from "../TemplateItem/TemplateItem";
 
-export const TemplateList = () => {
+export const TemplateList = (props: any) => {
     const {templates} = useTemplates();
     const [selected, setSelectedId] = useState<string | null>(null);
+    const {setTemplate} = props;
+
+    useEffect(() => {
+        const templateName = templates?.find(t => t.id === selected);
+        setTemplate(templateName?.name);
+    }, [selected])
 
     return (
         <div style={{height: 300, width: '100%', overflow: 'auto', whiteSpace: 'nowrap'}}>

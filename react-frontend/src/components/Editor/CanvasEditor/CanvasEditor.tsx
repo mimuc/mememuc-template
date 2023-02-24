@@ -6,10 +6,10 @@ import {useCanvasSizeState, useEditorState, useSelectedShapeIdState, useStageRef
 import {AddImageButton, AddTextButton, ClearButton, CreateButton} from 'src/components/Buttons';
 import {ImageShape, TextShape} from "../Shape";
 import {ContextMenu} from "../ContextMenu/ContextMenu";
-import {api} from "src/api";
+
 import {useNavigate} from "react-router-dom";
 
-export const CanvasEditor = () => {
+export const CanvasEditor: React.FC<{onMemeCreation: (values: any) => void}> = ({onMemeCreation}) => {
     const {token} = theme.useToken();
     const [shapes,] = useEditorState();
     const [, setStageRef] = useStageRef();
@@ -42,12 +42,7 @@ export const CanvasEditor = () => {
     });
 
     const onMemeCreate = (values: any) => {
-        const url = stageRef.current.toDataURL();
-
-        api.memes.add(values.visibility, values.name, url, canvasSize.width, canvasSize.height)
-        .then(newMeme => {
-            navigate(`/memes/${newMeme.publicId}`);
-        });
+        onMemeCreation({...values, stageRef, canvasSize});
     };
 
 
