@@ -2,10 +2,11 @@ import {useEffectOnce, useLocalStorage} from "react-use";
 import {useNavigate} from "react-router-dom";
 import uuid from "react-uuid";
 import {api} from "src/api";
-import {useEditorState} from "src/states";
+import {useCanvasSizeState, useEditorState} from "src/states";
 import {DraftType, ShapeInterface, TemplateType} from "src/types";
 
 export const useDrafts = () => {
+    const [canvasSize, setCanvasSize] = useCanvasSizeState();
     const [shapes, setShapes] = useEditorState();
     const [drafts, setDrafts,] = useLocalStorage<DraftType[]>('drafts', []);
     const navigate = useNavigate();
@@ -19,7 +20,8 @@ export const useDrafts = () => {
 
         newDrafts.push({
             id: uuid(),
-            shapes
+            shapes,
+            canvasSize
         });
 
         setDrafts(newDrafts)
@@ -28,7 +30,11 @@ export const useDrafts = () => {
     const loadDraft = (id: string) => {
         if (!drafts) return;
 
-        setShapes(drafts.find(draft => draft.id === id)?.shapes || []);
+        const draft = drafts.find(draft => draft.id === id);
+        if (!draft) return;
+
+        setCanvasSize(draft.canvasSize);
+        setShapes(draft.shapes);
         navigate('/');
     }
 
@@ -42,6 +48,8 @@ export const useDrafts = () => {
 }
 
 export const useTemplates = () => {
+    const [shapes,] = useEditorState();
+    const [canvasSize] = useCanvasSizeState();
     const [templates, setTemplates] = useLocalStorage<TemplateType[]>('templates', []);
 
     // Load templates from server
@@ -49,8 +57,8 @@ export const useTemplates = () => {
         api.templates.all().then(templates => setTemplates(templates as TemplateType[]));
     });
 
-    const addTemplate = async (name: string, shapes: ShapeInterface[]) => {
-        await api.templates.add(name, shapes, {width: 700, height: 700});
+    const addTemplate = async (name: string) => {
+        await api.templates.add(name, shapes, canvasSize);
 
         // Replace text with placeholders
         const templateShapes = shapes.map(s => s.type === 'text' ? {...s, text: 'Text Here'} : s);
@@ -58,7 +66,8 @@ export const useTemplates = () => {
         const newTemplate = {
             id: uuid(),
             name,
-            shapes: templateShapes as ShapeInterface[]
+            shapes: templateShapes as ShapeInterface[],
+            canvasSize
         } as TemplateType;
 
         // Update local storage
