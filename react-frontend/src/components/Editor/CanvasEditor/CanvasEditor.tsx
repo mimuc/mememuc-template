@@ -42,12 +42,10 @@ export const CanvasEditor = () => {
     });
 
     const onMemeCreate = (values: any) => {
-        console.log('Values', values);
         const url = stageRef.current.toDataURL();
 
         api.memes.add(values.visibility, values.name, url, canvasSize.width, canvasSize.height)
         .then(newMeme => {
-            console.log("newMeme", newMeme)
             navigate(`/memes/${newMeme.publicId}`);
         });
     };
