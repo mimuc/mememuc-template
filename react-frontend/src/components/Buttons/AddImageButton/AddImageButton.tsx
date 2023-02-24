@@ -87,7 +87,7 @@ export const AddImageButton = () => {
             const screenshotUrl = await takeScreenshot();
             if (screenshotUrl) await createImageElement(screenshotUrl)
         } else if (key === 'imgflip') {
-            await openImgflipInput();
+            const imageUrl = await openImgflipInput();
             if (imageUrl) {
                 const blob = await fetch(imageUrl).then(r => r.blob());
                 console.log("blob", blob)
