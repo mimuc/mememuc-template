@@ -4,6 +4,7 @@ import { exportComponentAsJPEG } from 'react-component-export-image';
 import Text from "../components/text";
 import Button from 'react-bootstrap/Button';
 import html2canvas from 'html2canvas';
+const localserver = "http://localhost:3001";
 
 //Editor where we can create new memes (TODO: Improve the style of the memes to make it more adaptable and flexible based on the source-image)
 export default function Editor () {
@@ -13,13 +14,13 @@ export default function Editor () {
     const memeRef = createRef();
 
     const createPost = async (data) => {
-        await fetch(localserv+`/posts/create?user=${name}`, {
+        await fetch(localserver+`/posts/create`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body:{
-                user_id:localStorage.get("username"),
+                user_id:localStorage.get("userId"),
                 image: data
             }
           })
