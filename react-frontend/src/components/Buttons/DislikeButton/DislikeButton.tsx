@@ -5,15 +5,18 @@ import {MemeType} from "src/types";
 import {useAuth, useMeme} from "src/hooks";
 import {useEffect} from "react";
 
-type DislikeButtonProps = {
-    meme: MemeType
-}
-
 const {Text} = Typography;
 
-export const DislikeButton = ({meme}: DislikeButtonProps) => {
+export const DislikeButton = ({id}: { id: string }) => {
     const {session} = useAuth();
-    const {toggleDislike} = useMeme(meme.publicId)
+    const {meme, toggleDislike} = useMeme(id)
+
+    useEffect(() => {
+        console.log('updated meme in dislike button', meme)
+    }, [meme])
+
+    if (!meme) return null;
+
     const totalDislikes = abbreviateNumber(meme.dislikes)
 
     return (

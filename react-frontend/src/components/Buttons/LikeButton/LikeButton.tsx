@@ -3,17 +3,15 @@ import {Button, Typography} from "antd";
 import {LikeFilled, LikeOutlined} from "@ant-design/icons";
 import {abbreviateNumber} from "src/utils";
 import {useAuth, useMeme} from "src/hooks";
-import {useEffect} from "react";
-
-type LikeButtonProps = {
-    meme: MemeType
-}
 
 const {Text} = Typography;
 
-export const LikeButton = ({meme}: LikeButtonProps) => {
+export const LikeButton = ({id}: { id: string }) => {
     const {session} = useAuth();
-    const {toggleLike} = useMeme(meme.publicId);
+    const {meme, toggleLike} = useMeme(id);
+
+    if(!meme) return null;
+
     const totalLikes = abbreviateNumber(meme.likes)
 
     return (
