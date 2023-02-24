@@ -16,7 +16,7 @@ export const LoginPage = () => {
             const data = await api.auth.login(values.username, values.password);
 
             // Login
-            login(data.token, data.expiryTime);
+            await login(data.token, data.expiryTime);
 
             // Navigate to previous page or home
             if(window.history.length > 0 && window.history.state) navigate(-1);
