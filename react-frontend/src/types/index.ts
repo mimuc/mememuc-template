@@ -4,7 +4,7 @@ export type TemplateType = {
     id: string
     name: string,
     shapes: ShapeInterface[]
-    canvas: {
+    canvasSize: {
         width: number
         height: number
     }
@@ -69,5 +69,9 @@ export interface ImageShapeInterface extends ShapeInterface {
 export type DraftType = {
     id: string;
     shapes: ShapeInterface[]
+    canvasSize: {
+        width: number
+        height: number
+    }
 }
 
