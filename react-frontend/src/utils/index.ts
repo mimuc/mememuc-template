@@ -1,4 +1,5 @@
 import { TinyColor } from '@ctrl/tinycolor'
+import imageCompression from 'browser-image-compression';
 
 /**
  * Converts big numbers to human-readable format, e.g. 1.100 -> '1.1k'
@@ -80,13 +81,32 @@ export function getMeta(url: string) {
  * @param uri
  * @param name
  */
-export function downloadURI(uri: string, name: string) {
+export async function downloadURI(uri: string, name: string, fileType: 'png' | 'jpg', maxSizeInKBytes: number) {
+    const response = await fetch(uri);
+    const imageData = await response.blob();
+
+    // Image compression
+    let compressedDataUrl = uri;
+
+    const options = {
+        maxSizeMB: maxSizeInKBytes / 1000,
+        useWebWorker: true,
+        alwaysKeepResolution: true,
+        maxIteration: 50,
+        fileType: 'image/' + fileType
+    }
+
+    const compressedImage = await imageCompression(imageData as File, options);
+    compressedDataUrl = URL.createObjectURL(compressedImage);
+
     const link = document.createElement('a');
-    link.download = name;
-    link.href = uri;
+    link.download = `${name}.${fileType}`;
+    link.href = compressedDataUrl;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    URL.revokeObjectURL(compressedDataUrl);
 }
 
 

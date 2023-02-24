@@ -209,38 +209,62 @@ export const useScreenshot = () => {
 export const useDownloadModal = () => {
     const [shapes,] = useEditorState();
     const [stageRef,] = useStageRef();
-    const [fileFormat, setFileFormat] = useState<string>('png');
-    const [fileSize, setFileSize] = useState<number>(1000);
+    //const [fileFormat, setFileFormat] = useState<string>('png');
+   // const [fileSize, setFileSize] = useState<number>(1000);
+    const [form] = Form.useForm();
+    const [memes] = useMemesState();
 
     // If no id is provided, download the current meme from the editor
     return (id?: string) => new Promise<string | undefined>(resolve => {
         Modal.info({
             title: 'Download',
             icon: <DownloadOutlined/>,
-            content: <>
-                <span style={{display: 'block', marginBottom: 5}}>File Size (KB):</span>
-                <InputNumber style={{width: 200}} min={50} max={10000} value={fileSize} onChange={setFileSize as any}/>
-                <span style={{display: 'block', marginTop: 20, marginBottom: 5}}>File Format:</span>
-                <Select
-                    style={{width: 200}}
-                    defaultValue={fileFormat}
-                    options={[{label: 'PNG', value: 'png'}, {label: 'JPEG', value: 'jpeg'}]}
-                    value={fileFormat}
-                    onChange={setFileFormat}
-                />
-            </>,
+            content: 
+                <Form
+                    form={form}
+                    layout="vertical"
+                    name="form_in_modal"
+                    initialValues={{filesize: 1000, fileformat: 'png'}}
+                >
+                    <Form.Item
+                        name="filesize"
+                        label="File size (KB)"
+                    >
+                        <Input/>
+                    </Form.Item>
+                    <Form.Item name="fileformat" className="collection-create-form_last-form-item">
+                        <Select
+                            options={[{label: 'PNG', value: 'png'}, {label: 'JPEG', value: 'jpeg'}]}
+                        />
+                    </Form.Item>
+                </Form>
+                ,
             onOk: async () => {
-                let url = '';
+                form
+                    .validateFields()
+                    .then(async values => {
+                        let url = '';
 
-                if (!id) {
-                    url = stageRef.current.toDataURL();
-                } else {
-                    //  TODO: fetch meme url if id is given
-                }
+                        if (!id) {
+                            url = stageRef.current.toDataURL();
+                        } else {
+                            const meme = memes.find(m => m.publicId === id);
+                            if(meme) {
+                                url = await fetch(meme.imageUrl)
+                                .then(res => res.blob())
+                                .then(blob => URL.createObjectURL(blob));
+                            }
+                            else {
+                                // TODO: ERROR
+                                return;
+                            }
+                        }
 
-                // TODO: compress/resize to match file size
-                downloadURI(url, 'meme.' + fileFormat);
-                resolve(undefined);
+                        downloadURI(url, 'meme', (values.fileformat ?? 'png'), values.filesize ?? 1000);
+                        URL.revokeObjectURL(url);
+                        resolve(undefined);
+                    })
+                
             }
         })
     });
