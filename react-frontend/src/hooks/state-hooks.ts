@@ -2,8 +2,9 @@ import {useEffectOnce, useLocalStorage} from "react-use";
 import {useNavigate} from "react-router-dom";
 import uuid from "react-uuid";
 import {api} from "src/api";
-import {useCanvasSizeState, useEditorState} from "src/states";
+import {useCanvasSizeState, useEditorState, useTemplatesState} from "src/states";
 import {DraftType, ShapeInterface, TemplateType} from "src/types";
+import {useEffect} from "react";
 
 export const useDrafts = () => {
     const [canvasSize, setCanvasSize] = useCanvasSizeState();
@@ -48,25 +49,28 @@ export const useDrafts = () => {
 }
 
 export const useTemplates = () => {
-    const [shapes,] = useEditorState();
-    const [canvasSize] = useCanvasSizeState();
-    const [templates, setTemplates] = useLocalStorage<TemplateType[]>('templates', []);
+    const [persistentTemplates, setPersistentTemplates] = useLocalStorage<TemplateType[]>('templates', []);
+    const [templates, setTemplates] = useTemplatesState();
+
+    useEffectOnce(() => {
+        setTemplates(persistentTemplates || []);
+    });
+
+    useEffect(() => {
+        setPersistentTemplates(templates);
+    }, [templates, setPersistentTemplates]);
+
 
     // Load templates from server
     useEffectOnce(() => {
         api.templates.all().then(templates => setTemplates(templates as TemplateType[]));
     });
 
-    const addTemplate = async (name: string) => {
-        await api.templates.add(name, shapes, canvasSize);
-
-        // Replace text with placeholders
-        const templateShapes = shapes.map(s => s.type === 'text' ? {...s, text: 'Text Here'} : s);
-
+    const addTemplate = async (name: string, canvasSize: {width: number, height: number}, shapes: ShapeInterface[]) => {
         const newTemplate = {
             id: uuid(),
             name,
-            shapes: templateShapes as ShapeInterface[],
+            shapes: shapes,
             canvasSize
         } as TemplateType;
 

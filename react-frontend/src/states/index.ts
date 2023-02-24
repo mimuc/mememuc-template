@@ -1,5 +1,5 @@
 import {createGlobalState} from "react-use";
-import {FilterType, MemeType, SessionType} from 'src/types';
+import {FilterType, MemeType, SessionType, TemplateType} from 'src/types';
 
 export * from './editor-states';
 
@@ -15,3 +15,5 @@ export const useSearchState = createGlobalState<string | null>(null)
 export const useSessionState = createGlobalState<SessionType | null>(null);
 
 export const useCanvasSizeState = createGlobalState<{ width: number; height: number }>({width: 700, height: 700})
+
+export const useTemplatesState = createGlobalState<TemplateType[]>([]);

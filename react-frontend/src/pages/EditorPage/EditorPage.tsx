@@ -3,12 +3,14 @@ import {CanvasEditor, TemplateList} from "src/components";
 import {api} from "src/api";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import {useTemplates} from "src/hooks";
 
 const {Title} = Typography;
 
 export const EditorPage = () => {
     const {token} = theme.useToken();
     const navigate = useNavigate();
+    const {addTemplate} = useTemplates();
     const [template, setTemplate] = useState("");
 
     const onMemeCreation = (values: any) => {
@@ -26,6 +28,7 @@ export const EditorPage = () => {
             values.shapes,
             values.canvasSize
         )
+        addTemplate(values.name, values.canvasSize, values.shapes)
     }
 
     return (
