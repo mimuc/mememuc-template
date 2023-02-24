@@ -10,7 +10,7 @@ export default function Editor() {
   const [data, setData] = useState([]);
   const [templateIndex, setTemplateIndex] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
-
+  
   const location = useLocation();
 
   useEffect(() => {
@@ -24,11 +24,21 @@ export default function Editor() {
   }, [])
 
   const handleTemplateChange = (increment) => {
-    const newIndex = (templateIndex + data.length + increment) % data.length;
-    setTemplateIndex(newIndex);
-    setCounter(0);
-    setImageUrl(data[newIndex].url);
-  }  
+  const currentIndex = data.findIndex((meme) => meme.url === imageUrl);
+  const newIndex = (currentIndex + data.length + increment) % data.length;
+  setTemplateIndex(newIndex);
+  setCounter(0);
+  setImageUrl(data[newIndex].url);
+}
+
+
+  const handlePreviousTemplate = () => {
+    handleTemplateChange(-1);
+  }
+
+  const handleNextTemplate = () => {
+    handleTemplateChange(1);
+  }
 
   return (
     <>
@@ -38,8 +48,8 @@ export default function Editor() {
         {Array(counter).fill(0).map(e => <Text key={e} />)}
       </div>
       <Button onClick={() => setCounter(counter + 1)}>Add Text</Button>
-      <Button onClick={() => handleTemplateChange(-1)}>Previous Template</Button>
-      <Button onClick={() => handleTemplateChange(1)}>Next Template</Button>
+      <Button onClick={handlePreviousTemplate}>Previous Template</Button>
+      <Button onClick={handleNextTemplate}>Next Template</Button>
       <Button onClick={() => {setCounter(0);}}>Clear</Button>
     </>
   );
