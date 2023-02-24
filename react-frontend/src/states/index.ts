@@ -8,6 +8,6 @@ export const useMemesState = createGlobalState<MemeType[]>([]);
 export const useFilterState = createGlobalState<FilterType>({
     creationDate: null
 });
-export const useSortState = createGlobalState<'latest' | 'popular'>('latest');
+export const useSortState = createGlobalState<'newest' | 'oldest'>('newest');
 
 export const useSearchState = createGlobalState<string | null>(null)

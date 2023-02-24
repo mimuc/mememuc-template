@@ -1,6 +1,6 @@
 import {ReactNode, useEffect} from "react";
 import {Button, Checkbox, DatePicker, Input, Layout, Popconfirm, Segmented, theme} from "antd";
-import {ClockCircleOutlined, FilterFilled, FilterOutlined, HeartOutlined} from "@ant-design/icons";
+import {DownOutlined, FilterFilled, FilterOutlined, UpOutlined} from "@ant-design/icons";
 import styled from "styled-components";
 import {api} from "src/api";
 import {useFilterState, useMemesState, useSearchState, useSortState} from "src/states";
@@ -57,7 +57,7 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
         api.memes.list(0, 10, sort, filter, search).then(setMemes);
     }, [sort, filter, search]);
 
-    const handleSortChange = (value: 'latest' | 'popular') => {
+    const handleSortChange = (value: 'newest' | 'oldest') => {
         setSort(value);
     }
 
@@ -88,14 +88,14 @@ export const MemeLayout = ({children}: MemeLayoutProps) => {
                         defaultValue={sort}
                         options={[
                             {
-                                value: 'latest',
-                                label: 'Latest',
-                                icon: <ClockCircleOutlined/>,
+                                value: 'newest',
+                                label: 'Newest',
+                                icon: <DownOutlined />
                             },
                             {
-                                value: 'popular',
-                                label: 'Popular',
-                                icon: <HeartOutlined/>,
+                                value: 'oldest',
+                                label: 'Oldest',
+                                icon: <UpOutlined />
                             },
                         ]}
                         onChange={handleSortChange as any}
