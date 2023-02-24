@@ -65,7 +65,7 @@ export const Comments = ({meme}: CommentsProps) => {
     })
 
     return (
-        <div style={{width: 400}}>
+        <div style={{width: "400px !important", minWidth: '400px !important'}}>
             <Form name={'comment'} onFinish={handlePostComment} validateTrigger={'onSubmit'} style={{height: 40}}>
                 <Input.Group compact>
                     <Form.Item name={'text'}>

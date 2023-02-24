@@ -21,6 +21,7 @@ const LayoutHeader = styled(Layout.Header)`
   width: 100%;
   padding-inline: 0 !important;
   border-bottom: 1px solid #f0f0f0;
+  min-width: 1400px;
 `;
 
 const Navigation = styled.nav`
