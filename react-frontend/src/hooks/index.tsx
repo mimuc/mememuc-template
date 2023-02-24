@@ -245,7 +245,7 @@ export const useDownloadModal = () => {
 }
 
 export const useCreateTemplateModal = () => {
-    const [shapes,] = useEditorState();
+
     const {addTemplate} = useTemplates();
     const [name, setName] = useState<string>('');
 
@@ -267,7 +267,7 @@ export const useCreateTemplateModal = () => {
 
                 if (name === '') throw new Error('Name is required');
 
-                await addTemplate(name, shapes);
+                await addTemplate(name);
 
                 // Reset
                 setName('');
