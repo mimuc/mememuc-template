@@ -20,9 +20,17 @@ export const EditorPage = () => {
         });
     };
 
+    const onTemplateCreation = (values: any) => {
+        api.templates.add(
+            values.name,
+            values.shapes,
+            values.canvasSize
+        )
+    }
+
     return (
         <>
-            <CanvasEditor onMemeCreation={onMemeCreation}/>
+            <CanvasEditor onMemeCreation={onMemeCreation} onTemplateCreation={onTemplateCreation}/>
             <Title level={2} style={{marginTop: token.marginXXL}}>Templates</Title>
             <TemplateList setTemplate={setTemplate}/>
         </>

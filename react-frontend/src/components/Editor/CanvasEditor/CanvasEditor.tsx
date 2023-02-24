@@ -9,7 +9,10 @@ import {ContextMenu} from "../ContextMenu/ContextMenu";
 
 import {useNavigate} from "react-router-dom";
 
-export const CanvasEditor: React.FC<{onMemeCreation: (values: any) => void}> = ({onMemeCreation}) => {
+export const CanvasEditor: React.FC<{
+    onMemeCreation: (values: any) => void,
+    onTemplateCreation: (values: any) => void
+}> = ({onMemeCreation, onTemplateCreation}) => {
     const {token} = theme.useToken();
     const [shapes,] = useEditorState();
     const [, setStageRef] = useStageRef();
@@ -45,6 +48,10 @@ export const CanvasEditor: React.FC<{onMemeCreation: (values: any) => void}> = (
         onMemeCreation({...values, stageRef, canvasSize});
     };
 
+    const onTemplateCreate = (values: any) => {
+        onTemplateCreation({...values, shapes, canvasSize});
+    };
+
 
     return (
         <Space direction={'vertical'} size={'large'} style={{width: '100%'}}>
@@ -73,7 +80,7 @@ export const CanvasEditor: React.FC<{onMemeCreation: (values: any) => void}> = (
                     </div>
                     <Divider type={'vertical'} style={{height: '100%', marginInline: token.marginMD}}/>
                     <div style={{display: 'inline-flex', alignItems: 'center'}}>
-                        <CreateButton onMemeCreate={onMemeCreate}/>
+                        <CreateButton onMemeCreate={onMemeCreate} onTemplateCreate={onTemplateCreate}/>
                     </div>
                 </Col>
             </Row>

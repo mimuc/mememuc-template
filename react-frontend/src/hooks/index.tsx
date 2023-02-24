@@ -248,35 +248,40 @@ export const useDownloadModal = () => {
     });
 }
 
-export const useCreateTemplateModal = () => {
-
-    const {addTemplate} = useTemplates();
-    const [name, setName] = useState<string>('');
-
-    const handleNameChange = (e: any) => {
-        console.log('name', e.target.value)
-        setName(e.target.value);
-    }
+export const useCreateTemplateModal = (onTemplateCreate: (values: any) => void) => {
+    const [form] = Form.useForm();
 
     return () => new Promise<string | undefined>(resolve => {
         Modal.info({
             closable: true,
             title: 'Create template',
-            icon: <FormOutlined/>,
-            content: <>
-                <Input placeholder={'Template name (required)'} onChange={handleNameChange} required/>
-            </>,
+            icon: <PictureOutlined/>,
+            content:
+                <Form
+                    form={form}
+                    layout="vertical"
+                    name="form_in_modal"
+                    initialValues={{visibility: 'public'}}
+                >
+                    <Form.Item
+                        name="name"
+                        label="Template name (required)"
+                        rules={[{required: true, message: 'Please input the name of the template!'}]}
+                    >
+                        <Input/>
+                    </Form.Item>
+                </Form>,
             onOk: async () => {
-                console.log('name', name);
-
-                if (name === '') throw new Error('Name is required');
-
-                await addTemplate(name);
-
-                // Reset
-                setName('');
-
-                resolve(undefined);
+                form
+                    .validateFields()
+                    .then(async (values) => {
+                        form.resetFields();
+                        onTemplateCreate(values);
+                    })
+                    .catch((info) => {
+                        // TODO: Warn, instead of closing dialogue
+                        console.log('Validate Failed:', info);
+                    });
             }
         });
     });
