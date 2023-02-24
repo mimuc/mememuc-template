@@ -21,6 +21,7 @@ const Login = ({ onLogin, onSignup, usernames }) => {
         console.log("data:"+data);
         localStorage.clear();
         localStorage.setItem("username",username);
+        onLogin(username);
         navigate("/discover");
       })
       .catch((error)=>{setErrorMessage("error: username not found")});
@@ -60,8 +61,8 @@ const Login = ({ onLogin, onSignup, usernames }) => {
             )
             .catch(error => setErrorMessage("signup didnt work, please retry"));
           }
-        /*onSignup(username);
-        onLogin(username);*/
+        onSignup(username);
+        onLogin(username);
         navigate("/discover");
       
     };
