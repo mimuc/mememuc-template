@@ -1,8 +1,8 @@
-import {useRef, useState} from "react";
+import {useRef} from "react";
 import {Layer, Stage} from 'react-konva';
 import {useEffectOnce} from "react-use";
 import {Col, InputNumber, Row, Space, theme} from "antd";
-import {useEditorState, useSelectedShapeIdState, useStageRef} from "src/states";
+import {useCanvasSizeState, useEditorState, useSelectedShapeIdState, useStageRef} from "src/states";
 import {AddImageButton, AddTextButton, ClearButton, CreateButton} from 'src/components/Buttons';
 import {ImageShape, TextShape} from "../Shape";
 import {ContextMenu} from "../ContextMenu/ContextMenu";
@@ -12,8 +12,8 @@ export const CanvasEditor = () => {
     const [shapes,] = useEditorState();
     const [, setStageRef] = useStageRef();
     const [selectedShapeId, setSelectedShapeId] = useSelectedShapeIdState();
-    const [width, setWidth] = useState(700);
-    const [height, setHeight] = useState(700);
+    const [canvasSize, setCanvasSize] = useCanvasSizeState();
+
 
     const stageRef = useRef<any>(null);
 
@@ -24,6 +24,14 @@ export const CanvasEditor = () => {
             setSelectedShapeId(null);
         }
     };
+
+    const setWidth = (width: number) => {
+        setCanvasSize(prev => ({...prev, width}));
+    }
+
+    const setHeight = (height: number) => {
+        setCanvasSize(prev => ({...prev, height}));
+    }
 
     // Effects
     useEffectOnce(() => {
@@ -36,10 +44,12 @@ export const CanvasEditor = () => {
             <Row>
                 <Col span={7} style={{display: 'flex', alignItems: 'center'}}>
                     Canvas Size (w x h):
-                    <InputNumber min={100} max={1000} value={width} style={{width: 70, marginInline: token.marginXS}}
+                    <InputNumber min={100} max={1000} value={canvasSize.width}
+                                 style={{width: 70, marginInline: token.marginXS}}
                                  onChange={setWidth as any}/>
                     x
-                    <InputNumber min={100} max={1000} value={height} style={{width: 70, marginInline: token.marginXS}}
+                    <InputNumber min={100} max={1000} value={canvasSize.height}
+                                 style={{width: 70, marginInline: token.marginXS}}
                                  onChange={setHeight as any}/>
                 </Col>
                 <Col offset={1} span={4} style={{display: 'flex', alignItems: 'center'}}>
@@ -60,8 +70,8 @@ export const CanvasEditor = () => {
                         ref={stageRef}
                         onMouseDown={checkDeselect}
                         onTouchStart={checkDeselect}
-                        width={width}
-                        height={height}
+                        width={canvasSize.width}
+                        height={canvasSize.height}
                         style={{border: '1px solid gray'}}
                     >
                         <Layer>
