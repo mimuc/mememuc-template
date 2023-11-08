@@ -1,6 +1,6 @@
 # MemeMuc Launcher
 
-This repository is a _template_ to unify the meme generator bonus project submissions for the _Online Multimedia Lecture_ in the winter semester 2022/23 at LMU Munich.
+This repository is a _template_ to unify the meme generator bonus project submissions for the _Online Multimedia Lecture_ in the winter semester 2023/24 at LMU Munich.
 
 Any submission must be runnable without additional adaptions by executing
 ```bash
