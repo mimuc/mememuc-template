@@ -1,3 +1,6 @@
+/* eslint-disable */
+// TODO: remove eslint-disable
+
 import createError from "http-errors";
 import express from "express";
 import path from "path";
@@ -15,7 +18,7 @@ const db = require("monk")(`127.0.0.1:${MONGODB_PORT}/omm-ws2223`); // connect t
 console.log(`Connected to MongoDB at port ${MONGODB_PORT}`);
 // ######
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

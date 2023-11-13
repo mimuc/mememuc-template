@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "vue.volar",
+    "vue.vscode-typescript-vue-plugin",
+    "mhutchie.git-graph",
+    "github.vscode-pull-request-github"
+  ]
+}
