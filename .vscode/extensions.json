@@ -3,6 +3,8 @@
     "vue.volar",
     "vue.vscode-typescript-vue-plugin",
     "mhutchie.git-graph",
-    "github.vscode-pull-request-github"
+    "github.vscode-pull-request-github",
+    "bradlc.vscode-tailwindcss",
+    "vivaxy.vscode-conventional-commits"
   ]
 }
