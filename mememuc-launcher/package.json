@@ -5,14 +5,14 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "concurrently \"npm start --prefix ../mongoserver\" \"npm start --prefix ../backend\" \"npm run dev --prefix ../frontend\"",
-    "startdev": "concurrently \"npm run dev --prefix ../backend\" \"npm run dev --prefix ../frontend\"",
-    "installall": "npm install && cd ../mongoserver && npm install && cd ../backend && npm install && cd ../frontend && npm install"
+    "start": "cd .. && ./mememuc-launcher/node_modules/pnpm/bin/pnpm.cjs run start",
+    "startdev": "cd .. && ./mememuc-launcher/node_modules/pnpm/bin/pnpm.cjs run dev",
+    "installall": "npm install && ./node_modules/pnpm/bin/pnpm.cjs install"
   },
   "keywords": [],
   "author": "LMU Mediainformatics Group",
   "license": "ISC",
-  "dependencies": {
-    "concurrently": "^8.2.2"
+  "devDependencies": {
+    "pnpm": "^8.10.4"
   }
 }

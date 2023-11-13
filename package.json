@@ -1,0 +1,14 @@
+{
+  "name": "mememuc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pnpm run -r dev",
+    "build": "pnpm run -r build",
+    "start": "pnpm run -r start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
