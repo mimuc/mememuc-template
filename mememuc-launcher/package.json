@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "concurrently \"npm start --prefix ../mongoserver\" \"npm start --prefix ../backend\" \"npm run dev --prefix ../frontend\"",
-    "startdev": "concurrently \"npm run startdev --prefix ../backend\" \"npm run dev --prefix ../frontend\"",
+    "startdev": "concurrently \"npm run dev --prefix ../backend\" \"npm run dev --prefix ../frontend\"",
     "installall": "npm install && cd ../mongoserver && npm install && cd ../backend && npm install && cd ../frontend && npm install"
   },
   "keywords": [],
