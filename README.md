@@ -1,3 +1,38 @@
+# MemeMuc
+
+This is a meme generator for the Online Multimedia lecture at LMU Munich.
+
+## Getting Started
+
+Prerequisites
+
+- [NodeJS](https://nodejs.org/en/)
+- [pnpm](https://pnpm.io/)
+
+### Installing
+
+We use pnpm to install dependencies. The repo is setup as a workspace, so you only need to run the following command once:
+
+```bash
+pnpm install
+```
+
+### Running
+
+The following command will start the backend and frontend in development mode:
+
+```bash
+pnpm dev
+```
+
+To start the DB as well, run:
+
+```bash
+pnpm start
+```
+
+---
+
 # MemeMuc Launcher
 
 This repository is a _template_ to unify the meme generator bonus project submissions for the _Online Multimedia Lecture_ in the winter semester 2023/24 at LMU Munich.
