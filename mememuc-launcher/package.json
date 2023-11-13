@@ -5,9 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "concurrently \"npm start --prefix ../mongoserver\" \"npm start --prefix ../node-backend\" \"npm start --prefix ../react-frontend\"",
-    "startdev": "concurrently \"npm run startdev --prefix ../node-backend\" \"npm start --prefix ../react-frontend\"",
-    "installall": "npm install && cd ../mongoserver && npm install && cd ../node-backend && npm install && cd ../react-frontend && npm install"
+    "start": "concurrently \"npm start --prefix ../mongoserver\" \"npm start --prefix ../backend\" \"npm run dev --prefix ../frontend\"",
+    "startdev": "concurrently \"npm run startdev --prefix ../backend\" \"npm run dev --prefix ../frontend\"",
+    "installall": "npm install && cd ../mongoserver && npm install && cd ../backend && npm install && cd ../frontend && npm install"
   },
   "keywords": [],
   "author": "LMU Mediainformatics Group",
