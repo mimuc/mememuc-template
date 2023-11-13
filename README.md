@@ -1,19 +1,57 @@
+# MemeMuc
+
+This is a meme generator for the Online Multimedia lecture at LMU Munich.
+
+## Getting Started
+
+Prerequisites
+
+- [NodeJS](https://nodejs.org/en/)
+- [pnpm](https://pnpm.io/)
+
+### Installing
+
+We use pnpm to install dependencies. The repo is setup as a workspace, so you only need to run the following command once:
+
+```bash
+pnpm install
+```
+
+### Running
+
+The following command will start the backend and frontend in development mode:
+
+```bash
+pnpm dev
+```
+
+To start the DB as well, run:
+
+```bash
+pnpm start
+```
+
+---
+
 # MemeMuc Launcher
 
 This repository is a _template_ to unify the meme generator bonus project submissions for the _Online Multimedia Lecture_ in the winter semester 2023/24 at LMU Munich.
 
 Any submission must be runnable without additional adaptions by executing
+
 ```bash
 cd mememuc-launcher && npm run installall && npm start
 ```
 
 The template contains two folders that are relevant to you. Your implementation is supposed to go in these two folders.
-* `./node-backend`: The backend of your project using NodeJS
-* `./react-frontend`: The frontend of your project using React
+
+- `./node-backend`: The backend of your project using NodeJS
+- `./react-frontend`: The frontend of your project using React
 
 Currently, both folder are filled with some dummy projects.
 
 When you replace the `./node-backend` dummy project with your own implementation, there are two pieces of code which you need to re-include from the dummy project:
+
 - In _app.js_: The block at the very top, commented with `Important`
   ```JavaScript
   const MONGODB_PORT = process.env.DBPORT || '27017';
@@ -28,14 +66,14 @@ When you replace the `./node-backend` dummy project with your own implementation
   },
   ```
 
-The other two folders __must not be changed__!
-* `./mememuc-launcher` contains configuration files for installing dependencies and launching the application you implement.
-* `./mongoserver` cotains a local in-memory database server independent of any existing local installation.
+The other two folders **must not be changed**!
+
+- `./mememuc-launcher` contains configuration files for installing dependencies and launching the application you implement.
+- `./mongoserver` cotains a local in-memory database server independent of any existing local installation.
   This database is not persistent and will reset with each restart. It is meant for testing your submission with a consistent data state, independent of the computer on which it runs.
   You _can_ add files to the `./mongoserver/data` subdirectory.
 
 Regarding the other two folder, `node-backend` and `react-frontend`, you are free to edit everything. However if you want to use a database and include demodata in your submission, it makes sense to stick to the code that connects the backend to the in-memory database (see comments at the top of `node-backend/app.js`)
-
 
 ## How To Use
 
@@ -46,22 +84,25 @@ During development we recommend to run the two projects (`./node-backend` and `.
 ```
 cd mememuc-launcher
 ```
+
 navigates your commandline into the mememuc launcher project
 
 ```
 npm run installall
 ```
+
 installs the dependencies of all (sub)projects
 
 ```
 npm run startdev
 ```
+
 starts the backend project. It will connect to a local MongoDB instance (assuming any is running on your local machine) at the default port `27017`.
 
 ### How To Prepare Your Submission
 
 - Export the MongoDB database state that you want us to user for evaluating your submission from your local MongoDB as bson files using `mongodump`, e.g.: `mongodump mongodb://127.0.0.1:27017 --db=omm-ws2223`
-- Place all created *.bson and *.metadata.json files in `mongoserver/data`
+- Place all created _.bson and _.metadata.json files in `mongoserver/data`
 - The in-memory database server (`./mongoserver`) will import these files as default data whenever you (re)launch the project.
 
 ### How We Will Test Your Submission
