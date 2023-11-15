@@ -90,6 +90,9 @@ importers:
       "@tailwindcss/typography":
         specifier: ^0.5.10
         version: 0.5.10(tailwindcss@3.3.5)
+      "@types/fabric":
+        specifier: ^5.3.6
+        version: 5.3.6
       "@vitejs/plugin-vue":
         specifier: ^4.2.3
         version: 4.4.1(vite@4.5.0)(vue@3.3.8)
@@ -750,6 +753,13 @@ packages:
       "@types/express-serve-static-core": 4.17.41
       "@types/qs": 6.9.10
       "@types/serve-static": 1.15.5
+    dev: true
+
+  /@types/fabric@5.3.6:
+    resolution:
+      {
+        integrity: sha512-nTP5I68SsGnanIHxCoBX83ghscw9M9DI27iSDcd0Z+cpiQ5cZByH0nzkm4itDR/LgAy253q7B93xHgyOh2+hFQ==,
+      }
     dev: true
 
   /@types/http-errors@2.0.4:
