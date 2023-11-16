@@ -2,10 +2,13 @@
 import { fabric } from "fabric";
 import { onMounted, ref } from "vue";
 import runningAwayBalloon from "../assets/templates/running_away_ballon.jpeg";
+import TextControl from "./TextControl.vue";
 
 const can = ref(null);
 const texts: any = ref([]);
 let canvas: fabric.Canvas;
+
+const activeObject: any = ref(null);
 
 onMounted(() => {
   canvas = new fabric.Canvas(can.value);
@@ -20,8 +23,15 @@ onMounted(() => {
 });
 
 function addText() {
-  console.log("add text");
-  const text = new fabric.IText("hello world", { left: 100, top: 100 });
+  const text = new fabric.IText("hello world", {
+    left: 100,
+    top: 100,
+  });
+  text.on("selected", () => {
+    console.log("selected");
+    activeObject.value = text;
+  });
+
   canvas.add(text);
   texts.value.push(text);
 }
@@ -32,4 +42,9 @@ function addText() {
     <canvas ref="can" width="500" height="500"></canvas>
   </div>
   <button class="btn btn-primary" @click="addText">Add Text</button>
+  <text-control
+    v-if="activeObject"
+    :canvas="canvas"
+    :activeObject="activeObject"
+  />
 </template>
