@@ -9,6 +9,7 @@ import logger from "morgan";
 
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
+import templateRouter from "./routes/template";
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
@@ -35,29 +36,30 @@ app.use(function (req: any, res, next) {
 });
 
 // the login middleware. Requires BasicAuth authentication
-app.use((req: any, res, next) => {
-  const users = db.get("users");
-  users
-    .findOne({ basicauthtoken: req.headers.authorization })
-    .then((user) => {
-      if (user) {
-        req.username = user.username; // test test => Basic dGVzdDp0ZXN0
-        next();
-      } else {
-        res.set("WWW-Authenticate", 'Basic realm="401"');
-        res.status(401).send();
-      }
-    })
-    .catch((e) => {
-      console.error(e);
-      res.set("WWW-Authenticate", 'Basic realm="401"');
-      res.status(401).send();
-    });
-});
+// app.use((req: any, res, next) => {
+//   const users = db.get("users");
+//   users
+//     .findOne({ basicauthtoken: req.headers.authorization })
+//     .then((user) => {
+//       if (user) {
+//         req.username = user.username; // test test => Basic dGVzdDp0ZXN0
+//         next();
+//       } else {
+//         res.set("WWW-Authenticate", 'Basic realm="401"');
+//         res.status(401).send();
+//       }
+//     })
+//     .catch((e) => {
+//       console.error(e);
+//       res.set("WWW-Authenticate", 'Basic realm="401"');
+//       res.status(401).send();
+//     });
+// });
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/template", templateRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -74,5 +76,7 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
+
+app.listen(3000, () => console.log("Example app listening on port 3000!"));
 
 export default app;
