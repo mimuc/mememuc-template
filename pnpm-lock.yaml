@@ -86,6 +86,9 @@ importers:
       vue:
         specifier: ^3.3.4
         version: 3.3.8(typescript@5.2.2)
+      vue-color-kit:
+        specifier: ^1.0.6
+        version: 1.0.6(vue@3.3.8)
     devDependencies:
       "@tailwindcss/typography":
         specifier: ^0.5.10
@@ -6233,6 +6236,17 @@ packages:
         integrity: sha512-qZKX4RnBzH2ugr8Lxa7x+0V6XD9Sb/ouARtiasEQCHB1EVU4NXtmHsDDrx1dO4ne5fc3J6EW05BP1Dl0z0iung==,
       }
     engines: { node: ">=0.10.0" }
+    dev: false
+
+  /vue-color-kit@1.0.6(vue@3.3.8):
+    resolution:
+      {
+        integrity: sha512-56oSUp8hGIZ3E4ayZLqTDAb2C7VzaWAC1EVUsZEvPCD2wiiiFd2L2BiEGN1ingfz538sYWKNXxMZQGslqbMiBg==,
+      }
+    peerDependencies:
+      vue: ^3.0.5
+    dependencies:
+      vue: 3.3.8(typescript@5.2.2)
     dev: false
 
   /vue-eslint-parser@9.3.2(eslint@8.53.0):

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ColorPicker } from "vue-color-kit";
+import "vue-color-kit/dist/vue-color-kit.css";
+
 const fonts = [
   "Arial",
   "Helvetica",
@@ -18,11 +21,62 @@ const fonts = [
 ];
 
 defineProps(["canvas", "activeObject"]);
+
+function transform({
+  r,
+  g,
+  b,
+  a,
+}: {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+}) {
+  return `rgba(${r}, ${g}, ${b}, ${a})`;
+}
 </script>
 
 <template>
-  <div class="card bg-neutral w-96">
+  <div class="card bg-neutral w-72">
     <div class="card-body">
+      <div class="grid grid-cols-2 gap-4">
+        <label class="label cursor-pointer justify-start gap-4">
+          <input
+            class="checkbox checkbox-primary"
+            type="checkbox"
+            :value="activeObject.fontWeight === 'bold'"
+            @change="
+              {
+                activeObject.set(
+                  'fontWeight',
+                  $event.target.checked ? 'bold' : 'normal',
+                );
+                canvas.renderAll();
+              }
+            "
+          />
+          <span class="label-text">Bold</span>
+        </label>
+        <label class="label cursor-pointer justify-start gap-4">
+          <input
+            class="checkbox checkbox-primary"
+            type="checkbox"
+            :value="activeObject.fontStyle === 'italic'"
+            @change="
+              {
+                activeObject.set(
+                  'fontStyle',
+                  $event.target.checked ? 'italic' : 'normal',
+                );
+                canvas.renderAll();
+              }
+            "
+          />
+          <span class="label-text">Italic</span>
+        </label>
+      </div>
+
       <label class="label">
         <span class="label-text">Font</span>
       </label>
@@ -45,23 +99,28 @@ defineProps(["canvas", "activeObject"]);
         @change="canvas.renderAll()"
       />
 
-      <label class="label cursor-pointer">
-        <span class="label-text">Bold</span>
-        <input
-          class="checkbox checkbox-primary"
-          type="checkbox"
-          :value="activeObject.fontWeight === 'bold'"
-          @change="
+      <label class="label">
+        <span class="label-text">Color</span>
+      </label>
+      <div class="flex w-full justify-center">
+        <ColorPicker
+          theme="dark"
+          :sucker-hide="true"
+          :color="activeObject.fill"
+          @changeColor="
             {
-              activeObject.set(
-                'fontWeight',
-                $event.target.checked ? 'bold' : 'normal',
-              );
+              activeObject.set('fill', transform($event.rgba));
               canvas.renderAll();
             }
           "
         />
-      </label>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.hu-color-picker {
+  width: 218px !important;
+}
+</style>
