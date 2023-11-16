@@ -1,50 +1,66 @@
 <script setup lang="ts">
 import { fabric } from "fabric";
-import { onMounted, ref } from "vue";
+import { Ref, onMounted, ref } from "vue";
+import { ChatBubbleBottomCenterTextIcon as TextIcon } from "@heroicons/vue/24/solid";
 import runningAwayBalloon from "../assets/templates/running_away_ballon.jpeg";
 import TextControl from "./TextControl.vue";
 
 const can = ref(null);
-const texts: any = ref([]);
 let canvas: fabric.Canvas;
 
-const activeObject: any = ref(null);
+const activeObject: Ref<fabric.IText | null> = ref(null);
 
 onMounted(() => {
   canvas = new fabric.Canvas(can.value);
-  new fabric.Image.fromURL(
-    runningAwayBalloon,
-    (img: { width: any; height: any }) => {
-      canvas.setWidth(img.width);
-      canvas.setHeight(img.height);
-      canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-    },
-  );
+  fabric.Image.fromURL(runningAwayBalloon, (img) => {
+    canvas.setWidth(img.width ?? 500);
+    canvas.setHeight(img.height ?? 500);
+    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+  });
+
+  canvas.on("selection:created", (e: any) => {
+    activeObject.value = e.selected[0];
+  });
+
+  canvas.on("selection:updated", (e: any) => {
+    activeObject.value = e.selected[0];
+  });
+
+  canvas.on("selection:cleared", () => {
+    activeObject.value = null;
+  });
 });
 
 function addText() {
   const text = new fabric.IText("hello world", {
-    left: 100,
-    top: 100,
+    left: (activeObject.value?.left ?? 0) + 10,
+    top: (activeObject.value?.top ?? 0) + 10,
   });
-  text.on("selected", () => {
-    console.log("selected");
-    activeObject.value = text;
-  });
-
   canvas.add(text);
-  texts.value.push(text);
+  canvas.setActiveObject(text);
 }
 </script>
 
 <template>
-  <div class="border-primary w-fit border-spacing-1 border-2">
-    <canvas ref="can" width="500" height="500"></canvas>
+  <div class="grid grid-cols-3 gap-8">
+    <div class="flex justify-end">
+      <button class="btn btn-primary" @click="addText">
+        Add Text <TextIcon class="h-6 w-6" />
+      </button>
+    </div>
+    <div class="flex justify-center">
+      <div class="card bg-neutral h-fit w-fit">
+        <div class="card-body">
+          <canvas ref="can" width="500" height="500"></canvas>
+        </div>
+      </div>
+    </div>
+    <div>
+      <text-control
+        v-if="activeObject"
+        :canvas="canvas"
+        :activeObject="activeObject"
+      />
+    </div>
   </div>
-  <button class="btn btn-primary" @click="addText">Add Text</button>
-  <text-control
-    v-if="activeObject"
-    :canvas="canvas"
-    :activeObject="activeObject"
-  />
 </template>
