@@ -5,9 +5,9 @@ import {
   ChatBubbleBottomCenterTextIcon as TextIcon,
   PhotoIcon,
 } from "@heroicons/vue/24/solid";
-import runningAwayBalloon from "../assets/templates/running_away_ballon.jpeg";
-import TextControl from "./TextControl.vue";
-import Upload from "./Upload.vue";
+import runningAwayBalloon from "@/assets/templates/running_away_ballon.jpeg";
+import TextControl from "@/components/TextControl.vue";
+import Upload from "@/components/Upload.vue";
 
 const can = ref(null);
 const modal = ref<HTMLDialogElement | null>(null);
