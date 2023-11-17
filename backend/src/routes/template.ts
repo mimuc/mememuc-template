@@ -10,8 +10,13 @@ router.get("/:id", function (req: any, res) {
   const id = req.params.id;
   const templates = req.db.get("templates");
   templates.findOne({ _id: id }).then((doc) => {
-    console.log(doc);
-    res.send(doc);
+    if (!doc || !doc.buffer) {
+      return res.status(404).send("Image not found");
+    }
+
+    const imageBuffer = doc.buffer.buffer;
+    res.set("Content-Type", doc.mimetype);
+    res.send(imageBuffer);
   });
 });
 
@@ -23,12 +28,7 @@ router.get("/all", function (req: any, res) {
 });
 
 router.post("/upload", upload.single("file"), function (req: any, res) {
-  console.log(req.file);
-
-  const fileData = req.file;
   const templates = req.db.get("templates");
-
-  console.log(fileData);
 
   templates.insert(req.file).then((doc) => {
     res.send(doc._id);

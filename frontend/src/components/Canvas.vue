@@ -47,13 +47,8 @@ function addText() {
 }
 
 async function setTemplate(id: string) {
-  console.log(id);
-  const data = await fetch(`http://localhost:3000/template/getImage/${id}`, {
-    method: "GET",
-  }).then((res) => res.json());
-
   const img = new Image();
-  img.src = `data:image/jpeg;base64,${data.buffer}`;
+  img.src = `http://localhost:3000/template/${id}`;
 
   fabric.Image.fromURL(img.src, (img) => {
     canvas.setWidth(img.width ?? 500);
