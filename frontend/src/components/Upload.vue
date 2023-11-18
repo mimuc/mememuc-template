@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { getUserTemplates, postUserTemplate } from "@/utils/api";
+import { onMounted, ref } from "vue";
+import Gallery from "./Gallery.vue";
+
+const username = "test-user"; // TODO: get username from login
 
 interface Props {
   setTemplate: (id: string) => void;
@@ -8,25 +12,29 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref();
-// const inputName = ref();
+const userTemplate = ref<{ id: string; name: string; url: string }[]>([]);
+
+onMounted(async () => {
+  getUserTemplates(username).then((data) => {
+    console.log(data);
+    userTemplate.value = data.map((template) => ({
+      id: template.id,
+      name: template.name,
+      url: `http://localhost:3001/users/img/${username}/${template.id}`,
+    }));
+  });
+});
 
 async function handleFileUpload(event: Event) {
   event.preventDefault();
-  const formData = new FormData();
-  formData.append("file", file.value);
-
-  await fetch("http://localhost:3000/template/upload", {
-    method: "POST",
-    body: formData,
-  })
-    .then((res) => res.json())
-    .then((data) => props.setTemplate(data));
+  postUserTemplate(username, file.value).then((data) => {
+    props.setTemplate(`http://localhost:3001/users/img/${username}/${data.id}`);
+  });
 }
 </script>
 
 <template>
-  <h3 class="text-lg font-bold">Hello!</h3>
-  <p class="py-4">Press ESC key or click outside to close</p>
+  <Gallery :templates="userTemplate" />
   <form @submit="handleFileUpload" enctype="multipart/form-data">
     <input
       class="file-input file-input-bordered file-input-primary w-full max-w-xs"

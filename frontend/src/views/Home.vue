@@ -1,3 +1,7 @@
+<script setup>
+import TemplateSelection from "@/components/TemplateSelection.vue";
+</script>
+
 <template>
   <div class="flex w-full flex-col items-center gap-4 p-16">
     <div class="prose">
@@ -8,5 +12,6 @@
       </p>
     </div>
     <router-link to="editor" class="btn btn-primary">Generate Meme</router-link>
+    <TemplateSelection />
   </div>
 </template>

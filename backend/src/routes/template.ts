@@ -1,8 +1,4 @@
 import express from "express";
-import multer from "multer";
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
 
 const router = express.Router();
 
@@ -19,6 +15,21 @@ router.get("/img/:id", function (req: any, res) {
   });
 });
 
+router.get("/random", function (req: any, res) {
+  const templates = req.db.get("templates");
+  templates
+    .aggregate([{ $sample: { size: 1 } }])
+    .then((docs) => {
+      res.send({
+        id: docs[0]._id,
+        name: docs[0].name,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
 router.get("/all", function (req: any, res) {
   const templates = req.db.get("templates");
   templates.find({}).then((docs) => {
@@ -30,14 +41,6 @@ router.get("/all", function (req: any, res) {
         };
       }),
     });
-  });
-});
-
-router.post("/upload", upload.single("file"), function (req: any, res) {
-  const templates = req.db.get("templates");
-
-  templates.insert(req.file).then((doc) => {
-    res.send(doc._id);
   });
 });
 
