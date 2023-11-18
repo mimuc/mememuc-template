@@ -7,6 +7,7 @@ import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from "cors";
+import monk from "monk";
 
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
@@ -16,7 +17,7 @@ import templateRouter from "./routes/template";
 // ### Your backend project has to switch the MongoDB port like this
 // ### Thus copy paste this block to your project
 const MONGODB_PORT = process.env.DBPORT || "27017";
-const db = require("monk")(`127.0.0.1:${MONGODB_PORT}/omm-ws2223`); // connect to database omm-2021
+const db = monk(`127.0.0.1:${MONGODB_PORT}/omm-ws2223`); // connect to database omm-2021
 console.log(`Connected to MongoDB at port ${MONGODB_PORT}`);
 // ######
 
@@ -85,6 +86,6 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-app.listen(3000, () => console.log("Example app listening on port 3000!"));
+app.listen(3001, () => console.log("Example app listening on port 3000!"));
 
 export default app;
