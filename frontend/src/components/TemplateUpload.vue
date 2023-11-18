@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { getUserTemplates, postUserTemplate } from "@/utils/api";
 import { onMounted, ref } from "vue";
-import Gallery from "./Gallery.vue";
+import { getUserTemplates, postUserTemplate } from "@/utils/api";
+import Gallery from "@/components/Gallery.vue";
 
 const username = "test-user"; // TODO: get username from login
 
@@ -34,7 +34,13 @@ async function handleFileUpload(event: Event) {
 </script>
 
 <template>
-  <Gallery :templates="userTemplate" />
+  <Gallery
+    :templates="userTemplate"
+    :onClick="
+      (id: string) =>
+        setTemplate(`http://localhost:3001/users/img/${username}/${id}`)
+    "
+  />
   <form @submit="handleFileUpload" enctype="multipart/form-data">
     <input
       class="file-input file-input-bordered file-input-primary w-full max-w-xs"
