@@ -5,6 +5,7 @@ import {
   MagnifyingGlassIcon as SearchIcon,
   ChevronRightIcon as NextIcon,
   ChevronLeftIcon as PreviousIcon,
+  ArrowPathIcon as RandomIcon,
 } from "@heroicons/vue/24/solid";
 import { getAllTemplates } from "@/utils/api";
 import TemplateUpload from "@/components/TemplateUpload.vue";
@@ -47,6 +48,11 @@ async function goToNext() {
   if (index.value >= templates.value.length) {
     index.value = 0;
   }
+  props.setTemplate(templates.value[index.value].url);
+}
+
+async function goToRandom() {
+  index.value = Math.floor(Math.random() * templates.value.length);
   props.setTemplate(templates.value[index.value].url);
 }
 </script>
@@ -100,6 +106,10 @@ async function goToNext() {
       @click="uploadModal?.showModal()"
     >
       <UpIcon class="h-6 w-6" />
+    </button>
+
+    <button class="btn btn-primary btn-outline" @click="goToRandom">
+      <RandomIcon class="h-6 w-6" />
     </button>
 
     <button class="btn btn-primary btn-outline" @click="goToNext">
