@@ -12,11 +12,11 @@ defineProps<Props>();
 </script>
 
 <template>
-  <div class="grid grid-cols-4 gap-4">
+  <div class="flex flex-wrap justify-center gap-4">
     <div
       v-for="template in templates"
       :key="template.id"
-      class="group relative h-32 w-32"
+      class="group relative h-32 w-32 cursor-pointer"
       @click="onClick && onClick(template.id)"
     >
       <img

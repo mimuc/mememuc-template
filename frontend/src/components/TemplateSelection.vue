@@ -26,7 +26,7 @@ async function shuffleTemplate() {
 
 <template>
   <dialog id="browse-modal" class="modal" ref="browseModal">
-    <div class="modal-box max-w-4xl">
+    <div class="modal-box h-4/5 max-w-3xl">
       <TemplateBrowse
         :setTemplate="
           (id: string) => {
@@ -38,7 +38,7 @@ async function shuffleTemplate() {
     </div>
   </dialog>
   <dialog id="upload-modal" class="modal" ref="uploadModal">
-    <div class="modal-box max-w-4xl">
+    <div class="modal-box w-1/2 max-w-xl">
       <TemplateUpload
         :setTemplate="
           (id: string) => {

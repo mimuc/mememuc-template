@@ -60,7 +60,7 @@ async function setTemplate(url: string) {
 </script>
 
 <template>
-  <div class="flex gap-8">
+  <div class="flex items-start gap-8">
     <div class="flex flex-col gap-4">
       <button class="btn btn-primary w-48" @click="addText">
         Add Text <TextIcon class="h-6 w-6" />
