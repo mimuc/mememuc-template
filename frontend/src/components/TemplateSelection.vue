@@ -36,6 +36,9 @@ async function shuffleTemplate() {
         "
       />
     </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
   </dialog>
   <dialog id="upload-modal" class="modal" ref="uploadModal">
     <div class="modal-box w-1/2 max-w-xl">
@@ -48,6 +51,9 @@ async function shuffleTemplate() {
         "
       />
     </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
   </dialog>
 
   <button class="btn btn-primary w-48" @click="browseModal?.showModal()">
