@@ -1,37 +1,27 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { getAllTemplates } from "@/utils/api";
+import { ref, watchEffect } from "vue";
 import Gallery from "@/components/Gallery.vue";
 
 interface Props {
+  templates: {
+    id: string;
+    name: string;
+    url: string;
+  }[];
   setTemplate: (id: string) => void;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
-const templates = ref<{ id: string; name: string; url: string }[]>([]);
 const filteredTemplates = ref<{ id: string; name: string; url: string }[]>([]);
 const searchFilter = ref("");
 
-onMounted(async () => {
-  // const data = await fetch("https://api.imgflip.com/get_memes")
-  //   .then((res) => res.json())
-  //   .then((data) => data);
-  // templates.value = data.data.memes;
-  getAllTemplates().then((data) => {
-    templates.value = data.map((template) => ({
-      id: template.id,
-      name: template.name,
-      url: `http://localhost:3001/template/img/${template.id}`,
-    }));
-  });
-
-  searchFilter.value = "";
-  filteredTemplates.value = templates.value;
+watchEffect(() => {
+  filterTemplates(searchFilter.value);
 });
 
 function filterTemplates(filter: string) {
-  filteredTemplates.value = templates.value.filter((template) =>
+  filteredTemplates.value = props.templates.filter((template) =>
     template.name.toLowerCase().includes(filter.toLowerCase()),
   );
 }

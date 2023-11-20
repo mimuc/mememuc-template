@@ -4,7 +4,6 @@ import { Ref, onMounted, ref } from "vue";
 import { ChatBubbleBottomCenterTextIcon as TextIcon } from "@heroicons/vue/24/solid";
 import TextControl from "@/components/TextControl.vue";
 import TemplateSelection from "@/components/TemplateSelection.vue";
-import { getRandomTemplate } from "@/utils/api";
 
 const can = ref(null);
 
@@ -26,9 +25,6 @@ onMounted(async () => {
   canvas.on("selection:cleared", () => {
     activeObject.value = null;
   });
-
-  const template = await getRandomTemplate();
-  setTemplate(`http://localhost:3001/template/img/${template.id}`);
 });
 
 function addText() {
@@ -65,10 +61,10 @@ async function setTemplate(url: string) {
       <button class="btn btn-primary w-48" @click="addText">
         Add Text <TextIcon class="h-6 w-6" />
       </button>
-      <TemplateSelection :setTemplate="setTemplate" />
     </div>
 
-    <div class="flex w-fit flex-col justify-center">
+    <div class="flex w-fit flex-col justify-center gap-4">
+      <TemplateSelection :setTemplate="setTemplate" />
       <div class="card bg-neutral h-fit w-fit">
         <div class="card-body">
           <canvas ref="can" width="500" height="500"></canvas>
