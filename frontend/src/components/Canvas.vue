@@ -4,6 +4,7 @@ import { Ref, onMounted, ref } from "vue";
 import { ChatBubbleBottomCenterTextIcon as TextIcon } from "@heroicons/vue/24/solid";
 import TextControl from "@/components/TextControl.vue";
 import TemplateSelection from "@/components/TemplateSelection.vue";
+import TemplateGeneration from "@/components/TemplateGeneration.vue";
 
 const can = ref(null);
 
@@ -70,6 +71,7 @@ async function setTemplate(url: string) {
           <canvas ref="can" width="500" height="500"></canvas>
         </div>
       </div>
+      <TemplateGeneration />
     </div>
     <div>
       <text-control
