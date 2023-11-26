@@ -19,7 +19,7 @@ const file = ref();
 const userTemplate = ref<{ id: string; name: string; url: string }[]>([]);
 
 onMounted(async () => {
-  getUserTemplates(username).then((data) => {
+  getUserTemplates(username, "upload").then((data) => {
     userTemplate.value = data.map((template) => ({
       id: template.id,
       name: template.name,
@@ -30,7 +30,7 @@ onMounted(async () => {
 
 async function handleFileUpload(event: Event) {
   event.preventDefault();
-  uploadUserTemplate(username, file.value).then((data) => {
+  uploadUserTemplate(username, file.value, "upload").then((data) => {
     props.setTemplate(`http://localhost:3001/users/img/${username}/${data.id}`);
   });
   getUserTemplates(username).then((data) => {
