@@ -10,6 +10,7 @@ import {
   CameraIcon,
   PaintBrushIcon as BrushIcon,
   GlobeAltIcon as GlobeIcon,
+  PlusIcon,
 } from "@heroicons/vue/24/solid";
 import { getAllTemplates } from "@/utils/api";
 import TemplateUpload from "./TemplateUpload.vue";
@@ -167,29 +168,44 @@ async function drawTemplate() {
       <SearchIcon class="h-6 w-6" />
     </button>
 
-    <button class="btn btn-primary btn-outline" @click="onlineModalOpen = true">
-      <GlobeIcon class="h-6 w-6" />
-    </button>
-
-    <button class="btn btn-primary btn-outline" @click="uploadModalOpen = true">
-      <UpIcon class="h-6 w-6" />
-    </button>
-
-    <button class="btn btn-primary btn-outline" @click="cameraModalOpen = true">
-      <CameraIcon class="h-6 w-6" />
-    </button>
-
-    <button class="btn btn-primary btn-outline" @click="pasteModalOpen = true">
-      <PasteIcon class="h-6 w-6" />
-    </button>
-
-    <button class="btn btn-primary btn-outline" @click="drawTemplate">
-      <BrushIcon class="h-6 w-6" />
-    </button>
-
     <button class="btn btn-primary btn-outline" @click="goToRandom">
       <RandomIcon class="h-6 w-6" />
     </button>
+
+    <div class="dropdown dropdown-hover">
+      <div role="button" class="btn btn-primary btn-outline">
+        <PlusIcon class="h-6 w-6" />
+      </div>
+      <ul
+        class="menu dropdown-content bg-base-100 rounded-box z-[1] w-48 p-2 shadow"
+      >
+        <li>
+          <button @click="onlineModalOpen = true">
+            <GlobeIcon class="h-6 w-6" /> Search Online
+          </button>
+        </li>
+        <li>
+          <button @click="uploadModalOpen = true">
+            <UpIcon class="h-6 w-6" /> Upload
+          </button>
+        </li>
+        <li>
+          <button data-tip="Camera" @click="cameraModalOpen = true">
+            <CameraIcon class="h-6 w-6" /> Camera
+          </button>
+        </li>
+        <li>
+          <button @click="pasteModalOpen = true">
+            <PasteIcon class="h-6 w-6" /> Paste URL
+          </button>
+        </li>
+        <li>
+          <button @click="drawTemplate">
+            <BrushIcon class="h-6 w-6" /> Draw
+          </button>
+        </li>
+      </ul>
+    </div>
 
     <button class="btn btn-primary btn-outline" @click="goToNext">
       <NextIcon class="h-6 w-6" />
