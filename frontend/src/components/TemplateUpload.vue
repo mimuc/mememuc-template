@@ -16,11 +16,11 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref();
-const userTemplate = ref<{ id: string; name: string; url: string }[]>([]);
+const userTemplates = ref<{ id: string; name: string; url: string }[]>([]);
 
 onMounted(async () => {
   getUserTemplates(username, "upload").then((data) => {
-    userTemplate.value = data.map((template) => ({
+    userTemplates.value = data.map((template) => ({
       id: template.id,
       name: template.name,
       url: `http://localhost:3001/users/img/${username}/${template.id}`,
@@ -34,7 +34,7 @@ async function handleFileUpload(event: Event) {
     props.setTemplate(`http://localhost:3001/users/img/${username}/${data.id}`);
   });
   getUserTemplates(username).then((data) => {
-    userTemplate.value = data.map((template) => ({
+    userTemplates.value = data.map((template) => ({
       id: template.id,
       name: template.name,
       url: `http://localhost:3001/users/img/${username}/${template.id}`,
@@ -44,7 +44,7 @@ async function handleFileUpload(event: Event) {
 
 async function handleFileDelete(id: string) {
   deleteUserTemplate(username, id).then(() => {
-    userTemplate.value = userTemplate.value.filter(
+    userTemplates.value = userTemplates.value.filter(
       (template) => template.id !== id,
     );
   });
@@ -65,9 +65,10 @@ async function handleFileDelete(id: string) {
     />
     <button class="btn btn-primary w-32" type="submit">Add Image</button>
   </form>
-  <div class="divider divider-neutral" />
+  <div v-if="userTemplates.length > 0" class="divider divider-neutral" />
   <Gallery
-    :templates="userTemplate"
+    v-if="userTemplates.length > 0"
+    :templates="userTemplates"
     :onClick="
       (id: string) =>
         setTemplate(`http://localhost:3001/users/img/${username}/${id}`)

@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { CameraIcon, CheckIcon, ArrowPathIcon } from "@heroicons/vue/24/solid";
-import { uploadUserTemplate } from "@/utils/api";
+import {
+  deleteUserTemplate,
+  getUserTemplates,
+  uploadUserTemplate,
+} from "@/utils/api";
+import Gallery from "./Gallery.vue";
 
 interface Props {
   setTemplate: (id: string) => void;
@@ -12,18 +17,27 @@ const props = defineProps<Props>();
 const isPhotoTaken = ref(false);
 const camera = ref<HTMLVideoElement>();
 const canvas = ref<HTMLCanvasElement>();
+const userTemplates = ref<{ id: string; name: string; url: string }[]>([]);
 
 const dimensions = {
   width: 450,
   height: 337,
 };
+const username = "test-user";
 
 onMounted(() => {
   createCameraElement();
+
+  getUserTemplates(username, "camera").then((data) => {
+    userTemplates.value = data.map((template) => ({
+      id: template.id,
+      name: template.name,
+      url: `http://localhost:3001/users/img/${username}/${template.id}`,
+    }));
+  });
 });
 
 onBeforeUnmount(() => {
-  console.log("Unmounting camera");
   stopCameraStream();
 });
 
@@ -63,11 +77,19 @@ const downloadImage = () => {
   if (!canvas.value) return;
 
   canvas.value.toBlob((blob) => {
-    uploadUserTemplate("test-user", blob as File, "upload").then((data) => {
+    uploadUserTemplate(username, blob as File, "camera").then((data) => {
       props.setTemplate(`http://localhost:3001/users/img/test-user/${data.id}`);
     });
   });
 };
+
+async function handleFileDelete(id: string) {
+  deleteUserTemplate(username, id).then(() => {
+    userTemplates.value = userTemplates.value.filter(
+      (template) => template.id !== id,
+    );
+  });
+}
 </script>
 
 <template>
@@ -114,4 +136,14 @@ const downloadImage = () => {
       </button>
     </div>
   </div>
+  <div v-if="userTemplates.length > 0" class="divider divider-neutral" />
+  <Gallery
+    v-if="userTemplates.length > 0"
+    :templates="userTemplates"
+    :onClick="
+      (id: string) =>
+        setTemplate(`http://localhost:3001/users/img/${username}/${id}`)
+    "
+    :onDelete="handleFileDelete"
+  />
 </template>
