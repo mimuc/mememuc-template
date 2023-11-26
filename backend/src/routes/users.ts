@@ -29,7 +29,7 @@ router.post("/upload/:user", upload.single("file"), function (req: any, res) {
     const id = req.db.id();
     user.templates.push({
       _id: id,
-      name: req.file.originalname,
+      name: req.file.originalname ?? new Date().toISOString(),
       image: req.file.buffer.toString("base64"),
       type: req.file.mimetype,
       origin: req.query.origin,

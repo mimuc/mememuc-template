@@ -7,10 +7,12 @@ import {
   ChevronLeftIcon as PreviousIcon,
   ArrowPathIcon as RandomIcon,
   ClipboardDocumentIcon as PasteIcon,
+  CameraIcon,
 } from "@heroicons/vue/24/solid";
 import { getAllTemplates } from "@/utils/api";
 import TemplateUpload from "@/components/TemplateUpload.vue";
 import TemplateBrowse from "./TemplateBrowse.vue";
+import TemplateCamera from "./TemplateCamera.vue";
 
 interface Props {
   setTemplate: (id: string) => void;
@@ -18,6 +20,7 @@ interface Props {
 
 const browseModalOpen = ref(false);
 const uploadModalOpen = ref(false);
+const cameraModalOpen = ref(false);
 const pasteModalOpen = ref(false);
 
 const templates = ref<{ id: string; name: string; url: string }[]>([]);
@@ -93,6 +96,21 @@ async function goToRandom() {
     <div class="modal-backdrop" @click="uploadModalOpen = false" />
   </div>
 
+  <div class="modal" :class="{ 'modal-open': cameraModalOpen }" role="dialog">
+    <div class="modal-box w-1/2 max-w-xl">
+      <TemplateCamera
+        v-if="cameraModalOpen"
+        :setTemplate="
+          (id: string) => {
+            setTemplate(id);
+            cameraModalOpen = false;
+          }
+        "
+      />
+    </div>
+    <div class="modal-backdrop" @click="cameraModalOpen = false" />
+  </div>
+
   <div class="modal" :class="{ 'modal-open': pasteModalOpen }" role="dialog">
     <div class="modal-box w-3/2 max-w-xl">
       <form
@@ -126,6 +144,10 @@ async function goToRandom() {
 
     <button class="btn btn-primary btn-outline" @click="uploadModalOpen = true">
       <UpIcon class="h-6 w-6" />
+    </button>
+
+    <button class="btn btn-primary btn-outline" @click="cameraModalOpen = true">
+      <CameraIcon class="h-6 w-6" />
     </button>
 
     <button class="btn btn-primary btn-outline" @click="pasteModalOpen = true">
