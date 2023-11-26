@@ -9,11 +9,13 @@ import {
   ClipboardDocumentIcon as PasteIcon,
   CameraIcon,
   PaintBrushIcon as BrushIcon,
+  GlobeAltIcon as GlobeIcon,
 } from "@heroicons/vue/24/solid";
 import { getAllTemplates } from "@/utils/api";
-import TemplateUpload from "@/components/TemplateUpload.vue";
+import TemplateUpload from "./TemplateUpload.vue";
 import TemplateBrowse from "./TemplateBrowse.vue";
 import TemplateCamera from "./TemplateCamera.vue";
+import TemplateOnline from "./TemplateOnline.vue";
 
 interface Props {
   setTemplate: (id: string) => void;
@@ -21,6 +23,7 @@ interface Props {
 }
 
 const browseModalOpen = ref(false);
+const onlineModalOpen = ref(false);
 const uploadModalOpen = ref(false);
 const cameraModalOpen = ref(false);
 const pasteModalOpen = ref(false);
@@ -88,6 +91,21 @@ async function drawTemplate() {
     <div class="modal-backdrop" @click="browseModalOpen = false" />
   </div>
 
+  <div class="modal" :class="{ 'modal-open': onlineModalOpen }" role="dialog">
+    <div class="modal-box h-4/5 max-w-3xl">
+      <TemplateOnline
+        v-if="onlineModalOpen"
+        :setTemplate="
+          (id: string) => {
+            setTemplate(id);
+            onlineModalOpen = false;
+          }
+        "
+      />
+    </div>
+    <div class="modal-backdrop" @click="onlineModalOpen = false" />
+  </div>
+
   <div class="modal" :class="{ 'modal-open': uploadModalOpen }" role="dialog">
     <div class="modal-box w-1/2 max-w-xl">
       <TemplateUpload
@@ -147,6 +165,10 @@ async function drawTemplate() {
 
     <button class="btn btn-primary btn-outline" @click="browseModalOpen = true">
       <SearchIcon class="h-6 w-6" />
+    </button>
+
+    <button class="btn btn-primary btn-outline" @click="onlineModalOpen = true">
+      <GlobeIcon class="h-6 w-6" />
     </button>
 
     <button class="btn btn-primary btn-outline" @click="uploadModalOpen = true">

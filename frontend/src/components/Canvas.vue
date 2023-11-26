@@ -6,8 +6,8 @@ import {
   PaintBrushIcon as BrushIcon,
 } from "@heroicons/vue/24/solid";
 import TextControl from "@/components/TextControl.vue";
-import TemplateSelection from "@/components/TemplateSelection.vue";
 import BrushControl from "./BrushControl.vue";
+import TemplateControl from "@/components/template/TemplateControl.vue";
 
 const can = ref(null);
 
@@ -91,7 +91,7 @@ function setDrawingMode(value: boolean) {
     </div>
 
     <div class="flex w-fit flex-col justify-center gap-4">
-      <TemplateSelection
+      <TemplateControl
         :setTemplate="setTemplate"
         :setDrawingMode="setDrawingMode"
       />

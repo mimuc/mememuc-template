@@ -1,7 +1,3 @@
-<script setup>
-import TemplateSelection from "@/components/TemplateSelection.vue";
-</script>
-
 <template>
   <div class="flex w-full flex-col items-center gap-4 p-16">
     <div class="prose">

@@ -6,7 +6,7 @@ import {
   getUserTemplates,
   uploadUserTemplate,
 } from "@/utils/api";
-import Gallery from "./Gallery.vue";
+import Gallery from "@/components/Gallery.vue";
 
 interface Props {
   setTemplate: (id: string) => void;
