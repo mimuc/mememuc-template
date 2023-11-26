@@ -20,7 +20,7 @@ export async function getUserTemplates(
   return await response.json().then((data) => data.templates);
 }
 
-export async function postUserTemplate(
+export async function uploadUserTemplate(
   user: string,
   file: File,
 ): Promise<string> {
@@ -31,4 +31,13 @@ export async function postUserTemplate(
     body: formData,
   });
   return await response.json();
+}
+
+export async function deleteUserTemplate(
+  user: string,
+  id: string,
+): Promise<void> {
+  await fetch(`http://localhost:3001/users/delete/${user}/${id}`, {
+    method: "DELETE",
+  });
 }

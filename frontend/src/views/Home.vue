@@ -12,6 +12,5 @@ import TemplateSelection from "@/components/TemplateSelection.vue";
       </p>
     </div>
     <router-link to="editor" class="btn btn-primary">Generate Meme</router-link>
-    <TemplateSelection />
   </div>
 </template>
