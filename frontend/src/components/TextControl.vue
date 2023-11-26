@@ -3,6 +3,7 @@ import { ColorPicker } from "vue-color-kit";
 import { fabric } from "fabric";
 import "vue-color-kit/dist/vue-color-kit.css";
 import { TrashIcon, DocumentDuplicateIcon } from "@heroicons/vue/24/solid";
+import { transformRgba } from "@/utils/helper";
 
 const fonts = [
   "Arial",
@@ -24,24 +25,10 @@ const fonts = [
 
 interface Props {
   canvas: fabric.Canvas;
-  activeObject: fabric.IText;
+  activeObject: fabric.IText | fabric.BaseBrush;
 }
 
 defineProps<Props>();
-
-function transformRgba({
-  r,
-  g,
-  b,
-  a,
-}: {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-}) {
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
-}
 
 function duplicate(obj: any, canvas: any) {
   const newObject = new fabric.IText(obj.text, {
@@ -61,7 +48,21 @@ function duplicate(obj: any, canvas: any) {
 
 <template>
   <div class="card bg-neutral w-72">
-    <div class="card-body">
+    <div v-if="!activeObject.fontFamily" class="card-body">
+      <button
+        class="btn btn-error btn-outline"
+        @click="
+          {
+            const obj = canvas.getActiveObject();
+            obj ? canvas.remove(obj) : null;
+            canvas.setActiveObject(canvas.getObjects()[0]);
+          }
+        "
+      >
+        <TrashIcon class="h-6 w-6" />
+      </button>
+    </div>
+    <div class="card-body" v-if="activeObject.fontFamily">
       <div class="grid grid-cols-2 gap-4">
         <button
           class="btn btn-info btn-outline"

@@ -8,6 +8,7 @@ import {
   ArrowPathIcon as RandomIcon,
   ClipboardDocumentIcon as PasteIcon,
   CameraIcon,
+  PaintBrushIcon as BrushIcon,
 } from "@heroicons/vue/24/solid";
 import { getAllTemplates } from "@/utils/api";
 import TemplateUpload from "@/components/TemplateUpload.vue";
@@ -16,6 +17,7 @@ import TemplateCamera from "./TemplateCamera.vue";
 
 interface Props {
   setTemplate: (id: string) => void;
+  setDrawingMode: (value: boolean) => void;
 }
 
 const browseModalOpen = ref(false);
@@ -61,6 +63,11 @@ async function goToNext() {
 async function goToRandom() {
   index.value = Math.floor(Math.random() * templates.value.length);
   props.setTemplate(templates.value[index.value].url);
+}
+
+async function drawTemplate() {
+  props.setTemplate("");
+  props.setDrawingMode(true);
 }
 </script>
 
@@ -152,6 +159,10 @@ async function goToRandom() {
 
     <button class="btn btn-primary btn-outline" @click="pasteModalOpen = true">
       <PasteIcon class="h-6 w-6" />
+    </button>
+
+    <button class="btn btn-primary btn-outline" @click="drawTemplate">
+      <BrushIcon class="h-6 w-6" />
     </button>
 
     <button class="btn btn-primary btn-outline" @click="goToRandom">
