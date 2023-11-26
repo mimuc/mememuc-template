@@ -33,6 +33,7 @@ defineProps<Props>();
         {{ template.name }}
       </p>
       <XMarkIcon
+        v-if="onDelete"
         class="hover:text-error absolute right-0 top-0 m-1 hidden h-4 w-4 cursor-pointer group-hover:block"
         @click="onDelete && onDelete(template.id)"
       />

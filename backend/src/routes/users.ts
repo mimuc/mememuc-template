@@ -73,7 +73,6 @@ router.get("/all/:user", function (req: any, res) {
   const username = req.params.user;
   const users = req.db.get("users");
   const origin = req.query.origin;
-  console.log("origin", origin);
 
   users.findOne({ username: username }).then((user) => {
     if (!user) {

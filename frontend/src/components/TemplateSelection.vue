@@ -16,9 +16,10 @@ interface Props {
   setTemplate: (id: string) => void;
 }
 
-const browseModal = ref<HTMLDialogElement | null>(null);
-const uploadModal = ref<HTMLDialogElement | null>(null);
-const pasteModal = ref<HTMLDialogElement | null>(null);
+const browseModalOpen = ref(false);
+const uploadModalOpen = ref(false);
+const pasteModalOpen = ref(false);
+
 const templates = ref<{ id: string; name: string; url: string }[]>([]);
 const index = ref(0);
 const pasteUrl = ref("");
@@ -61,43 +62,43 @@ async function goToRandom() {
 </script>
 
 <template>
-  <dialog id="browse-modal" class="modal" ref="browseModal">
+  <div class="modal" :class="{ 'modal-open': browseModalOpen }" role="dialog">
     <div class="modal-box h-4/5 max-w-3xl">
       <TemplateBrowse
+        v-if="browseModalOpen"
         :templates="templates"
         :setTemplate="
           (id: string) => {
             setTemplate(id);
-            browseModal?.close();
+            browseModalOpen = false;
           }
         "
       />
     </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
-  <dialog id="upload-modal" class="modal" ref="uploadModal">
+    <div class="modal-backdrop" @click="browseModalOpen = false" />
+  </div>
+
+  <div class="modal" :class="{ 'modal-open': uploadModalOpen }" role="dialog">
     <div class="modal-box w-1/2 max-w-xl">
       <TemplateUpload
+        v-if="uploadModalOpen"
         :setTemplate="
           (id: string) => {
             setTemplate(id);
-            uploadModal?.close();
+            uploadModalOpen = false;
           }
         "
       />
     </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
-  <dialog id="paste-modal" class="modal" ref="pasteModal">
+    <div class="modal-backdrop" @click="uploadModalOpen = false" />
+  </div>
+
+  <div class="modal" :class="{ 'modal-open': pasteModalOpen }" role="dialog">
     <div class="modal-box w-3/2 max-w-xl">
       <form
         @submit.prevent="
           setTemplate(pasteUrl);
-          pasteModal?.close();
+          pasteModalOpen = false;
         "
         enctype="multipart/form-data"
         class="flex gap-4"
@@ -111,33 +112,23 @@ async function goToRandom() {
         <button class="btn btn-primary w-32" type="submit">Add Image</button>
       </form>
     </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
+    <div class="modal-backdrop" @click="pasteModalOpen = false" />
+  </div>
 
   <div class="flex justify-center gap-4">
     <button class="btn btn-primary btn-outline" @click="goToPrevious">
       <PreviousIcon class="h-6 w-6" />
     </button>
 
-    <button
-      class="btn btn-primary btn-outline"
-      @click="browseModal?.showModal()"
-    >
+    <button class="btn btn-primary btn-outline" @click="browseModalOpen = true">
       <SearchIcon class="h-6 w-6" />
     </button>
-    <button
-      class="btn btn-primary btn-outline"
-      @click="uploadModal?.showModal()"
-    >
+
+    <button class="btn btn-primary btn-outline" @click="uploadModalOpen = true">
       <UpIcon class="h-6 w-6" />
     </button>
 
-    <button
-      class="btn btn-primary btn-outline"
-      @click="pasteModal?.showModal()"
-    >
+    <button class="btn btn-primary btn-outline" @click="pasteModalOpen = true">
       <PasteIcon class="h-6 w-6" />
     </button>
 
