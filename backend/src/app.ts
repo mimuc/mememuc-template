@@ -28,11 +28,14 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
 // CORS
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "*"],
-  }),
-);
+// app.use(
+//   cors({
+//     origin: ['http://localhost:5173', 'http://localhost:65535', 'http://localhost:3001'],
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     credentials: true,
+//   }),
+// );
+app.use(cors());
 
 app.use(logger("dev"));
 app.use(express.json());
