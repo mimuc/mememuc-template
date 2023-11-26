@@ -6,6 +6,7 @@ import {
   ChevronRightIcon as NextIcon,
   ChevronLeftIcon as PreviousIcon,
   ArrowPathIcon as RandomIcon,
+  ClipboardDocumentIcon as PasteIcon,
 } from "@heroicons/vue/24/solid";
 import { getAllTemplates } from "@/utils/api";
 import TemplateUpload from "@/components/TemplateUpload.vue";
@@ -17,8 +18,10 @@ interface Props {
 
 const browseModal = ref<HTMLDialogElement | null>(null);
 const uploadModal = ref<HTMLDialogElement | null>(null);
+const pasteModal = ref<HTMLDialogElement | null>(null);
 const templates = ref<{ id: string; name: string; url: string }[]>([]);
 const index = ref(0);
+const pasteUrl = ref("");
 
 const props = defineProps<Props>();
 
@@ -89,6 +92,29 @@ async function goToRandom() {
       <button>close</button>
     </form>
   </dialog>
+  <dialog id="paste-modal" class="modal" ref="pasteModal">
+    <div class="modal-box w-3/2 max-w-xl">
+      <form
+        @submit.prevent="
+          setTemplate(pasteUrl);
+          pasteModal?.close();
+        "
+        enctype="multipart/form-data"
+        class="flex gap-4"
+      >
+        <input
+          type="text"
+          placeholder="https://example.com/image.png"
+          class="input input-bordered input-primary w-full"
+          v-model="pasteUrl"
+        />
+        <button class="btn btn-primary w-32" type="submit">Add Image</button>
+      </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 
   <div class="flex justify-center gap-4">
     <button class="btn btn-primary btn-outline" @click="goToPrevious">
@@ -106,6 +132,13 @@ async function goToRandom() {
       @click="uploadModal?.showModal()"
     >
       <UpIcon class="h-6 w-6" />
+    </button>
+
+    <button
+      class="btn btn-primary btn-outline"
+      @click="pasteModal?.showModal()"
+    >
+      <PasteIcon class="h-6 w-6" />
     </button>
 
     <button class="btn btn-primary btn-outline" @click="goToRandom">

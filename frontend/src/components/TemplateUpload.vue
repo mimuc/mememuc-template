@@ -16,7 +16,6 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref();
-const url = ref();
 const userTemplate = ref<{ id: string; name: string; url: string }[]>([]);
 
 onMounted(async () => {
@@ -50,39 +49,9 @@ async function handleFileDelete(id: string) {
     );
   });
 }
-
-async function handleUrlUpload(event: Event) {
-  event.preventDefault();
-  // const browser = await puppeteer.launch();
-  // const page = await browser.newPage();
-  // await page.goto(url.value);
-  // const screenshot = await page.screenshot({ fullPage: true });
-  // console.log(screenshot);
-  // await browser.close();
-}
 </script>
 
 <template>
-  <label class="label">
-    <span class="label-text">Paste a Url</span>
-  </label>
-  <form
-    @submit="handleUrlUpload"
-    enctype="multipart/form-data"
-    class="flex gap-4"
-  >
-    <input
-      type="text"
-      placeholder="https://example.com/image.png"
-      class="input input-bordered input-primary w-full"
-      v-model="url"
-    />
-    <button class="btn btn-primary w-32" type="submit">Add Image</button>
-  </form>
-  <div class="divider divider-neutral">or</div>
-  <label class="label">
-    <span class="label-text">Upload a file</span>
-  </label>
   <form
     @submit="handleFileUpload"
     enctype="multipart/form-data"
@@ -96,7 +65,7 @@ async function handleUrlUpload(event: Event) {
     />
     <button class="btn btn-primary w-32" type="submit">Add Image</button>
   </form>
-  <div class="divider divider-neutral">or</div>
+  <div class="divider divider-neutral" />
   <Gallery
     :templates="userTemplate"
     :onClick="
