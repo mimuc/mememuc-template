@@ -23,9 +23,11 @@ console.log(`Connected to MongoDB at port ${MONGODB_PORT}`);
 
 const app = express();
 
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
+app.use(
+  cors({
+    origin: "*",
+  }),
+);
 
 // CORS
 // app.use(
@@ -35,7 +37,10 @@ app.set("view engine", "jade");
 //     credentials: true,
 //   }),
 // );
-app.use(cors());
+
+// view engine setup
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "jade");
 
 app.use(logger("dev"));
 app.use(express.json());

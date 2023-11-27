@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { fabric } from "fabric";
+import { Ref, onMounted, ref } from "vue";
+
+const canvasRef = ref<HTMLCanvasElement | null>(null);
 
 const generateMeme = () => {
   const lowerCanvas = document.querySelector(
@@ -19,9 +22,11 @@ const generateMeme = () => {
       left: lowerCanvas.width,
       top: 0,
     });
+    lowerImage.crossOrigin = "anonymous";
+    upperImage.crossOrigin = "anonymous";
 
     // Calculate the size of the new canvas based on the size of lower and upper canvases
-    const newCanvasWidth = lowerCanvas.width + upperCanvas.width;
+    const newCanvasWidth = Math.max(lowerCanvas.width, upperCanvas.width);
     const newCanvasHeight = Math.max(lowerCanvas.height, upperCanvas.height);
 
     // Set the size of the new canvas
@@ -29,15 +34,20 @@ const generateMeme = () => {
 
     // Add Fabric.js images to the new canvas
     newCanvas.add(lowerImage, upperImage);
+    console.log(newCanvas);
   }
 
+  var img = new Image();
+  img.crossOrigin = "anonymous"; // Set crossorigin attribute
+  img.src = canvasRef.value?.toDataURL("image/png") ?? "";
+
   // Convert the canvas to a data URL (PNG format)
-  var dataURL = newCanvas.toDataURL({ format: "png" });
+  // var dataURL = newCanvas.toDataURL({ format: "png" });
 
   // Optional: Open a new tab and display the generated meme
   const newTab = window.open("", "_blank");
   if (newTab) {
-    newTab.document.write(`<img src="${dataURL}" alt="Generated Meme"/>`);
+    newTab.document.write(`<img src="${img.src}" alt="Generated Meme"/>`);
   }
 };
 
@@ -72,7 +82,7 @@ const generateMeme = () => {
     id="test-canvas-container"
     style="width: 500px"
   >
-    <canvas id="c"></canvas>
+    <canvas id="c" ref="canvasRef"></canvas>
   </div>
 </template>
 
