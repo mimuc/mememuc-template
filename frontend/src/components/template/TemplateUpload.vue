@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { getUserTemplates, postUserTemplate } from "@/utils/api";
+import {
+  deleteUserTemplate,
+  getUserTemplates,
+  uploadUserTemplate,
+} from "@/utils/api";
 import Gallery from "@/components/Gallery.vue";
 
 const username = "test-user"; // TODO: get username from login
@@ -12,12 +16,11 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref();
-const userTemplate = ref<{ id: string; name: string; url: string }[]>([]);
+const userTemplates = ref<{ id: string; name: string; url: string }[]>([]);
 
 onMounted(async () => {
-  getUserTemplates(username).then((data) => {
-    console.log(data);
-    userTemplate.value = data.map((template) => ({
+  getUserTemplates(username, "upload").then((data) => {
+    userTemplates.value = data.map((template) => ({
       id: template.id,
       name: template.name,
       url: `http://localhost:3001/users/img/${username}/${template.id}`,
@@ -27,8 +30,23 @@ onMounted(async () => {
 
 async function handleFileUpload(event: Event) {
   event.preventDefault();
-  postUserTemplate(username, file.value).then((data) => {
+  uploadUserTemplate(username, file.value, "upload").then((data) => {
     props.setTemplate(`http://localhost:3001/users/img/${username}/${data.id}`);
+  });
+  getUserTemplates(username).then((data) => {
+    userTemplates.value = data.map((template) => ({
+      id: template.id,
+      name: template.name,
+      url: `http://localhost:3001/users/img/${username}/${template.id}`,
+    }));
+  });
+}
+
+async function handleFileDelete(id: string) {
+  deleteUserTemplate(username, id).then(() => {
+    userTemplates.value = userTemplates.value.filter(
+      (template) => template.id !== id,
+    );
   });
 }
 </script>
@@ -47,12 +65,14 @@ async function handleFileUpload(event: Event) {
     />
     <button class="btn btn-primary w-32" type="submit">Add Image</button>
   </form>
-  <div class="divider divider-neutral"></div>
+  <div v-if="userTemplates.length > 0" class="divider divider-neutral" />
   <Gallery
-    :templates="userTemplate"
+    v-if="userTemplates.length > 0"
+    :templates="userTemplates"
     :onClick="
       (id: string) =>
         setTemplate(`http://localhost:3001/users/img/${username}/${id}`)
     "
+    :onDelete="handleFileDelete"
   />
 </template>

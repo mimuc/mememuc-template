@@ -32,6 +32,7 @@ router.post("/upload/:user", upload.single("file"), function (req: any, res) {
       name: req.file.originalname,
       image: req.file.buffer.toString("base64"),
       type: req.file.mimetype,
+      origin: req.query.origin,
     });
     console.log(id);
 
@@ -43,8 +44,9 @@ router.post("/upload/:user", upload.single("file"), function (req: any, res) {
   });
 });
 
-router.get("/all/:user", function (req: any, res) {
+router.delete("/delete/:user/:id", function (req: any, res) {
   const username = req.params.user;
+  const id = req.params.id;
   const users = req.db.get("users");
 
   users.findOne({ username: username }).then((user) => {
@@ -52,13 +54,43 @@ router.get("/all/:user", function (req: any, res) {
       return res.status(404).send("User not found");
     }
 
+    const index = user.templates.findIndex((t) => t._id.toString() === id);
+    if (index === -1) {
+      return res.status(404).send("Template not found");
+    }
+
+    user.templates.splice(index, 1);
+
+    users
+      .update({ username: username }, { $set: { templates: user.templates } })
+      .then(() => {
+        return res.status(200).send();
+      });
+  });
+});
+
+router.get("/all/:user", function (req: any, res) {
+  const username = req.params.user;
+  const users = req.db.get("users");
+  const origin = req.query.origin;
+
+  users.findOne({ username: username }).then((user) => {
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
     res.send({
-      templates: user.templates.map((template) => {
-        return {
-          id: template._id,
-          name: template.name,
-        };
-      }),
+      templates: user.templates
+        .filter((template) => {
+          return origin ? template.origin === origin : true;
+        })
+        .map((template) => {
+          return {
+            id: template._id,
+            name: template.name,
+            origin: template.origin,
+          };
+        }),
     });
   });
 });
