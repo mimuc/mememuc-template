@@ -54,6 +54,8 @@ async function setTemplate(url: string) {
   }
 
   const img = new Image();
+  // It is important to set crossOrigin to anonymous so that the background image is not tainted
+  // this way toDataURL will work
   img.crossOrigin = "anonymous";
 
   img.onload = function () {
