@@ -107,12 +107,24 @@ function downloadImage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    // Open the image in a new tab, maybe this should instead open the single view of the meme?
+    const newTab = window.open();
+    if (newTab) {
+      newTab.document.write(`<img src="${dataUrl}" alt="my_meme"/>`);
+    } else {
+      console.error("Unable to open new tab.");
+    }
   } else {
     console.error(
       "Background image is tainted. Ensure that it is hosted on the same domain or has proper CORS headers.",
     );
   }
+
+  saveImagetoDb();
 }
+
+function saveImagetoDb() {}
 </script>
 
 <template>
@@ -142,7 +154,12 @@ function downloadImage() {
           <canvas ref="can" width="500" height="500"></canvas>
         </div>
       </div>
-      <TemplateGeneration />
+      <!-- <TemplateGeneration  :canvas="canvas"  /> -->
+      <div class="flex justify-center gap-4">
+        <button class="btn btn-primary w-48" @click="downloadImage">
+          Download Image
+        </button>
+      </div>
     </div>
     <div>
       <TextControl
@@ -151,10 +168,6 @@ function downloadImage() {
         :activeObject="activeObject"
       />
       <BrushControl v-if="drawingMode" :canvas="canvas" />
-
-      <button class="btn btn-primary w-48" @click="downloadImage">
-        Download Image
-      </button>
     </div>
   </div>
 </template>

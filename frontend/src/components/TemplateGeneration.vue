@@ -1,88 +1,44 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { fabric } from "fabric";
-import { Ref, onMounted, ref } from "vue";
 
-const canvasRef = ref<HTMLCanvasElement | null>(null);
+const props = defineProps(["canvas" as const]); // Assuming canvas is of type fabric.Canvas
 
-const generateMeme = () => {
-  const lowerCanvas = document.querySelector(
-    ".lower-canvas",
-  ) as HTMLCanvasElement | null;
-  const upperCanvas = document.querySelector(
-    ".upper-canvas",
-  ) as HTMLCanvasElement | null;
+function downloadImage() {
+  console.log("I am in 0");
+  console.log(props);
+  if (props.canvas) {
+    console.log("I am in 1");
+    // Check if there is a background image and it is not tainted
+    if (
+      props.canvas.backgroundImage &&
+      !(props.canvas.backgroundImage as fabric.Image).crossOrigin
+    ) {
+      console.log("I am in 2");
+      // Create a data URL for the canvas
+      const dataUrl = props.canvas.toDataURL({ format: "png", quality: 1 });
 
-  // Create a new Fabric.js canvas
-  const newCanvas = new fabric.Canvas("c");
-
-  if (lowerCanvas && upperCanvas) {
-    // Create Fabric.js images from the existing lower and upper canvas elements
-    const lowerImage = new fabric.Image(lowerCanvas, { left: 0, top: 0 });
-    const upperImage = new fabric.Image(upperCanvas, {
-      left: lowerCanvas.width,
-      top: 0,
-    });
-    lowerImage.crossOrigin = "anonymous";
-    upperImage.crossOrigin = "anonymous";
-
-    // Calculate the size of the new canvas based on the size of lower and upper canvases
-    const newCanvasWidth = Math.max(lowerCanvas.width, upperCanvas.width);
-    const newCanvasHeight = Math.max(lowerCanvas.height, upperCanvas.height);
-
-    // Set the size of the new canvas
-    newCanvas.setDimensions({ width: newCanvasWidth, height: newCanvasHeight });
-
-    // Add Fabric.js images to the new canvas
-    newCanvas.add(lowerImage, upperImage);
-    console.log(newCanvas);
+      // Create a link element and trigger a click to download the image
+      const link = document.createElement("a");
+      link.href = dataUrl;
+      link.download = "my_meme.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      console.error(
+        "Background image is tainted. Ensure that it is hosted on the same domain or has proper CORS headers.",
+      );
+    }
   }
-
-  var img = new Image();
-  img.crossOrigin = "anonymous"; // Set crossorigin attribute
-  img.src = canvasRef.value?.toDataURL("image/png") ?? "";
-
-  // Convert the canvas to a data URL (PNG format)
-  // var dataURL = newCanvas.toDataURL({ format: "png" });
-
-  // Optional: Open a new tab and display the generated meme
-  const newTab = window.open("", "_blank");
-  if (newTab) {
-    newTab.document.write(`<img src="${img.src}" alt="Generated Meme"/>`);
-  }
-};
-
-// Optional: Convert data URL to Blob (helper function)
-// const dataURLToBlob = (dataURL: string) => {
-//   const parts = dataURL.split(",");
-//   const contentType = parts[0].split(":")[1].split(";")[0];
-//   const byteString = atob(parts[1]);
-//   const arrayBuffer = new ArrayBuffer(byteString.length);
-//   const uint8Array = new Uint8Array(arrayBuffer);
-
-//   for (let i = 0; i < byteString.length; i++) {
-//     uint8Array[i] = byteString.charCodeAt(i);
-//   }
-
-//   return new Blob([arrayBuffer], { type: contentType });
-// };
+}
 </script>
 
 <template>
   <div class="flex justify-center gap-4">
-    <button
-      @click="generateMeme"
-      id="generate-meme"
-      class="btn btn-primary btn-outline"
-    >
-      Generate Meme
+    <button class="btn btn-primary w-48" @click="downloadImage">
+      Download Image
     </button>
-  </div>
-  <div
-    ref="testCanvasContainer"
-    id="test-canvas-container"
-    style="width: 500px"
-  >
-    <canvas id="c" ref="canvasRef"></canvas>
   </div>
 </template>
 
