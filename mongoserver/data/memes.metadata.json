@@ -1,0 +1,12 @@
+{
+  "indexes": [
+    {
+      "v": { "$numberInt": "2" },
+      "key": { "_id": { "$numberInt": "1" } },
+      "name": "_id_"
+    }
+  ],
+  "uuid": "683eb18e1bc8450282c913768f065cb6",
+  "collectionName": "memes",
+  "type": "collection"
+}
