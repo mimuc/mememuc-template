@@ -6,7 +6,7 @@ import {
   PaintBrushIcon as BrushIcon,
 } from "@heroicons/vue/24/solid";
 import TextControl from "@/components/TextControl.vue";
-import TemplateSelection from "@/components/TemplateSelection.vue";
+//import TemplateSelection from "@/components/TemplateSelection.vue";
 import TemplateGeneration from "@/components/TemplateGeneration.vue";
 import BrushControl from "./BrushControl.vue";
 import TemplateControl from "@/components/template/TemplateControl.vue";
@@ -50,30 +50,66 @@ async function setTemplate(url: string) {
       canvas.setDimensions({ width: 500, height: 500 });
       canvas.renderAll();
     });
-
     return;
   }
 
   const img = new Image();
-  img.src = url;
+  img.crossOrigin = "anonymous";
 
-  fabric.Image.fromURL(img.src, (img) => {
+  img.onload = function () {
     const width = img.width ?? 500;
     const height = img.height ?? 500;
 
     const scale = 500 / width;
 
-    img.scale(scale);
+    const fabricImg = new fabric.Image(img, {
+      scaleX: scale,
+      scaleY: scale,
+    });
+
     canvas.setWidth(width * scale);
     canvas.setHeight(height * scale);
 
-    canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-  });
+    canvas.setBackgroundImage(fabricImg, canvas.renderAll.bind(canvas));
+    canvas.setWidth(width * scale);
+    canvas.setHeight(height * scale);
+
+    canvas.setBackgroundImage(fabricImg, canvas.renderAll.bind(canvas));
+  };
+
+  img.onerror = function (error) {
+    console.error("Error loading image:", error);
+  };
+
+  img.src = url;
 }
 
 function setDrawingMode(value: boolean) {
   drawingMode.value = value;
   canvas.isDrawingMode = value;
+}
+
+function downloadImage() {
+  // Check if there is a background image and it is not tainted
+  if (
+    canvas.backgroundImage &&
+    !(canvas.backgroundImage as fabric.Image).crossOrigin
+  ) {
+    // Create a data URL for the canvas
+    const dataUrl = canvas.toDataURL({ format: "png", quality: 1 });
+
+    // Create a link element and trigger a click to download the image
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = "my_meme.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    console.error(
+      "Background image is tainted. Ensure that it is hosted on the same domain or has proper CORS headers.",
+    );
+  }
 }
 </script>
 
@@ -81,14 +117,16 @@ function setDrawingMode(value: boolean) {
   <div class="flex items-start gap-8">
     <div class="flex flex-col gap-4">
       <button class="btn btn-primary w-48" @click="addText">
-        Add Text <TextIcon class="h-6 w-6" />
+        Add Text
+        <TextIcon class="h-6 w-6" />
       </button>
       <button
         class="btn btn-primary w-48"
         :class="{ 'btn-outline': !drawingMode }"
         @click="setDrawingMode(!drawingMode)"
       >
-        Add Brush <BrushIcon class="h-6 w-6" />
+        Add Brush
+        <BrushIcon class="h-6 w-6" />
       </button>
     </div>
 
@@ -111,6 +149,10 @@ function setDrawingMode(value: boolean) {
         :activeObject="activeObject"
       />
       <BrushControl v-if="drawingMode" :canvas="canvas" />
+
+      <button class="btn btn-primary w-48" @click="downloadImage">
+        Download Image
+      </button>
     </div>
   </div>
 </template>
