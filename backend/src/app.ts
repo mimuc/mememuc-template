@@ -12,6 +12,7 @@ import monk from "monk";
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
 import templateRouter from "./routes/template";
+import memesRouter from "./routes/memes";
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
@@ -77,6 +78,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/template", templateRouter);
+app.use("/memes", memesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

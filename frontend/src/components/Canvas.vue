@@ -108,6 +108,9 @@ function downloadImage() {
     link.click();
     document.body.removeChild(link);
 
+    //save image to mongoDB database
+    saveImageToDb(dataUrl);
+
     // Open the image in a new tab, maybe this should instead open the single view of the meme?
     const newTab = window.open();
     if (newTab) {
@@ -120,11 +123,34 @@ function downloadImage() {
       "Background image is tainted. Ensure that it is hosted on the same domain or has proper CORS headers.",
     );
   }
-
-  saveImagetoDb();
 }
 
-function saveImagetoDb() {}
+async function saveImageToDb(dataUrl: string) {
+  try {
+    // Convert the data URL to base64
+    console.log(dataUrl);
+    const base64Data = dataUrl.split(",")[1];
+    console.log(base64Data);
+
+    const testBody = "test test test";
+
+    const response = await fetch("http://localhost:3001/memes/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: testBody,
+    });
+
+    if (response.ok) {
+      console.log("Meme saved to MongoDB");
+    } else {
+      console.error("Failed to save meme to MongoDB");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
 </script>
 
 <template>
