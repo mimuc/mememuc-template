@@ -4,18 +4,19 @@ const router = express.Router();
 
 router.post("/save", async (req: any, res) => {
   try {
-    console.log(req);
+    console.log(req.body.memeData);
     const db = req.db;
     const base64Data = req.body.memeData;
+    const type = req.body.type;
 
     // Decode base64 data
-    const binaryData = Buffer.from(base64Data, "base64");
+    // const binaryData = Buffer.from(base64Data, "base64");
 
     // Assuming you have a collection named "memes" in your MongoDB
     const memes = db.get("memes");
 
     // Insert the meme data into the MongoDB collection
-    const result = await memes.insert({ memeData: binaryData });
+    const result = await memes.insert({ memeData: base64Data, type: type });
 
     console.log("Meme saved to MongoDB:", result);
 

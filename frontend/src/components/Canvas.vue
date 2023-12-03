@@ -127,23 +127,24 @@ function downloadImage() {
 
 async function saveImageToDb(dataUrl: string) {
   try {
+    console.log("dataUrl:", dataUrl);
     // Convert the data URL to base64
-    console.log(dataUrl);
     const base64Data = dataUrl.split(",")[1];
-    console.log(base64Data);
-
-    const testBody = "test test test";
+    const imageType = dataUrl.split(";")[0].split(":")[1];
+    console.log("base64Data:", base64Data);
+    console.log("imageType:", imageType);
 
     const response = await fetch("http://localhost:3001/memes/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: testBody,
+      body: JSON.stringify({ memeData: base64Data, type: imageType }), // Send the base64 data in the request body
     });
 
     if (response.ok) {
-      console.log("Meme saved to MongoDB");
+      const result = await response.json();
+      console.log("Meme saved to MongoDB. Meme ID:", result.memeId);
     } else {
       console.error("Failed to save meme to MongoDB");
     }
