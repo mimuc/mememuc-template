@@ -9,8 +9,6 @@ import logger from "morgan";
 import cors from "cors";
 import monk from "monk";
 
-import bodyParser from "body-parser"; // Import bodyParser
-
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
 import templateRouter from "./routes/template";
@@ -46,12 +44,9 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
 app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb" }));
 app.use(cookieParser());
-
-// Increase payload limit
-app.use(bodyParser.json({ limit: "50mb" }));
 
 app.use(function (req: any, res, next) {
   req.db = db;
