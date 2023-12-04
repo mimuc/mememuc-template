@@ -147,6 +147,7 @@ async function saveImageToDb(dataUrl: string) {
       console.log("Meme saved to MongoDB. Meme ID:", result.memeId);
     } else {
       console.error("Failed to save meme to MongoDB");
+      console.error("Error:", response);
     }
   } catch (error) {
     console.error("Error:", error);

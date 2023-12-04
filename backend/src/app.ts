@@ -9,6 +9,8 @@ import logger from "morgan";
 import cors from "cors";
 import monk from "monk";
 
+import bodyParser from "body-parser"; // Import bodyParser
+
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
 import templateRouter from "./routes/template";
@@ -47,6 +49,9 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Increase payload limit
+app.use(bodyParser.json({ limit: "50mb" }));
 
 app.use(function (req: any, res, next) {
   req.db = db;
