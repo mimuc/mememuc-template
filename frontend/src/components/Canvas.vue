@@ -11,6 +11,8 @@ import TemplateGeneration from "@/components/TemplateGeneration.vue";
 import BrushControl from "./BrushControl.vue";
 import TemplateControl from "@/components/template/TemplateControl.vue";
 
+const username = "test-user"; // TODO: get username from login
+
 const can = ref(null);
 
 let canvas: fabric.Canvas;
@@ -91,7 +93,13 @@ function setDrawingMode(value: boolean) {
   canvas.isDrawingMode = value;
 }
 
-function downloadImage() {
+function generateMeme() {
+  // Funktionalität das Meme zu erzeugen hierher auslagern
+  // Download Funktionalität in die Single View einbauen?
+  // -> Dann hier Funktionalität SingleView anzuzeigen
+}
+
+function downloadMeme() {
   // Check if there is a background image and it is not tainted
   if (
     canvas.backgroundImage &&
@@ -109,7 +117,7 @@ function downloadImage() {
     document.body.removeChild(link);
 
     //save image to mongoDB database
-    saveImageToDb(dataUrl);
+    saveMemeToDb(dataUrl);
 
     // Open the image in a new tab, maybe this should instead open the single view of the meme?
     const newTab = window.open();
@@ -125,21 +133,26 @@ function downloadImage() {
   }
 }
 
-async function saveImageToDb(dataUrl: string) {
+async function saveMemeToDb(dataUrl: string) {
   try {
-    console.log("dataUrl:", dataUrl);
-    // Convert the data URL to base64
     const base64Data = dataUrl.split(",")[1];
     const imageType = dataUrl.split(";")[0].split(":")[1];
-    console.log("base64Data:", base64Data);
-    console.log("imageType:", imageType);
+
+    // Get the current timestamp
+    const timestamp = new Date().getTime();
+    // console.log("Timestamp:", timestamp);
 
     const response = await fetch("http://localhost:3001/memes/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ memeData: base64Data, type: imageType }), // Send the base64 data in the request body
+      body: JSON.stringify({
+        memeData: base64Data,
+        type: imageType,
+        timestamp: timestamp,
+        username: username,
+      }),
     });
 
     if (response.ok) {
@@ -184,8 +197,8 @@ async function saveImageToDb(dataUrl: string) {
       </div>
       <!-- <TemplateGeneration  :canvas="canvas"  /> -->
       <div class="flex justify-center gap-4">
-        <button class="btn btn-primary w-48" @click="downloadImage">
-          Download Image
+        <button class="btn btn-primary w-48" @click="downloadMeme">
+          Create Meme
         </button>
       </div>
     </div>
