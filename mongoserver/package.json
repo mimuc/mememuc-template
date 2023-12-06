@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "concurrently-await \"node --experimental-modules index.mjs\" \"mongorestore mongodb://127.0.0.1:65535 --db omm-ws2223 data\\ await --delay 2000\"",
-    "dump": "mongodump mongodb://127.0.0.1:65535 --db omm-ws2223 && mv dump/omm-ws2223/* data && rm -rf dump"
+    "dump": "mongodump mongodb://127.0.0.1:65535 --db omm-ws2223 && mv dump/omm-ws2223/* data && rm -rf dump",
+    "dumpWindows": "mongodump --uri mongodb://127.0.0.1:65535 --db omm-ws2223 && rmdir /s /q data && mkdir data && xcopy /e /y dump\\omm-ws2223 data && rmdir /s /q dump"
   },
   "keywords": [],
   "author": "",
