@@ -1,14 +1,15 @@
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
 import type { AppRouter } from "../,,/../../../server";
 
-// Pass AppRouter as generic here. 👇 This lets the `trpc` object know
-// what procedures are available on the server and their input/output types.
-const trpc = createTRPCProxyClient<AppRouter>({
+const client = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: "http://localhost:3000",
+      url: "http://localhost:4000",
     }),
   ],
 });
 
-export default trpc;
+export function getUserTemplates(user: string, origin?: "upload" | "camera") {
+  console.log("getUserTemplates", client);
+  return client.user.getUserTemplates.query({ username: user, origin });
+}

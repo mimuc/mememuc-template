@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = "mongodb://127.0.0.1:65535/omm-ws2223"
+}
+
+type UsersTemplates {
+  id     String @map("_id") @db.ObjectId
+  image  String
+  name   String
+  origin String
+  type   String
+}
+
+model memes {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model templates {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  image String
+  name  String
+  type  String
+}
+
+model users {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  templates UsersTemplates[]
+  username  String
+}
