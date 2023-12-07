@@ -7,7 +7,6 @@ import {
 } from "@heroicons/vue/24/solid";
 import TextControl from "@/components/TextControl.vue";
 //import TemplateSelection from "@/components/TemplateSelection.vue";
-import TemplateGeneration from "@/components/TemplateGeneration.vue";
 import BrushControl from "./BrushControl.vue";
 import TemplateControl from "@/components/template/TemplateControl.vue";
 
