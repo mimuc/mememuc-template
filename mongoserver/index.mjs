@@ -11,6 +11,6 @@ const mongod = await MongoMemoryReplSet.create({
 
 const uri = mongod.getUri();
 
-console.log(uri);
+console.log("Started MongoDB:", uri);
 
 await mongoose.connect(uri, {});
