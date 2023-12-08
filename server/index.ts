@@ -5,9 +5,11 @@ import cors from "cors";
 import { createContext } from "./src/context";
 
 import { userRouter } from "./src/routers/user";
+import { templateRouter } from "./src/routers/template";
 
 const appRouter = router({
   user: userRouter,
+  template: templateRouter,
 });
 
 export type AppRouter = typeof appRouter;

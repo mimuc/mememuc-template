@@ -30,8 +30,6 @@ export const userRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
-      console.log("getUserTemplates", input);
-
       const user = await ctx.prisma.users
         .findFirst({
           where: { username: input.username },

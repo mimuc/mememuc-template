@@ -97,3 +97,4 @@ async function handleFileDelete(id: string) {
     :onDelete="handleFileDelete"
   />
 </template>
+@/utils/api

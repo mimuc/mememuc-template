@@ -1,27 +1,40 @@
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onMounted } from "vue";
 import Gallery from "@/components/Gallery.vue";
+import { getTemplateImage } from "@/utils/trpc";
 
 interface Props {
   templates: {
     id: string;
     name: string;
-    url: string;
   }[];
   setTemplate: (id: string) => void;
 }
 
 const props = defineProps<Props>();
 
+const templates = ref<{ id: string; name: string; url: string }[]>([]);
 const filteredTemplates = ref<{ id: string; name: string; url: string }[]>([]);
 const searchFilter = ref("");
+
+onMounted(() => getSrc());
 
 watchEffect(() => {
   filterTemplates(searchFilter.value);
 });
 
+async function getSrc() {
+  templates.value = await Promise.all(
+    props.templates.map(async (template) => ({
+      id: template.id,
+      name: template.name,
+      url: await getTemplateImage(template.id),
+    })),
+  );
+}
+
 function filterTemplates(filter: string) {
-  filteredTemplates.value = props.templates.filter((template) =>
+  filteredTemplates.value = templates.value.filter((template) =>
     template.name.toLowerCase().includes(filter.toLowerCase()),
   );
 }
@@ -41,7 +54,11 @@ function filterTemplates(filter: string) {
   <Gallery
     :templates="filteredTemplates"
     :onClick="
-      (id: string) => setTemplate(`http://localhost:3001/template/img/${id}`)
+      (id: string) =>
+        setTemplate(
+          filteredTemplates.find((template) => template.id === id)!.url,
+        )
     "
   />
 </template>
+@/utils/api
