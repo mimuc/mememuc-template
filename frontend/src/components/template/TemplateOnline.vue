@@ -8,8 +8,8 @@ interface Props {
 
 defineProps<Props>();
 
-const templates = ref<{ id: string; name: string; url: string }[]>([]);
-const filteredTemplates = ref<{ id: string; name: string; url: string }[]>([]);
+const templates = ref<{ id: string; name: string; src: string }[]>([]);
+const filteredTemplates = ref<{ id: string; name: string; src: string }[]>([]);
 const searchFilter = ref("");
 
 onMounted(async () => {
@@ -45,7 +45,7 @@ function filterTemplates(filter: string) {
     :templates="filteredTemplates"
     :onClick="
       (id: string) =>
-        setTemplate(templates.find((template) => template.id === id)?.url || '')
+        setTemplate(templates.find((template) => template.id === id)?.src || '')
     "
   />
 </template>

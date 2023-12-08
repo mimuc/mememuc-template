@@ -17,7 +17,7 @@ const props = defineProps<Props>();
 const isPhotoTaken = ref(false);
 const camera = ref<HTMLVideoElement>();
 const canvas = ref<HTMLCanvasElement>();
-const userTemplates = ref<{ id: string; name: string; url: string }[]>([]);
+const userTemplates = ref<{ id: string; name: string; src: string }[]>([]);
 
 const dimensions = {
   width: 450,
@@ -32,7 +32,7 @@ onMounted(() => {
     userTemplates.value = data.map((template) => ({
       id: template.id,
       name: template.name,
-      url: template.base64,
+      src: template.base64,
     }));
   });
 });
@@ -85,7 +85,7 @@ const downloadImage = () => {
     userTemplates.value.push({
       id: name,
       name: name,
-      url: base64,
+      src: base64,
     });
   });
 };

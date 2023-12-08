@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { fabric } from "fabric";
 
 const props = defineProps(["canvas" as const]); // Assuming canvas is of type fabric.Canvas

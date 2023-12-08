@@ -13,8 +13,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const templates = ref<{ id: string; name: string; url: string }[]>([]);
-const filteredTemplates = ref<{ id: string; name: string; url: string }[]>([]);
+const templates = ref<{ id: string; name: string; src: string }[]>([]);
+const filteredTemplates = ref<{ id: string; name: string; src: string }[]>([]);
 const searchFilter = ref("");
 
 onMounted(() => getSrc());
@@ -28,7 +28,7 @@ async function getSrc() {
     props.templates.map(async (template) => ({
       id: template.id,
       name: template.name,
-      url: await getTemplateImage(template.id),
+      src: await getTemplateImage(template.id),
     })),
   );
 }
@@ -56,7 +56,7 @@ function filterTemplates(filter: string) {
     :onClick="
       (id: string) =>
         setTemplate(
-          filteredTemplates.find((template) => template.id === id)!.url,
+          filteredTemplates.find((template) => template.id === id)!.src,
         )
     "
   />

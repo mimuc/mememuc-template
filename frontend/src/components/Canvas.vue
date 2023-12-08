@@ -45,8 +45,8 @@ function addText() {
   canvas.setActiveObject(text);
 }
 
-async function setTemplate(url: string) {
-  if (url === "") {
+async function setTemplate(src: string) {
+  if (src === "") {
     canvas.clear();
     canvas.setBackgroundColor("white", () => {
       canvas.setDimensions({ width: 500, height: 500 });
@@ -85,7 +85,7 @@ async function setTemplate(url: string) {
     console.error("Error loading image:", error);
   };
 
-  img.src = url;
+  img.src = src;
 }
 
 function setDrawingMode(value: boolean) {

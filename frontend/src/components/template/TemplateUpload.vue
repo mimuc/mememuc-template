@@ -16,14 +16,14 @@ interface Props {
 const props = defineProps<Props>();
 
 const file = ref();
-const userTemplates = ref<{ id: string; name: string; url: string }[]>([]);
+const userTemplates = ref<{ id: string; name: string; src: string }[]>([]);
 
 onMounted(async () => {
   getUserTemplates(username, "upload").then((data) => {
     userTemplates.value = data.map((template) => ({
       id: template.id,
       name: template.name,
-      url: template.base64,
+      src: template.base64,
     }));
   });
 });
@@ -49,7 +49,7 @@ async function handleFileUpload(event: Event) {
         userTemplates.value.push({
           id: file.value.name,
           name: file.value.name,
-          url: base64String,
+          src: base64String,
         });
       },
     );

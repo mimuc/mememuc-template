@@ -5,7 +5,7 @@ interface Props {
   templates: {
     id: string;
     name: string;
-    url: string; // TODO: change to src
+    src: string;
   }[];
   onClick?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -22,7 +22,7 @@ defineProps<Props>();
       class="group relative h-32 w-32"
     >
       <img
-        :src="template.url"
+        :src="template.src"
         class="h-full w-full object-cover transition-all duration-300 group-hover:blur-sm group-hover:brightness-50"
         loading="lazy"
       />
