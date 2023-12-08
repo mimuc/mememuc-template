@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect, onMounted } from "vue";
 import Gallery from "@/components/Gallery.vue";
-import { getTemplateImage } from "@/utils/trpc";
+import { getTemplateImage } from "@/utils/api";
 
 interface Props {
   templates: {

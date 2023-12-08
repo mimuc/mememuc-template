@@ -16,7 +16,10 @@ type UsersTemplates {
 }
 
 model memes {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  base64    String
+  timestamp DateTime @default(now())
+  user      String
 }
 
 model templates {
@@ -30,4 +33,5 @@ model users {
   id        String           @id @default(auto()) @map("_id") @db.ObjectId
   templates UsersTemplates[]
   username  String
+  memes     String[]         @default([])
 }

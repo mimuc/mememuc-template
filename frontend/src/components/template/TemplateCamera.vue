@@ -6,7 +6,7 @@ import {
   getUserTemplates,
   uploadUserTemplate,
   deleteUserTemplate,
-} from "@/utils/trpc";
+} from "@/utils/api";
 
 interface Props {
   setTemplate: (id: string) => void;

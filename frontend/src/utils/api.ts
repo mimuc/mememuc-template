@@ -38,3 +38,7 @@ export function getAllTemplates() {
 export function getTemplateImage(id: string) {
   return client.template.getSrc.query({ id });
 }
+
+export function createMeme(username: string, base64: string) {
+  return client.meme.save.mutate({ username, base64 });
+}

@@ -9,6 +9,7 @@ import TextControl from "@/components/TextControl.vue";
 //import TemplateSelection from "@/components/TemplateSelection.vue";
 import BrushControl from "./BrushControl.vue";
 import TemplateControl from "@/components/template/TemplateControl.vue";
+import { createMeme } from "@/utils/api";
 
 const username = "test-user"; // TODO: get username from login
 
@@ -116,7 +117,7 @@ function downloadMeme() {
     document.body.removeChild(link);
 
     //save image to mongoDB database
-    saveMemeToDb(dataUrl);
+    createMeme(username, dataUrl);
 
     // Open the image in a new tab, maybe this should instead open the single view of the meme?
     const newTab = window.open();
@@ -129,40 +130,6 @@ function downloadMeme() {
     console.error(
       "Background image is tainted. Ensure that it is hosted on the same domain or has proper CORS headers.",
     );
-  }
-}
-
-async function saveMemeToDb(dataUrl: string) {
-  try {
-    const base64Data = dataUrl.split(",")[1];
-    const imageType = dataUrl.split(";")[0].split(":")[1];
-
-    // Get the current timestamp
-    const timestamp = new Date().getTime();
-    // console.log("Timestamp:", timestamp);
-
-    const response = await fetch("http://localhost:3001/memes/save", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        memeData: base64Data,
-        type: imageType,
-        timestamp: timestamp,
-        username: username,
-      }),
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      console.log("Meme saved to MongoDB. Meme ID:", result.memeId);
-    } else {
-      console.error("Failed to save meme to MongoDB");
-      console.error("Error:", response);
-    }
-  } catch (error) {
-    console.error("Error:", error);
   }
 }
 </script>

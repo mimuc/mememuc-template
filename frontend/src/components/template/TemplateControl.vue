@@ -16,7 +16,7 @@ import TemplateUpload from "./TemplateUpload.vue";
 import TemplateBrowse from "./TemplateBrowse.vue";
 import TemplateCamera from "./TemplateCamera.vue";
 import TemplateOnline from "./TemplateOnline.vue";
-import { getAllTemplates, getTemplateImage } from "@/utils/trpc";
+import { getAllTemplates, getTemplateImage } from "@/utils/api";
 
 interface Props {
   setTemplate: (id: string) => void;

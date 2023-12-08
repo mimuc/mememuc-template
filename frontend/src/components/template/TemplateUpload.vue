@@ -5,7 +5,7 @@ import {
   getUserTemplates,
   uploadUserTemplate,
   deleteUserTemplate,
-} from "@/utils/trpc";
+} from "@/utils/api";
 
 const username = "test-user"; // TODO: get username from login
 
