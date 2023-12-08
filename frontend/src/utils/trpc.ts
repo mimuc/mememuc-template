@@ -10,6 +10,23 @@ const client = createTRPCProxyClient<AppRouter>({
 });
 
 export function getUserTemplates(user: string, origin?: "upload" | "camera") {
-  console.log("getUserTemplates", client);
   return client.user.getUserTemplates.query({ username: user, origin });
+}
+
+export function uploadUserTemplate(
+  user: string,
+  name: string,
+  base64: string,
+  origin: "upload" | "camera",
+) {
+  return client.user.uploadTemplate.mutate({
+    username: user,
+    origin,
+    name,
+    base64,
+  });
+}
+
+export function deleteUserTemplate(user: string, id: string) {
+  return client.user.deleteTemplate.mutate({ username: user, id });
 }

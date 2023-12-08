@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { CameraIcon, CheckIcon, ArrowPathIcon } from "@heroicons/vue/24/solid";
+import Gallery from "@/components/Gallery.vue";
 import {
-  deleteUserTemplate,
   getUserTemplates,
   uploadUserTemplate,
-} from "@/utils/api";
-import Gallery from "@/components/Gallery.vue";
+  deleteUserTemplate,
+} from "@/utils/trpc";
 
 interface Props {
   setTemplate: (id: string) => void;
@@ -32,7 +32,7 @@ onMounted(() => {
     userTemplates.value = data.map((template) => ({
       id: template.id,
       name: template.name,
-      url: `http://localhost:3001/users/img/${username}/${template.id}`,
+      url: template.base64,
     }));
   });
 });
@@ -58,6 +58,7 @@ const createCameraElement = () => {
 };
 
 const stopCameraStream = () => {
+  if (!camera.value?.srcObject) return;
   const tracks = camera.value.srcObject.getTracks();
   tracks.forEach((track: any) => {
     track.stop();
@@ -76,9 +77,15 @@ const takePhoto = () => {
 const downloadImage = () => {
   if (!canvas.value) return;
 
-  canvas.value.toBlob((blob) => {
-    uploadUserTemplate(username, blob as File, "camera").then((data) => {
-      props.setTemplate(`http://localhost:3001/users/img/test-user/${data.id}`);
+  const base64 = canvas.value.toDataURL("image/png");
+  const name = `${Date.now()}.png`;
+
+  uploadUserTemplate(username, name, base64, "camera").then(() => {
+    props.setTemplate(base64);
+    userTemplates.value.push({
+      id: name,
+      name: name,
+      url: base64,
     });
   });
 };

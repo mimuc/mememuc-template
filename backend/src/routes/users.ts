@@ -6,16 +6,6 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-/* GET users listing. */
-router.get("/", function (req: any, res) {
-  const db = req.db;
-  const users = db.get("users");
-  users
-    .find({ username: req.username }, { projection: { basicauthtoken: 0 } }) // return all user properties, except the basic auth token
-    .then((docs) => res.json(docs))
-    .catch(() => res.status(500).send());
-});
-
 /* add template to user entry */
 router.post("/upload/:user", upload.single("file"), function (req: any, res) {
   const username = req.params.user;

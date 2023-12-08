@@ -10,10 +10,9 @@ datasource db {
 
 type UsersTemplates {
   id     String @map("_id") @db.ObjectId
-  image  String
   name   String
   origin String
-  type   String
+  base64 String
 }
 
 model memes {

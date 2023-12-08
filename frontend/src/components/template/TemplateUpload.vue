@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import Gallery from "@/components/Gallery.vue";
 import {
-  deleteUserTemplate,
   getUserTemplates,
   uploadUserTemplate,
-} from "@/utils/api";
-import Gallery from "@/components/Gallery.vue";
+  deleteUserTemplate,
+} from "@/utils/trpc";
 
 const username = "test-user"; // TODO: get username from login
 
@@ -23,23 +23,44 @@ onMounted(async () => {
     userTemplates.value = data.map((template) => ({
       id: template.id,
       name: template.name,
-      url: `http://localhost:3001/users/img/${username}/${template.id}`,
+      url: template.base64,
     }));
   });
 });
 
 async function handleFileUpload(event: Event) {
   event.preventDefault();
-  uploadUserTemplate(username, file.value, "upload").then((data) => {
-    props.setTemplate(`http://localhost:3001/users/img/${username}/${data.id}`);
-  });
-  getUserTemplates(username).then((data) => {
-    userTemplates.value = data.map((template) => ({
-      id: template.id,
-      name: template.name,
-      url: `http://localhost:3001/users/img/${username}/${template.id}`,
-    }));
-  });
+
+  if (!file.value) {
+    alert("Please select an image.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    const base64String = reader.result as string;
+
+    console.log(base64String);
+
+    uploadUserTemplate(username, file.value.name, base64String, "upload").then(
+      () => {
+        props.setTemplate(base64String);
+        userTemplates.value.push({
+          id: file.value.name,
+          name: file.value.name,
+          url: base64String,
+        });
+      },
+    );
+  };
+
+  reader.onerror = (error) => {
+    console.error("Error occurred while reading the file:", error);
+  };
+
+  // Convert the file to Base64
+  reader.readAsDataURL(file.value);
 }
 
 async function handleFileDelete(id: string) {

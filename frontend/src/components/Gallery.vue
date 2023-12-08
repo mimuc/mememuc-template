@@ -5,7 +5,7 @@ interface Props {
   templates: {
     id: string;
     name: string;
-    url: string;
+    url: string; // TODO: change to src
   }[];
   onClick?: (id: string) => void;
   onDelete?: (id: string) => void;
