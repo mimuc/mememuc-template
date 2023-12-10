@@ -15,7 +15,17 @@
         <label>Password</label>
         <input v-model="password" type="password" id="password" />
       </div>
+      <div class="form-group">
+        <label>Password Confirmation</label>
+        <input
+          v-model="passwordConfirmation"
+          type="password"
+          id="passwordConfirmation"
+        />
+      </div>
 
+      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      <p v-if="passwordError" style="color: red">{{ passwordError }}</p>
       <button @click="submitForm" class="btn btn-dark btn-lg btn-block">
         Sign Up
       </button>
@@ -30,27 +40,49 @@ import axios from "axios";
 const username = ref("");
 const email = ref("");
 const password = ref("");
+const passwordConfirmation = ref("");
+const errorMessage = ref("");
+const passwordError = ref("");
 
-const submitForm = () => {
-  console.log("Username: ", username.value);
-  console.log("E-mail: ", email.value);
-  console.log("Password: ", password.value);
+const submitForm = async (event) => {
+  event.preventDefault();
+  try {
+    if (password.value !== passwordConfirmation.value) {
+      passwordError.value = "Passwords do not match.";
+      return;
+    }
+    const newUser = {
+      username: username.value,
+      email: email.value,
+      password: password.value,
+    };
+    const response = await axios.post(
+      "http://localhost:3001/register",
+      newUser,
+    );
 
-  let newUser = {
-    username: username.value,
-    email: email.value,
-    password: password.value,
-  };
-  console.log("Info: ", newUser);
-  axios
-    .post("http://localhost:3001/register", newUser)
-    .then((response) => {
-      console.log("Sende newUser");
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log("Da ist ein Fehler");
-      console.log(error);
-    });
+    console.log("Antwort Backend: ", response);
+    errorMessage.value = "";
+
+    if (response.data.success) {
+      window.location.href = "http://localhost:5173";
+    }
+  } catch (error) {
+    console.log("Fehlermeldung: ", error);
+
+    if (error.response && error.response.status === 400) {
+      console.log("Ist schon vorhanden");
+      errorMessage.value =
+        "An account with the username or e-mail is already registered. Please use a different username or e-mail.";
+      console.log(errorMessage.value);
+    }
+  }
 };
 </script>
+
+<style scoped>
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+</style>

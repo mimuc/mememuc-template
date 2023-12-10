@@ -11,5 +11,6 @@
     <router-link to="register" class="btn btn-primary"
       >Register new Account</router-link
     >
+    <router-link to="login" class="btn btn-primary">Login</router-link>
   </div>
 </template>

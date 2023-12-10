@@ -13,6 +13,8 @@ import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
 import templateRouter from "./routes/template";
 import memesRouter from "./routes/memes";
+import registerRouter from "./routes/register";
+import loginRouter from "./routes/login";
 
 // ##### IMPORTANT
 // ### Your backend project has to switch the MongoDB port like this
@@ -79,6 +81,8 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/template", templateRouter);
 app.use("/memes", memesRouter);
+app.use("/register", registerRouter);
+app.use("/login", loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -96,6 +100,6 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-app.listen(3001, () => console.log("Example app listening on port 3000!"));
+app.listen(3001, () => console.log("Example app listening on port 3001!"));
 
 export default app;
