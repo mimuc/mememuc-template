@@ -8,5 +8,8 @@
       </p>
     </div>
     <router-link to="editor" class="btn btn-primary">Generate Meme</router-link>
+    <router-link to="register" class="btn btn-primary"
+      >Register new Account</router-link
+    >
   </div>
 </template>
