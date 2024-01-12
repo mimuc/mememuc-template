@@ -73,3 +73,10 @@ cd mememuc-launcher # Navigates your commandline into the mememuc launcher proje
 npm run installall # Installs the dependencies of all (sub)projects.
 npm start # Starts the backend project using the non-persistent in-memory MongoDB instance.
 ```
+
+### Optional: Docker
+
+If you prefer, you are free to alternatively use Docker. In that case, please ensure that we can launch your project without any further local installations through
+```bash
+docker-compose up
+```
