@@ -47,10 +47,29 @@ router.get('/fetchMemes', async (req, res) => {
 });
 
 // Function to attach metadata to memes (placeholder function)
+async function getMemeMetadataById(memeId) {
+    // Simulate a database call or external API request
+    // This is a placeholder function. Replace it with your actual data fetching logic.
+    return {
+        title: `Meme Title for ID ${memeId}`,
+        creator: 'Creator Name',
+        creationDate: '2021-01-01',
+        imageCaptions: ['Top Text', 'Bottom Text'],
+        votes: 100,
+        usedTemplate: 'Standard Template'
+    };
+}
+
+// Function to attach metadata to each meme in the list
 async function attachMetadataToMemes(memes) {
-    // This function should enhance each meme object with metadata
-    // For simplicity, this is a placeholder that assumes memes already contain metadata
-    return memes; // In a real implementation, this would fetch or compute metadata for each meme
+    // Map each meme to a promise that resolves to the meme with its metadata attached
+    const memesWithMetadataPromises = memes.map(async (meme) => {
+        const metadata = await getMemeMetadataById(meme.id); // Assume each meme has an id
+        return { ...meme, metadata }; // Combine the meme object with its metadata
+    });
+
+    // Wait for all promises to resolve and return the enhanced memes
+    return await Promise.all(memesWithMetadataPromises);
 }
 
 // Use the router and start the server
