@@ -10,6 +10,31 @@ const EditorPage = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
     const [imageUrl, setImageUrl] = useState('');
+    const [text, setText] = useState('');
+    const [textColor, setTextColor] = useState('white');
+    const [textSize, setTextSize] = useState('20');
+    const [textX, setTextX] = useState(50);
+    const [textY, setTextY] = useState(50);
+    const [canvasWidth, setCanvasWidth] = useState(500)
+    const [cavasHeight, setCanvasHeight] = useState(400)
+    const canvasRef = useRef();
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw image
+        if (image) {
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        }
+        // Draw text
+        ctx.fillStyle = textColor;
+        ctx.font = `${textSize}px Arial`;
+        ctx.fillText(text, textX, textY);
+    }, [image, text, textColor, textSize, textX, textY]);
 
     /**
      * Handles the selection of an image file.
