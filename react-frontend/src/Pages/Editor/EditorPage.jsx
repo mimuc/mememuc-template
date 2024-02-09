@@ -12,8 +12,8 @@ const EditorPage = () => {
     const [textSize, setTextSize] = useState(20);
     const [textX, setTextX] = useState(50);
     const [textY, setTextY] = useState(50);
-    const [canvasWidth, setCanvasWidth] = useState(400);
-    const [canvasHeight, setCanvasHeight] = useState(300);
+  //  const [canvasWidth, setCanvasWidth] = useState(500);
+  //  const [canvasHeight, setCanvasHeight] = useState(400);
     const canvasRef = useRef();
 
     useEffect(() => {
@@ -84,6 +84,7 @@ const EditorPage = () => {
         setTextY(parseInt(event.target.value));
     };
 
+    /*
     const handleCanvasWidthChange = (event) => {
         setCanvasWidth(parseInt(event.target.value));
     };
@@ -91,6 +92,8 @@ const EditorPage = () => {
     const handleCanvasHeightChange = (event) => {
         setCanvasHeight(parseInt(event.target.value));
     };
+    */
+
 
     const handleSaveImage = () => {
         const canvas = canvasRef.current;
@@ -189,9 +192,10 @@ const createGifFromImage = () => {
                     <input type="number" value={textSize} onChange={handleTextSizeChange} />
                     <input type="number" value={textX} onChange={handleTextXChange} />
                     <input type="number" value={textY} onChange={handleTextYChange} />
-                    <input type="number" value={canvasWidth} onChange={handleCanvasWidthChange} />
-                    <input type="number" value={canvasHeight} onChange={handleCanvasHeightChange} />
-                    <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
+                    {/*   <input type="number" value={canvasWidth} onChange={handleCanvasWidthChange} /> */}
+                    {/* <input type="number" value={canvasHeight} onChange={handleCanvasHeightChange} /> */}
+                    {/*<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} /> */}
+                    <canvas ref={canvasRef} style={{ width: '500px', height: '350px' }} />
                     <button onClick={handleSaveImage}>Save Image</button>
                 </div>
             )}
