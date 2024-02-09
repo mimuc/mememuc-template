@@ -1,8 +1,13 @@
 /**
  * Searches for memes in the MongoDB collection based on the provided request query parameters.
  * 
+<<<<<<< Updated upstream
  * @param {Object} req The request object from Express route, containing query parameters.
  * @returns A promise that resolves to an array of memes matching the search criteria.
+=======
+ * @param {Object} req // The request object from Express route, containing query parameters.
+ * @returns //A promise that resolves to an array of memes matching the search criteria.
+>>>>>>> Stashed changes
  */
 function findMemesInDB(req) {
     // Initialize search parameters with default condition to exclude private memes
