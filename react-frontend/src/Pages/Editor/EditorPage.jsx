@@ -94,9 +94,22 @@ const EditorPage = () => {
     const handleSaveImage = () => {
         const canvas = canvasRef.current;
         if (!canvas) return; // Ensure canvas is available
-        const image = canvas.toDataURL('image/png');
-        // Implement saving logic here, e.g., using fetch to send the image data to a server
+
+        const dataURL = canvas.toDataURL('image/png');
+
+        // Create a link element
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = 'edited_image.png'; // Set the default filename
+        document.body.appendChild(link);
+
+        // Trigger the download
+        link.click();
+
+        // Clean up the link element
+        document.body.removeChild(link);
     };
+
 
     return (
         <Container>
