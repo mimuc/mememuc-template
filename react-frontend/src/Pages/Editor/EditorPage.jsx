@@ -1,5 +1,6 @@
 import { Container, Row, Col } from 'react-bootstrap';
 import React, { useState } from 'react';
+import styles from './editor.module.css'
 
 /**
  * EditorPage component for editing images.
@@ -52,7 +53,7 @@ const EditorPage = () => {
 
     return (
         <div>
-            <h1>EDITOR</h1>
+            <h1 className={styles.center}>EDITOR</h1>
             <button onClick={togglePopup}>Select Image</button>
             {showPopup && (
                 <div className="popup">
