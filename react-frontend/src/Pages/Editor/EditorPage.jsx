@@ -149,8 +149,8 @@ const EditorPage = () => {
 */
 const createGifFromImage = () => {
     gifshot.createGIF({
-        gifWidth: canvasWidth,
-        gifHeight: canvasHeight,
+       // gifWidth: canvasWidth,
+      //gifHeight: canvasHeight,
         images: [selectedImage],
         text: text,
         fontWeight: 'normal',
