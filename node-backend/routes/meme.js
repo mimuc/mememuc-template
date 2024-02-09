@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
+/* GET meme listing. */
 router.get('/', function(req, res, next) {
   const db = req.db;
-  const users = db.get('meme');
-  //to create logic
+  const memes = db.get('meme');
+  //logic to be created
 });
 
 module.exports = router;
