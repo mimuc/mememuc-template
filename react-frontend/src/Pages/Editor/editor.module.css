@@ -2,3 +2,12 @@
     align-content: center;
     padding: 5%;
 }
+
+.template1 {
+    font-family: 'Arial', sans-serif;
+    font-size: 40px;
+    font-weight: bolder;
+    outline-color: aliceblue;
+    color: blue;
+    /* Add other styles as needed */
+}
