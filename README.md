@@ -80,3 +80,5 @@ If you prefer, you are free to alternatively use Docker. In that case, please en
 ```bash
 docker-compose up
 ```
+
+Is this thing connected? -Laura
