@@ -110,11 +110,44 @@ const EditorPage = () => {
         document.body.removeChild(link);
     };
 
+    const handleTemplate1 = () => {
+        // Set properties for template 1
+        setText('Template 1 Text');
+        setTextColor('white');
+        setTextSize(20);
+        setTextX(50);
+        setTextY(50);
+        // You can set other properties as needed
+    };
+
+    const handleTemplate2 = () => {
+        // Set properties for template 2
+        setText('Template 2 Text');
+        setTextColor('black');
+        setTextSize(25);
+        setTextX(100);
+        setTextY(100);
+        // You can set other properties as needed
+    };
+
+    const handleTemplate3 = () => {
+        // Set properties for template 3
+        setText('Template 3 Text');
+        setTextColor('red');
+        setTextSize(30);
+        setTextX(150);
+        setTextY(150);
+        // You can set other properties as needed
+    };
+
 
     return (
         <Container>
             <h1 className={styles.center}>EDITOR</h1>
             <button onClick={togglePopup}>Select Image</button>
+            <button onClick={handleTemplate1}>Template 1</button>
+            <button onClick={handleTemplate2}>Template 2</button>
+            <button onClick={handleTemplate3}>Template 3</button>
             {showPopup && (
                 <div className="popup">
                     <input type="file" accept="image/*" onChange={handleImageSelect} />
