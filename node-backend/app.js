@@ -14,6 +14,7 @@ console.log(`Connected to MongoDB at port ${MONGODB_PORT}`)
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var memeRouter = require('./routes/meme');
 
 var app = express();
 
@@ -21,10 +22,22 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+// Import the routers from your API modules
+const memeCreationRouter = require('./path/to/memeCreationAPI'); // Update the path as necessary
+const memeRetrievalRouter = require('./path/to/memeRetrievalAPI'); // Update the path as necessary
+
+// use 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+// Mount the router on the root path (for handling routes like '/')
+app.use('/', memeRouter);
+// Use the memeCreationRouter for routes starting with '/create'
+app.use('/create', memeCreationRouter);
+// Use the memeRetrievalRouter for routes starting with '/retrieve'
+app.use('/retrieve', memeRetrievalRouter);
+
 
 app.use(function(req,res,next){  req.db = db;
   next();
