@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import styles from './editor.module.css';
@@ -174,18 +176,6 @@ const EditorPage = () => {
         <Container>
             <h1 className={styles.center}>EDITOR</h1>
             <button onClick={togglePopup}>Select Image</button>
-            <button onClick={createGifFromImage}>Create GIF</button> 
-            {gifUrl && <img src={gifUrl} alt="Generated GIF" />}
-            <button onClick={handleTemplate1}>Template 1</button>
-            <button onClick={handleTemplate2}>Template 2</button>
-            <button onClick={handleTemplate3}>Template 3</button>
-            {showPopup && (
-                <div className="popup">
-                    <input type="file" accept="image/*" onChange={handleImageSelect} />
-                    <input type="text" placeholder="Enter Image URL" value={imageUrl} onChange={handleImageUrlChange} />
-                    <button onClick={handleAddImageUrl}>Add Image</button>
-                </div>
-            )}
             {selectedImage && (
                 <div>
                     <input type="text" value={text} onChange={handleTextChange} />
@@ -198,6 +188,18 @@ const EditorPage = () => {
                     {/*<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} /> */}
                     <canvas ref={canvasRef} style={{ width: '500px', height: '350px' }} />
                     <button onClick={handleSaveImage}>Save Image</button>
+                    <button onClick={createGifFromImage}>Create GIF</button> 
+                    {gifUrl && <img src={gifUrl} alt="Generated GIF" />}
+                </div>
+            )}
+            <button onClick={handleTemplate1}>Template 1</button>
+            <button onClick={handleTemplate2}>Template 2</button>
+            <button onClick={handleTemplate3}>Template 3</button>
+            {showPopup && (
+                <div className="popup">
+                    <input type="file" accept="image/*" onChange={handleImageSelect} />
+                    <input type="text" placeholder="Enter Image URL" value={imageUrl} onChange={handleImageUrlChange} />
+                    <button onClick={handleAddImageUrl}>Add Image</button>
                 </div>
             )}
         </Container>
