@@ -175,6 +175,7 @@ const createGifFromImage = () => {
         <Container>
             <h1 className={styles.center}>EDITOR</h1>
             <button onClick={togglePopup}>Select Image</button>
+            <button onClick={createGifFromImage}>Create GIF</button> 
             <button onClick={handleTemplate1}>Template 1</button>
             <button onClick={handleTemplate2}>Template 2</button>
             <button onClick={handleTemplate3}>Template 3</button>
