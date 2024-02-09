@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 import styles from './editor.module.css';
 import gifshot from 'gifshot';
 
+
 const EditorPage = () => {
     const [showPopup, setShowPopup] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
@@ -15,6 +16,7 @@ const EditorPage = () => {
   //  const [canvasWidth, setCanvasWidth] = useState(500);
   //  const [canvasHeight, setCanvasHeight] = useState(400);
     const canvasRef = useRef();
+    const [gifUrl, setGifUrl] = useState('');
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -147,35 +149,33 @@ const EditorPage = () => {
 /**
 *    Function to create a GIF from an image
 */
-const createGifFromImage = () => {
-    gifshot.createGIF({
-       // gifWidth: canvasWidth,
-      //gifHeight: canvasHeight,
-        images: [selectedImage],
-        text: text,
-        fontWeight: 'normal',
-        fontSize: '16px',
-        fontFamily: 'Arial',
-        fontColor: textColor,
-        textAlign: 'center',
-        textBaseline: 'bottom',
-        textXCoordinate: textX,
-        textYCoordinate: textY - 10, // Adjust based on your needs
-    }, function(obj) {
-        if (!obj.error) {
-            const imageSrc = obj.image,
-            animatedImage = document.createElement('img');
-            animatedImage.src = imageSrc;
-            document.body.appendChild(animatedImage);
-        }
-    });
-};
+    const createGifFromImage = () => {
+        if (!selectedImage) return; // Ensure there's an image selected
 
+        gifshot.createGIF({
+            images: [selectedImage],
+            text: text,
+            textFontWeight: 'normal',
+            textFontSize: textSize + 'px',
+            textFontFamily: 'Arial',
+            textFontColor: textColor,
+            textAlign: 'left',
+            textBaseline: 'top',
+            textXCoordinate: textX,
+            textYCoordinate: textY,
+        }, function(obj) {
+            if (!obj.error) {
+                const imageSrc = obj.image;
+                setGifUrl(imageSrc); // Update the state with the new GIF URL
+            }
+        });
+};
     return (
         <Container>
             <h1 className={styles.center}>EDITOR</h1>
             <button onClick={togglePopup}>Select Image</button>
             <button onClick={createGifFromImage}>Create GIF</button> 
+            {gifUrl && <img src={gifUrl} alt="Generated GIF" />}
             <button onClick={handleTemplate1}>Template 1</button>
             <button onClick={handleTemplate2}>Template 2</button>
             <button onClick={handleTemplate3}>Template 3</button>
