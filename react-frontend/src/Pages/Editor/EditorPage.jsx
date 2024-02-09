@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import styles from './editor.module.css';
+import gifshot from 'gifshot';
 
 const EditorPage = () => {
     const [showPopup, setShowPopup] = useState(false);
@@ -140,6 +141,32 @@ const EditorPage = () => {
         // You can set other properties as needed
     };
 
+/**
+*    Function to create a GIF from an image
+*/
+const createGifFromImage = () => {
+    gifshot.createGIF({
+        gifWidth: canvasWidth,
+        gifHeight: canvasHeight,
+        images: [selectedImage],
+        text: text,
+        fontWeight: 'normal',
+        fontSize: '16px',
+        fontFamily: 'Arial',
+        fontColor: textColor,
+        textAlign: 'center',
+        textBaseline: 'bottom',
+        textXCoordinate: textX,
+        textYCoordinate: textY - 10, // Adjust based on your needs
+    }, function(obj) {
+        if (!obj.error) {
+            const imageSrc = obj.image,
+            animatedImage = document.createElement('img');
+            animatedImage.src = imageSrc;
+            document.body.appendChild(animatedImage);
+        }
+    });
+};
 
     return (
         <Container>
