@@ -174,30 +174,50 @@ const createGifFromImage = () => {
     return (
         <Container>
             <h1 className={styles.center}>EDITOR</h1>
-            <button onClick={togglePopup}>Select Image</button>
-            <button onClick={createGifFromImage}>Create GIF</button> 
-            <button onClick={handleTemplate1}>Template 1</button>
-            <button onClick={handleTemplate2}>Template 2</button>
-            <button onClick={handleTemplate3}>Template 3</button>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+            <button  onClick={togglePopup}>Select Image</button>
+            <button  onClick={createGifFromImage}>Create GIF</button>
+            <button  onClick={handleTemplate1}>Template 1</button>
+            <button  onClick={handleTemplate2}>Template 2</button>
+            <button  onClick={handleTemplate3}>Template 3</button>
+            </div>
+            <div style={{ display: 'flex', gap: '20%' }}>
+            <div>
+                <h2>Canvas</h2>
+                <canvas ref={canvasRef} style={{ width: '500px', height: '350px' }} />
+            </div>
+                <div>
+                    {selectedImage && (
+                      <div>
+                        <h2>Text Editing</h2>
+                        <label htmlFor="textInput">Text:</label>
+                        <input type="text" value={text} onChange={handleTextChange} />
+                        <br />
+                        <label htmlFor="textColorInput">Text Color:</label>
+                        <input type="color" value={textColor} onChange={handleTextColorChange} />
+                        <br />
+                        <label htmlFor="textSizeInput">Text Size:</label>
+                        <input type="number" value={textSize} onChange={handleTextSizeChange} />
+                        <br />
+                        <label htmlFor="textXInput">Text X Position:</label>
+                        <input type="number" value={textX} onChange={handleTextXChange} />
+                        <br />
+                        <label htmlFor="textYInput">Text Y Position:</label>
+                        <input type="number" value={textY} onChange={handleTextYChange} />
+                        <br />
+                        {/*   <input type="number" value={canvasWidth} onChange={handleCanvasWidthChange} /> */}
+                        {/* <input type="number" value={canvasHeight} onChange={handleCanvasHeightChange} /> */}
+                        {/*<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} /> */}
+                        <button onClick={handleSaveImage}>Save Image</button>
+                        </div>
+                    )}
+                </div>
+            </div>
             {showPopup && (
                 <div className="popup">
                     <input type="file" accept="image/*" onChange={handleImageSelect} />
                     <input type="text" placeholder="Enter Image URL" value={imageUrl} onChange={handleImageUrlChange} />
                     <button onClick={handleAddImageUrl}>Add Image</button>
-                </div>
-            )}
-            {selectedImage && (
-                <div>
-                    <input type="text" value={text} onChange={handleTextChange} />
-                    <input type="color" value={textColor} onChange={handleTextColorChange} />
-                    <input type="number" value={textSize} onChange={handleTextSizeChange} />
-                    <input type="number" value={textX} onChange={handleTextXChange} />
-                    <input type="number" value={textY} onChange={handleTextYChange} />
-                    {/*   <input type="number" value={canvasWidth} onChange={handleCanvasWidthChange} /> */}
-                    {/* <input type="number" value={canvasHeight} onChange={handleCanvasHeightChange} /> */}
-                    {/*<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} /> */}
-                    <canvas ref={canvasRef} style={{ width: '500px', height: '350px' }} />
-                    <button onClick={handleSaveImage}>Save Image</button>
                 </div>
             )}
         </Container>
