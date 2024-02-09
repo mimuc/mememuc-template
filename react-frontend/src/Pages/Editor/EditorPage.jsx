@@ -15,9 +15,13 @@ const EditorPage = () => {
     const [textStyle, setTextStyle] = useState('');
     const [textX, setTextX] = useState(50);
     const [textY, setTextY] = useState(50);
+    const [outlineColor, setOutlineColor] = useState('#000000'); // State for outline color
+    const [outlineThickness, setOutlineThickness] = useState(2); // State for outline thickness
 //  const [canvasWidth, setCanvasWidth] = useState(500);
 //  const [canvasHeight, setCanvasHeight] = useState(400);
     const canvasRef = useRef();
+    const [canvasColor, setCanvasColor] = useState('white'); // Canvas color state
+    const [imageSizeOption, setImageSizeOption] = useState('cover'); // New state for image size option
     const [gifUrl, setGifUrl] = useState('');
 
     useEffect(() => {
@@ -26,22 +30,46 @@ const EditorPage = () => {
         const ctx = canvas.getContext('2d');
 
         // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = canvasColor; // Set canvas color
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Draw image
         if (selectedImage) {
             const image = new Image();
             image.src = selectedImage;
             image.onload = () => {
-                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                let imageWidth, imageHeight;
+
+                // Calculate image dimensions based on the canvas size and selected option
+                if (imageSizeOption === 'cover') {
+                    imageWidth = canvas.width;
+                    imageHeight = canvas.height;
+                } else {
+                    imageWidth = canvas.width * 0.8;
+                    imageHeight = canvas.height * 0.8;
+                }
+
+                // Calculate image position based on canvas size and selected option
+                const imageX = (canvas.width - imageWidth) / 2;
+                const imageY = (canvas.height - imageHeight) / 2;
+
+                // Render the image
+                ctx.drawImage(image, imageX, imageY, imageWidth, imageHeight);
 
                 // Draw text on top of the image
                 ctx.fillStyle = textColor;
                 ctx.font = `${textSize}px Arial ${textStyle}`;
                 ctx.fillText(text, textX, textY);
+
+                // Apply text outline
+                ctx.shadowColor = outlineColor;
+                ctx.shadowBlur = outlineThickness;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.fillText(text, textX, textY);
             };
         }
-    }, [selectedImage, text, textColor, textSize, textX, textY, textStyle]);
+    }, [selectedImage, text, textColor, textSize, textX, textY, textStyle, canvasColor, imageSizeOption, outlineColor, outlineThickness]);
 
     const handleImageSelect = (event) => {
         const file = event.target.files[0];
@@ -118,6 +146,15 @@ const EditorPage = () => {
         document.body.removeChild(link);
     };
 
+    const handleOutlineColorChange = (event) => {
+        setOutlineColor(event.target.value);
+    };
+
+    const handleOutlineThicknessChange = (event) => {
+        setOutlineThickness(parseInt(event.target.value));
+    };
+
+
     const handleTemplate1 = () => {
         // Set properties for template 1
         setText('Template 1 Text');
@@ -186,11 +223,21 @@ const EditorPage = () => {
             <div style={{ display: 'flex', gap: '20%' }}>
                 <div>
                     <h2>Canvas</h2>
-                    <canvas ref={canvasRef} style={{ width: '500px', height: '350px' }} />
+                    <div>
+                        {/* Canvas color selection */}
+                        <label htmlFor="canvasColor">Canvas Color:</label>
+                        <input type="color" value={canvasColor} onChange={(e) => setCanvasColor(e.target.value)} />
+                    </div>
+                    <canvas ref={canvasRef} style={{ width: '700px', height: '700px' }} />
                 </div>
                 <div>
                     {selectedImage && (
                         <div>
+                            <h2>Image Size</h2>
+                            <select value={imageSizeOption} onChange={(e) => setImageSizeOption(e.target.value)}>
+                                <option value="cover">Cover (100%)</option>
+                                <option value="eightyPercent">80% of Canvas</option>
+                            </select>
                             <h2>Text Editing</h2>
                             <label htmlFor="textInput">Text:</label>
                             <input type="text" value={text} onChange={handleTextChange} />
@@ -207,9 +254,16 @@ const EditorPage = () => {
                             <label htmlFor="textYInput">Text Y Position:</label>
                             <input type="number" value={textY} onChange={handleTextYChange} />
                             <br />
+                            <label htmlFor="outlineColorInput">Outline Color:</label>
+                            <input type="color" value={outlineColor} onChange={handleOutlineColorChange} />
+                            <br />
+                            <label htmlFor="outlineThicknessInput">Outline Thickness:</label>
+                            <input type="number" value={outlineThickness} onChange={handleOutlineThicknessChange} />
+                            <br />
                             {/*   <input type="number" value={canvasWidth} onChange={handleCanvasWidthChange} /> */}
                             {/* <input type="number" value={canvasHeight} onChange={handleCanvasHeightChange} /> */}
                             {/*<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} /> */}
+                            <button onClick={() => setText('')}>Clear Text</button> {/* Clear Text button */}
                             <button onClick={handleSaveImage}>Save Image</button>
                         </div>
                     )}
