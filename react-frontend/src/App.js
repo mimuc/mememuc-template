@@ -1,6 +1,6 @@
 import './App.css';
-import LandingPage from './Comps/MainPage';
-
+import LandingPage from './Pages/MainPage';
+import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   return (
     <>
