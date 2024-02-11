@@ -1,8 +1,7 @@
 
     import React, { useState, useEffect, useRef } from 'react';
-    import { Container } from 'react-bootstrap';
+    import { Container} from 'react-bootstrap';
     import styles from './editor.module.css';
-    //import gifshot from 'gifshot';
 
 
     const EditorPage = () => {
@@ -17,12 +16,14 @@
         const [textY, setTextY] = useState(50);
         const [outlineColor, setOutlineColor] = useState('#000000'); // State for outline color
         const [outlineThickness, setOutlineThickness] = useState(2); // State for outline thickness
-    //  const [canvasWidth, setCanvasWidth] = useState(500);
-    //  const [canvasHeight, setCanvasHeight] = useState(400);
+
         const canvasRef = useRef();
         const [canvasColor, setCanvasColor] = useState('white'); // Canvas color state
         const [imageSizeOption, setImageSizeOption] = useState('cover'); // New state for image size option
         const [fontFamily, setFontFamily] = useState('Arial');
+        const [showColorPopup, setShowColorPopup] = useState(false); // State for showing the canvas color popup
+        const [tempCanvasColor, setTempCanvasColor] = useState('white'); // Temporary canvas color
+        
 
         //const [gifUrl, setGifUrl] = useState('');
 
@@ -73,6 +74,16 @@
             }
         }, [selectedImage, text, textColor, textSize, textX, textY, textStyle, canvasColor, imageSizeOption, outlineColor, outlineThickness, fontFamily]);
 
+        
+        const confirmCanvasColorChange = () => {
+            setCanvasColor(tempCanvasColor);
+            setShowColorPopup(false); 
+        }; // Handler to confirm the canvas color change
+
+        const toggleColorPopup = () => {
+            setShowColorPopup(!showColorPopup);
+        };
+        
         const handleImageSelect = (event) => {
             const file = event.target.files[0];
             setSelectedImage(URL.createObjectURL(file));
@@ -117,17 +128,6 @@
         const handleTextYChange = (event) => {
             setTextY(parseInt(event.target.value));
         };
-
-        /*
-        const handleCanvasWidthChange = (event) => {
-            setCanvasWidth(parseInt(event.target.value));
-        };
-
-        const handleCanvasHeightChange = (event) => {
-            setCanvasHeight(parseInt(event.target.value));
-        };
-        */
-
 
         const handleSaveImage = () => {
             const canvas = canvasRef.current;
@@ -187,67 +187,48 @@
             // You can set other properties as needed
         };
 
-        /**
-         *    Function to create a GIF from an image
-        const createGifFromImage = () => {
-            if (!selectedImage) return; // Ensure there's an image selected
-
-            gifshot.createGIF({
-                images: [selectedImage],
-                text: text,
-                textFontWeight: 'normal',
-                textFontSize: textSize + 'px',
-                textFontFamily: 'Arial',
-                textFontColor: textColor,
-                textAlign: 'left',
-                textBaseline: 'top',
-                textXCoordinate: textX,
-                textYCoordinate: textY,
-            }, function(obj) {
-                if (!obj.error) {
-                    //const imageSrc = obj.image;
-                    //setGifUrl(imageSrc); // Update the state with the new GIF URL
-                }
-            });
-        
-        }; */
 
         return (
-            <Container>
-                <header>
-                <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
-                </link>
-                <h1 className={styles.center}>Meme Editor</h1>
+            <Container fluid style={{ textAlign: 'left' }}>
+                <header style={{ marginLeft: '20px' }}>
+                    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+                    </link>
+                    <h1 className={styles.left} style = {{fontFamily:'Arial'}}>Meme Editor</h1>
                 </header>
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                    <button  onClick={togglePopup}>Select Image</button>
-                    {/*<button  onClick={createGifFromImage}>Create GIF</button*/}
-                    <button  onClick={handleTemplate1}>Template 1</button>
-                    <button  onClick={handleTemplate2}>Template 2</button>
-                    <button  onClick={handleTemplate3}>Template 3</button>
-                </div>
-                {/* Font family selection */}
-        
-
-                <div style={{ display: 'flex', gap: '20%' }}>
-                    <div>
-                        <h2>Canvas</h2>
-                        <div>
-                            {/* Canvas color selection */}
-                            <label htmlFor="canvasColor">Canvas Color:</label>
-                            <input type="color" value={canvasColor} onChange={(e) => setCanvasColor(e.target.value)} />
-                        </div>
-                        <canvas ref={canvasRef} style={{ width: '700px', height: '700px' }} />
+                <div style={{ display: 'flex', marginLeft: '30px' }}>
+                    <div style={{ marginBottom: '10px', marginLeft: '-10px'  }}>
+                    <button  onClick={togglePopup} style = {{marginRight: '30px'}}>Select Image</button>
+                    <button  onClick={handleTemplate1} style = {{marginRight: '30px'}}>Template 1</button>
+                    <button  onClick={handleTemplate2} style = {{marginRight: '30px'}}>Template 2</button>
+                    <button  onClick={handleTemplate3} style = {{marginRight: '30px'}}>Template 3</button>
                     </div>
-                    <div>
-                        {selectedImage && (
-                            <div>
-                                <h2>Image Size</h2>
+                </div>
+                <div>   
+                {selectedImage && (
+                    <>
+                    <h2 style = {{fontFamily:'Arial', marginBottom: '10px', marginLeft: '1000px' }} >Canvas</h2>
+                    <button onClick={toggleColorPopup}>Change Canvas Color</button>
+                    {showColorPopup && (
+                        <div className="popup">
+                            <label htmlFor="canvasColor">Canvas Color:</label>
+                            <input
+                                type="color"
+                                value={tempCanvasColor}
+                                onChange={(e) => setTempCanvasColor(e.target.value)}
+                            />
+                        <button onClick={confirmCanvasColorChange}>Confirm Color</button>
+                        </div>
+                    )}
+                    <canvas ref={canvasRef} style={{ width: '700px', height: '700px', marginTop: '10px' }} />
+                    {selectedImage && (
+                        <>
+                            <div style = {{textAlign: 'left', marginLeft: '1000px', marginTop: '-700px'}}>
+                                <h2 style = {{fontFamily:'Arial'}} >Image Size</h2>
                                 <select value={imageSizeOption} onChange={(e) => setImageSizeOption(e.target.value)}>
                                     <option value="cover">Cover (100%)</option>
                                     <option value="eightyPercent">80% of Canvas</option>
                                 </select>
-                                <h2>Add/Edit Text</h2>
+                                <h2 style = {{fontFamily:'Arial'}}>Add/Edit Text</h2>
                                 <label htmlFor="textInput">Text:</label>
                                 <input type="text" value={text} onChange={handleTextChange} />
                                 <br />
@@ -278,22 +259,21 @@
                                 <label htmlFor="outlineThicknessInput">Outline Thickness:</label>
                                 <input type="number" value={outlineThickness} onChange={handleOutlineThicknessChange} />
                                 <br />
-                                {/*   <input type="number" value={canvasWidth} onChange={handleCanvasWidthChange} /> */}
-                                {/* <input type="number" value={canvasHeight} onChange={handleCanvasHeightChange} /> */}
-                                {/*<canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} /> */}
-                                <button onClick={() => setText('')}>Clear Text</button> {/* Clear Text button */}
+                                <button onClick={() => setText('')}>Clear Text</button> 
                                 <button onClick={handleSaveImage}>Save Image</button>
                             </div>
-                        )}
-                    </div>
+                            </>
+                    )}; 
+                    </>
+                )}; 
                 </div>
                 {showPopup && (
-                    <div className="popup">
-                        <input type="file" accept="image/*" onChange={handleImageSelect} />
-                        <input type="text" placeholder="Enter Image URL" value={imageUrl} onChange={handleImageUrlChange} />
-                        <button onClick={handleAddImageUrl}>Add Image</button>
-                    </div>
-                )}
+                            <div className="popup">
+                                <input type="file" accept="image/*" onChange={handleImageSelect} />
+                                <input type="text" placeholder="Enter Image URL" value={imageUrl} onChange={handleImageUrlChange} />
+                                <button onClick={handleAddImageUrl}>Add Image</button>
+                            </div>
+                )};   
             </Container>
         );
     };
@@ -304,7 +284,7 @@
 
 
 
-    /*
+    {/*
     import { Container, Row, Col } from 'react-bootstrap';
     import React, { useState } from 'react';
     import styles from './editor.module.css'
@@ -428,4 +408,4 @@
         </Row>
     </Container>
 
-    */
+*/}
