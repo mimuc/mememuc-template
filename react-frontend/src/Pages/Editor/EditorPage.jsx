@@ -60,8 +60,15 @@ const EditorPage = () => {
 
                 // Draw text on top of the image
                 ctx.fillStyle = textColor;
-                ctx.font = `${textSize}px ${fontFamily} ${textStyle}`;
+    
                 ctx.fillText(text, textX, textY);
+                if ('fonts' in document) {
+                    document.fonts.load('10pt "anton"').then(function () {
+                        // Now the font is loaded, set the font on the canvas context
+                        ctx.font = `20px anton`;
+                        ctx.fillText(text, textX, textY);
+                    });
+                }                
 
                 // Apply text outline
                 ctx.shadowColor = outlineColor;
@@ -254,6 +261,7 @@ const EditorPage = () => {
                                 <option value="Times New Roman">Times New Roman</option>
                                 <option value="Georgia">Georgia</option>
                                 <option value="Courier New">Courier New</option>
+                                <option value="anton">Anton</option>
                             </select>
                             <label htmlFor="textColorInput">Text Color:</label>
                             <input type="color" value={textColor} onChange={handleTextColorChange} />
