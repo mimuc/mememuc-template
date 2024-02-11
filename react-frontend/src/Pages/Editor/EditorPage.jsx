@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container } from 'react-bootstrap';
 import styles from './editor.module.css';
-import gifshot from 'gifshot';
+//import gifshot from 'gifshot';
 
 
 const EditorPage = () => {
@@ -22,7 +22,9 @@ const EditorPage = () => {
     const canvasRef = useRef();
     const [canvasColor, setCanvasColor] = useState('white'); // Canvas color state
     const [imageSizeOption, setImageSizeOption] = useState('cover'); // New state for image size option
-    const [gifUrl, setGifUrl] = useState('');
+    const [fontFamily, setFontFamily] = useState('Arial');
+
+    //const [gifUrl, setGifUrl] = useState('');
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -58,7 +60,7 @@ const EditorPage = () => {
 
                 // Draw text on top of the image
                 ctx.fillStyle = textColor;
-                ctx.font = `${textSize}px Arial ${textStyle}`;
+                ctx.font = `${textSize}px ${fontFamily} ${textStyle}`;
                 ctx.fillText(text, textX, textY);
 
                 // Apply text outline
@@ -187,7 +189,6 @@ const EditorPage = () => {
 
     /**
      *    Function to create a GIF from an image
-     */
     const createGifFromImage = () => {
         if (!selectedImage) return; // Ensure there's an image selected
 
@@ -204,22 +205,26 @@ const EditorPage = () => {
             textYCoordinate: textY,
         }, function(obj) {
             if (!obj.error) {
-                const imageSrc = obj.image;
-                setGifUrl(imageSrc); // Update the state with the new GIF URL
+                //const imageSrc = obj.image;
+                //setGifUrl(imageSrc); // Update the state with the new GIF URL
             }
         });
-    };
+       
+    }; */
 
     return (
         <Container>
             <h1 className={styles.center}>EDITOR</h1>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                 <button  onClick={togglePopup}>Select Image</button>
-                <button  onClick={createGifFromImage}>Create GIF</button>
+                {/*<button  onClick={createGifFromImage}>Create GIF</button*/}
                 <button  onClick={handleTemplate1}>Template 1</button>
                 <button  onClick={handleTemplate2}>Template 2</button>
                 <button  onClick={handleTemplate3}>Template 3</button>
             </div>
+            {/* Font family selection */}
+    
+
             <div style={{ display: 'flex', gap: '20%' }}>
                 <div>
                     <h2>Canvas</h2>
@@ -242,6 +247,14 @@ const EditorPage = () => {
                             <label htmlFor="textInput">Text:</label>
                             <input type="text" value={text} onChange={handleTextChange} />
                             <br />
+                            <label htmlFor="fontFamilyInput">Font Family:</label>
+                            <select id="fontFamilyInput" value={fontFamily} onChange={(e) => setFontFamily(e.target.value)}>
+                                <option value="Arial">Arial</option>
+                                <option value="Verdana">Verdana</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Courier New">Courier New</option>
+                            </select>
                             <label htmlFor="textColorInput">Text Color:</label>
                             <input type="color" value={textColor} onChange={handleTextColorChange} />
                             <br />
