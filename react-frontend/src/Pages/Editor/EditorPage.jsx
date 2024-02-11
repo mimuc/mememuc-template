@@ -35,12 +35,16 @@ const EditorPage = () => {
         ctx.fillStyle = canvasColor; // Set canvas color
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        
+
         // Draw image
         if (selectedImage) {
             const image = new Image();
             image.src = selectedImage;
             image.onload = () => {
                 let imageWidth, imageHeight;
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height); // Draw image
 
                 // Calculate image dimensions based on the canvas size and selected option
                 if (imageSizeOption === 'cover') {
@@ -55,20 +59,19 @@ const EditorPage = () => {
                 const imageX = (canvas.width - imageWidth) / 2;
                 const imageY = (canvas.height - imageHeight) / 2;
 
+                // Clear the area for the image to prevent overlapping texts on multiple updates
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
                 // Render the image
                 ctx.drawImage(image, imageX, imageY, imageWidth, imageHeight);
 
-                // Draw text on top of the image
-                ctx.fillStyle = textColor;
-    
+                
+                // Set the font using the selected fontFamily and textSize
+                ctx.font = `${textSize}px ${fontFamily}`;
                 ctx.fillText(text, textX, textY);
-                if ('fonts' in document) {
-                    document.fonts.load('10pt "anton"').then(function () {
-                        // Now the font is loaded, set the font on the canvas context
-                        ctx.font = `20px anton`;
-                        ctx.fillText(text, textX, textY);
-                    });
-                }                
+
+                // Draw text on top of the image
+                ctx.fillStyle = textColor;  
 
                 // Apply text outline
                 ctx.shadowColor = outlineColor;
@@ -78,7 +81,7 @@ const EditorPage = () => {
                 ctx.fillText(text, textX, textY);
             };
         }
-    }, [selectedImage, text, textColor, textSize, textX, textY, textStyle, canvasColor, imageSizeOption, outlineColor, outlineThickness]);
+    }, [selectedImage, text, textColor, textSize, textX, textY, textStyle, canvasColor, imageSizeOption, outlineColor, outlineThickness, fontFamily]);
 
     const handleImageSelect = (event) => {
         const file = event.target.files[0];
@@ -221,7 +224,11 @@ const EditorPage = () => {
 
     return (
         <Container>
-            <h1 className={styles.center}>EDITOR</h1>
+            <header>
+            <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+            </link>
+            <h1 className={styles.center}>Meme Editor</h1>
+            </header>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                 <button  onClick={togglePopup}>Select Image</button>
                 {/*<button  onClick={createGifFromImage}>Create GIF</button*/}
@@ -250,7 +257,7 @@ const EditorPage = () => {
                                 <option value="cover">Cover (100%)</option>
                                 <option value="eightyPercent">80% of Canvas</option>
                             </select>
-                            <h2>Text Editing</h2>
+                            <h2>Add/Edit Text</h2>
                             <label htmlFor="textInput">Text:</label>
                             <input type="text" value={text} onChange={handleTextChange} />
                             <br />
@@ -261,7 +268,7 @@ const EditorPage = () => {
                                 <option value="Times New Roman">Times New Roman</option>
                                 <option value="Georgia">Georgia</option>
                                 <option value="Courier New">Courier New</option>
-                                <option value="anton">Anton</option>
+                                <option value="Anton">Anton</option>
                             </select>
                             <label htmlFor="textColorInput">Text Color:</label>
                             <input type="color" value={textColor} onChange={handleTextColorChange} />
